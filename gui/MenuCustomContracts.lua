@@ -21,7 +21,6 @@ function MenuCustomContracts.new(i18n)
   self.name = "menuCustomContracts"
   self.i18n = i18n
 
-  self.data = {}
   self.newData = {}
   self.activeData = {}
   self.yourData = {}
@@ -106,6 +105,8 @@ end
 function MenuCustomContracts:onFrameOpen()
   MenuCustomContracts:superClass().onFrameOpen(self)
 
+  print("[CustomContracts] Menu opened, subscribing to updates")
+
   self:onMoneyChange()
   g_messageCenter:subscribe(MessageType.MONEY_CHANGED, self.onMoneyChange, self)
   g_messageCenter:subscribe(MessageType.CUSTOM_CONTRACTS_UPDATED, self.updateContent, self)
@@ -126,6 +127,13 @@ function MenuCustomContracts:updateContent()
   self.newContractsList:reloadData()
   self.activeContractsList:reloadData()
   self.yourContractsList:reloadData()
+
+  print(
+    "[CustomContracts] updateContent called",
+    "new:", #self.newData,
+    "active:", #self.activeData,
+    "yours:", #self.yourData
+  )
 
   -- Redirect to "Yours" tab after creating a contract
   if self.redirectToYoursAfterCreate then
@@ -421,7 +429,7 @@ function MenuCustomContracts:onAcceptContract()
     function(_, yes)
       if yes then
         g_client:getServerConnection():sendEvent(
-          AcceptContractEvent.new(contract.id, g_currentMission:getFarmId())
+          AcceptContractEvent.new(contract.id)
         )
       end
     end,
@@ -446,7 +454,7 @@ function MenuCustomContracts:onCancelContract()
     function(_, yes)
       if yes then
         g_client:getServerConnection():sendEvent(
-          CancelContractEvent.new(contract.id, g_currentMission:getFarmId())
+          CancelContractEvent.new(contract.id)
         )
       end
     end,

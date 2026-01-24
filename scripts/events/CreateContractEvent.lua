@@ -1,55 +1,45 @@
 CreateContractEvent = {}
-CreateContractEvent_mt = Class(CreateContractEvent, Event)
+local CreateContractEvent_mt = Class(CreateContractEvent, Event)
 
 InitEventClass(CreateContractEvent, "CreateContractEvent")
 
+-- REQUIRED by Giants networking
 function CreateContractEvent.emptyNew()
   local self = Event.new(CreateContractEvent_mt)
-
   return self
 end
 
-function CreateContractEvent.new(farmId, contract)
+-- Used by client UI
+function CreateContractEvent.new(payload)
   local self = CreateContractEvent.emptyNew()
-  self.farmId = farmId
-  self.contract = contract
+  self.payload = payload
   return self
 end
 
 function CreateContractEvent:writeStream(streamId, connection)
-  streamWriteInt32(streamId, self.farmId)
-  streamWriteInt32(streamId, self.contract.fieldId)
-  streamWriteString(streamId, self.contract.workType)
-  streamWriteInt32(streamId, self.contract.reward)
+  streamWriteInt32(streamId, self.payload.fieldId)
+  streamWriteString(streamId, self.payload.workType)
+  streamWriteInt32(streamId, self.payload.reward)
 end
 
 function CreateContractEvent:readStream(streamId, connection)
-  self.farmId = streamReadInt32(streamId)
-  self.contract = {
+  self.payload = {
     fieldId  = streamReadInt32(streamId),
     workType = streamReadString(streamId),
     reward   = streamReadInt32(streamId)
   }
+
   self:run(connection)
 end
 
 function CreateContractEvent:run(connection)
-  -- Only the server may act
+  -- 🔒 Server only
   if g_server == nil then
     return
   end
 
-  -- 🚫 Ignore executions that are not from a player connection
+  -- 🔒 Ignore server-originated runs
   if connection == nil or connection:getIsServer() then
-    return
-  end
-
-  print(
-    "CreateContractEvent server-side",
-    "farmId:", self.farmId
-  )
-
-  if self.farmId == nil or self.farmId == FarmManager.SPECTATOR_FARM_ID then
     return
   end
 
@@ -57,5 +47,10 @@ function CreateContractEvent:run(connection)
     return
   end
 
-  g_customContractManager:createContract(self.farmId, self.contract)
+  local farmId = connection.farmId
+  if farmId == nil or farmId == FarmManager.SPECTATOR_FARM_ID then
+    return
+  end
+
+  g_customContractManager:handleCreateRequest(farmId, self.payload)
 end

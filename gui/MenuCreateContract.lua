@@ -147,7 +147,7 @@ function MenuCreateContract:onConfirm(sender)
   )
 
   g_client:getServerConnection():sendEvent(
-    CreateContractEvent.new(g_currentMission:getFarmId(), contract)
+    CreateContractEvent.new(contract)
   )
 
   self:close()

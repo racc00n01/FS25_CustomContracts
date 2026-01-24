@@ -1,45 +1,38 @@
 CancelContractEvent = {}
-CancelContractEvent_mt = Class(CancelContractEvent, Event)
+local CancelContractEvent_mt = Class(CancelContractEvent, Event)
 
 InitEventClass(CancelContractEvent, "CancelContractEvent")
 
-
+-- REQUIRED
 function CancelContractEvent.emptyNew()
   local self = Event.new(CancelContractEvent_mt)
-
   return self
 end
 
-function CancelContractEvent.new(contractId, farmId)
-  local self = Event.new(CancelContractEvent_mt)
-  self.farmId = farmId
+-- Used by client UI
+function CancelContractEvent.new(contractId)
+  local self = CancelContractEvent.emptyNew()
   self.contractId = contractId
   return self
 end
 
+function CancelContractEvent:writeStream(streamId, connection)
+  streamWriteInt32(streamId, self.contractId)
+end
+
 function CancelContractEvent:readStream(streamId, connection)
-  self.farmId = streamReadInt32(streamId)
   self.contractId = streamReadInt32(streamId)
   self:run(connection)
 end
 
-function CancelContractEvent:writeStream(streamId, connection)
-  streamWriteInt32(streamId, self.farmId)
-  streamWriteInt32(streamId, self.contractId)
-end
-
 function CancelContractEvent:run(connection)
-  -- Only the server may act
+  -- 🔒 Server only
   if g_server == nil then
     return
   end
 
-  -- 🚫 Ignore executions that are not from a player connection
+  -- 🔒 Ignore server-originated runs
   if connection == nil or connection:getIsServer() then
-    return
-  end
-
-  if self.farmId == nil or self.farmId == FarmManager.SPECTATOR_FARM_ID then
     return
   end
 
@@ -47,14 +40,10 @@ function CancelContractEvent:run(connection)
     return
   end
 
-  -- Retrieve the contract
-  local contract = g_customContractManager.contracts[self.contractId]
-
-  -- Validation if contract is open or accepted
-  if contract == nil then InfoDialog.show("Contract was not found.") end
-  if contract.status ~= CustomContract.STATUS.OPEN and contract.status ~= CustomContract.STATUS.ACCEPTED then
-    InfoDialog.show("You cannot cancel this contract.")
+  local farmId = connection.farmId
+  if farmId == nil or farmId == FarmManager.SPECTATOR_FARM_ID then
+    return
   end
 
-  g_customContractManager:cancelContract(self.contractId, self.farmId)
+  g_customContractManager:handleCancelRequest(farmId, self.contractId)
 end

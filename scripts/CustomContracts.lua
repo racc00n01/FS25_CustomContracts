@@ -11,22 +11,20 @@ CustomContracts.dir = g_currentModDirectory
 CustomContracts.modName = g_currentModName
 CustomContracts.SaveKey = "CustomContracts"
 
--- source(CustomContracts.dir .. "scripts/FieldAccessController.lua")
--- source(CustomContracts.dir .. "scripts/WorkProgressTracker.lua")
--- source(CustomContracts.dir .. "scripts/PaymentHandler.lua")
-
 source(CustomContracts.dir .. "gui/MenuCustomContracts.lua")
 source(CustomContracts.dir .. "gui/MenuCreateContract.lua")
+source(CustomContracts.dir .. "scripts/events/SyncContractsEvent.lua")
 
 function CustomContracts:loadMap()
   g_currentMission.customContracts = self
 
   MessageType.CUSTOM_CONTRACTS_UPDATED = nextMessageTypeId()
+  MessageType.PLAYER_CONNECTED = nextMessageTypeId()
 
   g_gui:loadProfiles(CustomContracts.dir .. "gui/guiProfiles.xml")
 
   if g_customContractManager == nil then
-    g_customContractManager = CustomContractManager:new(g_server ~= nil)
+    g_customContractManager = CustomContractManager:new()
   end
 
   -- Register menu page
@@ -42,7 +40,13 @@ function CustomContracts:loadMap()
   g_gui:loadGui(CustomContracts.dir .. "gui/MenuCreateContract.xml", "menuCreateContract", createContractDialog)
 
   self:loadFromXmlFile()
+
+  if g_currentMission:getIsServer() then
+    g_customContractManager:syncContracts()
+  end
+
   g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
+  g_messageCenter:publish(MessageType.PLAYER_CONNECTED)
 end
 
 function CustomContracts:makeIsTaskListCheckEnabledPredicate()
@@ -89,8 +93,6 @@ function CustomContracts:loadFromXmlFile()
     g_customContractManager:loadFromXmlFile(xmlFile)
 
     delete(xmlFile)
-
-    g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
   end
 end
 
