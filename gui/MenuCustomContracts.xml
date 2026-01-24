@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<GUI name="menuCustomContracts">
+  <GuiElement profile="fs25_menuContainer">
+    <!-- Header -->
+    <GuiElement profile="fs25_menuHeaderPanel">
+      <Bitmap profile="fs25_menuHeaderIconBg">
+        <Bitmap profile="CC_MenuHeaderIcon" size="50px 50px"/>
+      </Bitmap>
+      <Text profile="fs25_menuHeaderTitle" text="Custom Contracts"/>
+      <RoundCorner profile="fs25_shopMoneyBoxBg" id="shopMoneyBoxBg"/>
+      <BoxLayout profile="fs25_shopMoneyBox" id="shopMoneyBox">
+        <Text profile="fs25_shopBalance" text="Current balance:"/>
+        <Text profile="fs25_shopMoney" id="currentBalanceText"/>
+      </BoxLayout>
+    </GuiElement>
+    <BoxLayout profile="fs25_subCategorySelectorTabbedBox" id="subCategoryBox">
+      <Button profile="fs25_subCategorySelectorTabbedTab" id="inGameMenuNew" text="New" onClick="onClickNew">
+        <ThreePartBitmap profile="fs25_subCategorySelectorTabbedTabBg" name="background"/>
+      </Button>
+      <Button profile="fs25_subCategorySelectorTabbedTab" id="inGameMenuActive" text="Active" onClick="onClickActive">
+        <ThreePartBitmap profile="fs25_subCategorySelectorTabbedTabBg" name="background"/>
+      </Button>
+      <Button profile="fs25_subCategorySelectorTabbedTab" id="inGameMenuYours" text="Your contracts" onClick="onClickYours">
+        <ThreePartBitmap profile="fs25_subCategorySelectorTabbedTabBg" name="background"/>
+      </Button>
+    </BoxLayout>
+    <ThreePartBitmap profile="fs25_lineSeparatorTopHighlighted" position="0px -57px"/>
+    <MultiTextOption profile="fs25_subCategorySelectorTabbed" id="subCategoryPaging" position="0px -10px" onClick="updateSubCategoryPages"/>
+
+    <!-- Page New contracts -->
+    <GuiElement profile="fs25_subCategorySelectorTabbedContainer" id="inGameMenuNewPage">
+      <GuiElement position="0px -20px">
+        <!-- TABLE HEADER -->
+        <Bitmap profile="fs25_statisticsHeaderBox" size="1480px 40px">
+          <Button profile="rtTableHeader" position="15px 0px" size="247px 40px" text="Farm" handleFocus="true"/>
+          <Button profile="rtTableHeader" position="335px 0px" size="247px 40px" text="Field" handleFocus="false"/>
+          <Button profile="rtTableHeader" position="475px 0px" size="247px 40px" text="Work" handleFocus="false"/>
+          <Button profile="rtTableHeader" position="695px 0px" size="247px 40px" text="Reward" handleFocus="false"/>
+          <Button profile="rtTableHeader" position="875px 0px" size="247px 40px" text="Status" handleFocus="false"/>
+          <ThreePartBitmap profile="fs25_lineSeparatorBottom" position="0px 2px" />
+        </Bitmap>
+
+        <!-- TABLE BODY -->
+        <SmoothList id="newContractsList" profile="rt_table" position="40px -30px" size="1480px 1280px">
+          <ListItem profile="rtTableListItem">
+            <Text profile="rtListRowCellLeft" position="15px 0px" size="247px 44px" name="farm"/>
+            <Text profile="rtListRowCellLeft" position="335px 0px" size="247px 44px" name="field"/>
+            <Text profile="rtListRowCellLeft" position="475px 0px" size="247px 44px" name="work"/>
+            <Text profile="rtListRowCellLeft" position="695px 0px" size="247px 44px" name="reward"/>
+            <Text profile="rtListRowCellLeft" position="875px 0px" size="247px 44px" name="status"/>
+          </ListItem>
+        </SmoothList>
+
+        <!-- SCROLLBAR -->
+        <ThreePartBitmap profile="rt_slider_box_right" position="960px -260px" size="6px 300px">
+          <Slider profile="fs25_listSlider" dataElementId="contractsList"/>
+        </ThreePartBitmap>
+      </GuiElement>
+
+    </GuiElement>
+
+    <!-- Page Active contracts -->
+    <GuiElement profile="fs25_subCategorySelectorTabbedContainer" id="inGameMenuActivePage">
+      <GuiElement position="0px -20px">
+        <!-- TABLE HEADER -->
+        <Bitmap profile="fs25_statisticsHeaderBox" size="1480px 40px">
+          <Button profile="rtTableHeader" position="15px 0px" size="247px 40px" text="Farm" handleFocus="true"/>
+          <Button profile="rtTableHeader" position="335px 0px" size="247px 40px" text="Field" handleFocus="false"/>
+          <Button profile="rtTableHeader" position="475px 0px" size="247px 40px" text="Work" handleFocus="false"/>
+          <Button profile="rtTableHeader" position="695px 0px" size="247px 40px" text="Reward" handleFocus="false"/>
+          <Button profile="rtTableHeader" position="875px 0px" size="247px 40px" text="Status" handleFocus="false"/>
+          <Button profile="rtTableHeader" position="1055px 0px" size="247px 40px" text="Accepted by" handleFocus="false"/>
+          <ThreePartBitmap profile="fs25_lineSeparatorBottom" position="0px 2px" />
+        </Bitmap>
+
+        <!-- TABLE BODY -->
+        <SmoothList id="activeContractsList" profile="rt_table" position="40px -30px" size="1480px 1280px">
+          <ListItem profile="rtTableListItem">
+            <Text profile="rtListRowCellLeft" position="15px 0px" size="247px 44px" name="farm"/>
+            <Text profile="rtListRowCellLeft" position="335px 0px" size="247px 44px" name="field"/>
+            <Text profile="rtListRowCellLeft" position="475px 0px" size="247px 44px" name="work"/>
+            <Text profile="rtListRowCellLeft" position="695px 0px" size="247px 44px" name="reward"/>
+            <Text profile="rtListRowCellLeft" position="875px 0px" size="247px 44px" name="status"/>
+            <Text profile="rtListRowCellLeft" position="1055px 0px" size="247px 44px" name="accept"/>
+          </ListItem>
+        </SmoothList>
+
+        <!-- SCROLLBAR -->
+        <ThreePartBitmap profile="rt_slider_box_right" position="960px -260px" size="6px 300px">
+          <Slider profile="fs25_listSlider" dataElementId="contractsList"/>
+        </ThreePartBitmap>
+      </GuiElement>
+
+    </GuiElement>
+
+    <!-- Page your contracts contracts -->
+    <GuiElement profile="fs25_subCategorySelectorTabbedContainer" id="inGameMenuYoursPage">
+      <GuiElement position="0px -20px">
+        <!-- TABLE HEADER -->
+        <Bitmap profile="fs25_statisticsHeaderBox" size="1480px 40px">
+          <Button profile="rtTableHeader" position="15px 0px" size="247px 40px" text="Farm" handleFocus="true"/>
+          <Button profile="rtTableHeader" position="335px 0px" size="247px 40px" text="Field" handleFocus="false"/>
+          <Button profile="rtTableHeader" position="475px 0px" size="247px 40px" text="Work" handleFocus="false"/>
+          <Button profile="rtTableHeader" position="695px 0px" size="247px 40px" text="Reward" handleFocus="false"/>
+          <Button profile="rtTableHeader" position="875px 0px" size="247px 40px" text="Status" handleFocus="false"/>
+          <Button profile="rtTableHeader" position="1055px 0px" size="247px 40px" text="Accepted by" handleFocus="false"/>
+          <ThreePartBitmap profile="fs25_lineSeparatorBottom" position="0px 2px" />
+        </Bitmap>
+
+        <!-- TABLE BODY -->
+        <SmoothList id="yourContractsList" profile="rt_table" position="40px -30px" size="1480px 1280px">
+          <ListItem profile="rtTableListItem">
+            <Text profile="rtListRowCellLeft" position="15px 0px" size="247px 44px" name="farm"/>
+            <Text profile="rtListRowCellLeft" position="335px 0px" size="247px 44px" name="field"/>
+            <Text profile="rtListRowCellLeft" position="475px 0px" size="247px 44px" name="work"/>
+            <Text profile="rtListRowCellLeft" position="695px 0px" size="247px 44px" name="reward"/>
+            <Text profile="rtListRowCellLeft" position="875px 0px" size="247px 44px" name="status"/>
+            <Text profile="rtListRowCellLeft" position="1055px 0px" size="247px 44px" name="accept"/>
+          </ListItem>
+        </SmoothList>
+
+        <!-- SCROLLBAR -->
+        <ThreePartBitmap profile="rt_slider_box_right" position="960px -260px" size="6px 300px">
+          <Slider profile="fs25_listSlider" dataElementId="contractsList"/>
+        </ThreePartBitmap>
+      </GuiElement>
+
+    </GuiElement>
+  </GuiElement>
+</GUI>

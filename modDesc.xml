@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<modDesc descVersion="104">
+  <author>Racc00n</author>
+
+  <version>0.0.0.4</version>
+
+  <iconFilename>icon_taskList.dds</iconFilename>
+
+  <multiplayer supported="true" />
+
+  <title>
+    <en>Custom Contracts</en>
+
+    <nl>Custom Contracten</nl>
+    <de>Benutzerdefinierte Verträge</de>
+  </title>
+
+  <description>
+    <en><![CDATA[Custom Contracts enables player-to-player contracting on multiplayer servers.
+Whether you’re helping a neighbor or running a farming business, you can create, accept, and manage contracts to perform field work for other players and get paid for the job.]]></en>
+
+    <nl><![CDATA[Custom Contracts maakt speler-tot-speler contracten mogelijk op multiplayer servers.
+Of je nu een andere boer helpt of een landbouwbedrijf runt, je kunt contracten aanmaken, accepteren en beheren om veldwerk voor andere spelers uit te voeren en hiervoor betaald te krijgen.]]></nl>
+    <de><![CDATA[Custom Contracts ermöglicht Spieler-zu-Spieler-Verträge auf Multiplayer-Servern.
+Egal ob du einem Nachbarn hilfst oder einen landwirtschaftlichen Betrieb führst – du kannst Verträge erstellen, annehmen und verwalten, um Feldarbeiten für andere Spieler durchzuführen und dafür bezahlt zu werden.]]></de>
+  </description>
+
+  <multiplayer supported="true"/>
+
+  <extraSourceFiles>
+    <sourceFile filename="scripts/events/CreateContractEvent.lua"/>
+    <sourceFile filename="scripts/events/AcceptContractEvent.lua"/>
+    <sourceFile filename="scripts/events/CancelContractEvent.lua"/>
+    <sourceFile filename="scripts/events/CompleteContractEvent.lua"/>
+    <sourceFile filename="scripts/events/DeleteContractEvent.lua"/>
+    <sourceFile filename="scripts/events/SyncContractsEvent.lua"/>
+
+    <sourceFile filename="gui/MenuCustomContracts.xml"/>
+    <sourceFile filename="gui/MenuCreateContract.xml"/>
+
+    <sourceFile filename="scripts/CustomContract.lua"/>
+    <sourceFile filename="scripts/CustomContracts.lua"/>
+    <sourceFile filename="scripts/CustomContractManager.lua"/>
+
+  </extraSourceFiles>
+</modDesc>
