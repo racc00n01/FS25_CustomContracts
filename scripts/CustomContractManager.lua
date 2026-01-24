@@ -22,6 +22,12 @@ function CustomContractManager:new()
   self.contracts = {}
   self.nextId = 1
 
+  g_messageCenter:subscribe(
+    MessageType.PLAYER_CONNECTED,
+    self.onPlayerConnected,
+    self
+  )
+
   return self
 end
 
@@ -82,6 +88,16 @@ function CustomContractManager:loadFromXmlFile(xmlFile)
 
     i = i + 1
   end
+
+  self:syncContracts()
+end
+
+function CustomContractManager:onPlayerConnected(player)
+  if not g_currentMission:getIsServer() then return end
+
+  if player.connection ~= nil then
+    self:syncContracts(player.connection)
+  end
 end
 
 -- Called by CreateContractEvent, runs on server
@@ -116,17 +132,30 @@ function CustomContractManager:createContract(farmId, contract)
 end
 
 -- Function to acceptContract, called by AcceptContractEvent
-function CustomContractManager:acceptContract(contractId, contractorFarmId)
+function CustomContractManager:acceptContract(contractId, farmId)
+  print("CustomContractManager:acceptContract called")
+  if g_server == nil then
+    return
+  end
+
+  if farmId == nil or farmId == FarmManager.SPECTATOR_FARM_ID then
+    return
+  end
+
   local contract = self.contracts[contractId]
+  print(" Retrieved contract: " .. tostring(contract.id))
   if contract == nil then return end
 
   if contract.status ~= CustomContract.STATUS.OPEN then return end
 
-  contract.contractorFarmId = contractorFarmId
+  contract.contractorFarmId = farmId
   contract.status = CustomContract.STATUS.ACCEPTED
+
+  print("Contract accepted: " .. tostring(contract.id))
 
   self:syncContracts()
   g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
+
   -- TODO: grant field access
 end
 
@@ -182,6 +211,10 @@ end
 
 -- Function to cancelContract, called by CancelContractEvent
 function CustomContractManager:cancelContract(contractId, farmId)
+  if g_server == nil then
+    return
+  end
+
   local contract = self.contracts[contractId]
   if contract == nil then return end
 

@@ -3,8 +3,13 @@ SyncContractsEvent_mt = Class(SyncContractsEvent, Event)
 
 InitEventClass(SyncContractsEvent, "SyncContractsEvent")
 
-function SyncContractsEvent.new(contracts, nextId)
+function SyncContractsEvent.emptyNew()
   local self = Event.new(SyncContractsEvent_mt)
+  return self
+end
+
+function SyncContractsEvent.new(contracts, nextId)
+  local self = SyncContractsEvent.emptyNew()
   self.contracts = contracts
   self.nextId = nextId
   return self

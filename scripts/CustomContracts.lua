@@ -42,7 +42,6 @@ function CustomContracts:loadMap()
   g_gui:loadGui(CustomContracts.dir .. "gui/MenuCreateContract.xml", "menuCreateContract", createContractDialog)
 
   self:loadFromXmlFile()
-
   g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
 end
 
@@ -153,12 +152,6 @@ function CustomContracts.addIngameMenuPage(frame, pageName, uvs, predicateFunc, 
   end
 
   g_inGameMenu:rebuildTabList()
-end
-
-function CustomContracts:onPlayerJoined(connection)
-  if g_server == nil then
-    g_customContractManager:syncContracts(connection)
-  end
 end
 
 function CustomContracts:registerMenu()

@@ -29,7 +29,6 @@ function CustomContract.new(id, creatorFarmId, fieldId, workType, reward)
   self.fieldId = fieldId
   self.workType = workType
   self.reward = reward
-  self.progress = 0
   self.status = CustomContract.STATUS.OPEN
 
   return self
@@ -43,7 +42,6 @@ function CustomContract:writeStream(streamId)
   streamWriteString(streamId, self.workType)
   streamWriteInt32(streamId, self.reward)
   streamWriteString(streamId, self.status)
-  streamWriteFloat(streamId, self.progress or 0)
 end
 
 function CustomContract.newFromStream(streamId)
@@ -54,7 +52,6 @@ function CustomContract.newFromStream(streamId)
   local workType = streamReadString(streamId)
   local reward = streamReadInt32(streamId)
   local status = streamReadString(streamId)
-  local progress = streamReadFloat(streamId)
 
   local contract = CustomContract.new(
     id,
@@ -66,7 +63,6 @@ function CustomContract.newFromStream(streamId)
 
   contract.contractorFarmId = contractorFarmId ~= -1 and contractorFarmId or nil
   contract.status = status
-  contract.progress = progress
 
   return contract
 end

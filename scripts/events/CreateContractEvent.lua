@@ -10,7 +10,7 @@ function CreateContractEvent.emptyNew()
 end
 
 function CreateContractEvent.new(farmId, contract)
-  local self = Event.new(CreateContractEvent_mt)
+  local self = CreateContractEvent.emptyNew()
   self.farmId = farmId
   self.contract = contract
   return self

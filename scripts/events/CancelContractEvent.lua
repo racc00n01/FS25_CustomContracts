@@ -3,7 +3,14 @@ CancelContractEvent_mt = Class(CancelContractEvent, Event)
 
 InitEventClass(CancelContractEvent, "CancelContractEvent")
 
-function CancelContractEvent.new(farmId, contractId)
+
+function CancelContractEvent.emptyNew()
+  local self = Event.new(CancelContractEvent_mt)
+
+  return self
+end
+
+function CancelContractEvent.new(contractId, farmId)
   local self = Event.new(CancelContractEvent_mt)
   self.farmId = farmId
   self.contractId = contractId
@@ -22,12 +29,26 @@ function CancelContractEvent:writeStream(streamId, connection)
 end
 
 function CancelContractEvent:run(connection)
-  -- Retrieve the contract
-  local contract = g_customContractManager.contracts[self.contractId]
+  -- Only the server may act
+  if g_server == nil then
+    return
+  end
+
+  -- 🚫 Ignore executions that are not from a player connection
+  if connection == nil or connection:getIsServer() then
+    return
+  end
 
   if self.farmId == nil or self.farmId == FarmManager.SPECTATOR_FARM_ID then
     return
   end
+
+  if g_customContractManager == nil then
+    return
+  end
+
+  -- Retrieve the contract
+  local contract = g_customContractManager.contracts[self.contractId]
 
   -- Validation if contract is open or accepted
   if contract == nil then InfoDialog.show("Contract was not found.") end
