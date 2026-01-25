@@ -177,8 +177,73 @@ end
 function MenuCustomContracts:onListSelectionChanged(list, section, index)
   self.selectedIndex = index
   self.selectedList = list
+
+  local contract = self:getSelectedContract()
+
+  if list == self.yourContractsList then
+    self:updateYourContractDetails(contract)
+  else
+    self:clearYourContractDetails()
+  end
+
   self:updateMenuButtons()
   self:setMenuButtonInfoDirty()
+end
+
+function MenuCustomContracts:getSelectedContract()
+  if self.selectedIndex == nil or self.selectedIndex < 1 then
+    return nil
+  end
+
+  if self.selectedList == self.newContractsList then
+    return self.newData[self.selectedIndex]
+  elseif self.selectedList == self.activeContractsList then
+    return self.activeData[self.selectedIndex]
+  elseif self.selectedList == self.yourContractsList then
+    return self.yourData[self.selectedIndex]
+  end
+
+  return nil
+end
+
+function MenuCustomContracts:updateYourContractDetails(contract)
+  if contract == nil then
+    self:clearYourContractDetails()
+    return
+  end
+
+  -- Field
+  self.contractFieldValue:setText(
+    string.format("Field %d", contract.fieldId)
+  )
+
+  -- Worktype
+  self.contractWorkTypeValue:setText(contract.workType)
+
+  -- Reward
+  self.contractRewardValue:setText(
+    g_i18n:formatMoney(contract.reward, 0, true, true)
+  )
+
+  -- Farm name + icon
+  local farm = g_farmManager:getFarmById(contract.creatorFarmId)
+  if farm ~= nil then
+    self.contractFarmName:setText(farm.name)
+    self.contractWorkType:setText(contract.workType)
+  else
+    self.contractFarmName:setText("-")
+    self.contractWorkType:setText("-")
+    self.detailsIcon:setVisible(false)
+  end
+end
+
+function MenuCustomContracts:clearYourContractDetails()
+  self.contractFieldValue:setText("-")
+  self.contractWorkTypeValue:setText("-")
+  self.contractRewardValue:setText("-")
+  self.contractFarmName:setText("")
+  self.contractWorkType:setText("")
+  self.detailsIcon:setVisible(false)
 end
 
 function MenuCustomContracts:initialize()
@@ -310,7 +375,6 @@ function MenuCustomContracts:updateMenuButtons()
     self.btnDelete.disabled =
         contract == nil
         or contract.creatorFarmId ~= farmId
-        or contract.status ~= CustomContract.STATUS.CANCELLED
   end
 
   self:setMenuButtonInfo(buttons)
@@ -337,43 +401,82 @@ end
 function MenuCustomContracts:populateCellForItemInSection(list, section, index, cell)
   local contract
 
-  if self.subCategoryPaging.state == self.FILTER.NEW then
+  if list == self.newContractsList then
     contract = self.newData[index]
-  elseif self.subCategoryPaging.state == self.FILTER.ACTIVE then
+    self:populateNewOrActiveCell(contract, cell)
+  elseif list == self.activeContractsList then
     contract = self.activeData[index]
-  elseif self.subCategoryPaging.state == self.FILTER.YOURS then
+    self:populateNewOrActiveCell(contract, cell)
+  elseif list == self.yourContractsList then
     contract = self.yourData[index]
+    self:populateYourContractsCell(contract, cell)
   end
 
-  if contract == nil then
-    return
-  end
+  -- -- Creator farm (always exists)
+  -- local creatorFarm = g_farmManager:getFarmById(contract.creatorFarmId)
+  -- if creatorFarm ~= nil then
+  --   cell:getAttribute("farm"):setText(creatorFarm.name)
+  -- end
 
-  -- Creator farm (always exists)
-  local creatorFarm = g_farmManager:getFarmById(contract.creatorFarmId)
-  if creatorFarm ~= nil then
-    cell:getAttribute("farm"):setText(creatorFarm.name)
-  end
+  -- -- Contractor farm (optional)
+  -- local acceptCell = cell:getAttribute("accept")
+  -- if acceptCell ~= nil then
+  --   if contract.contractorFarmId ~= nil then
+  --     local contractorFarm = g_farmManager:getFarmById(contract.contractorFarmId)
+  --     if contractorFarm ~= nil then
+  --       acceptCell:setText(contractorFarm.name)
+  --     else
+  --       acceptCell:setText("-")
+  --     end
+  --   else
+  --     acceptCell:setText("-")
+  --   end
+  -- end
 
-  -- Contractor farm (optional)
-  local acceptCell = cell:getAttribute("accept")
-  if acceptCell ~= nil then
-    if contract.contractorFarmId ~= nil then
-      local contractorFarm = g_farmManager:getFarmById(contract.contractorFarmId)
-      if contractorFarm ~= nil then
-        acceptCell:setText(contractorFarm.name)
-      else
-        acceptCell:setText("-")
-      end
-    else
-      acceptCell:setText("-")
-    end
-  end
+  -- cell:getAttribute("field"):setText("Field " .. contract.fieldId)
+  -- cell:getAttribute("work"):setText(contract.workType)
+  -- cell:getAttribute("reward"):setText(g_i18n:formatMoney(contract.reward))
+  -- cell:getAttribute("status"):setText(string.lower(contract.status))
+end
 
+function MenuCustomContracts:populateNewOrActiveCell(contract, cell)
+  if contract == nil then return end
+
+  local farm = g_farmManager:getFarmById(contract.creatorFarmId)
+  cell:getAttribute("farm"):setText(farm and farm.name or "-")
   cell:getAttribute("field"):setText("Field " .. contract.fieldId)
   cell:getAttribute("work"):setText(contract.workType)
   cell:getAttribute("reward"):setText(g_i18n:formatMoney(contract.reward))
   cell:getAttribute("status"):setText(string.lower(contract.status))
+
+  local acceptCell = cell:getAttribute("accept")
+  if acceptCell ~= nil then
+    if contract.contractorFarmId then
+      local contractor = g_farmManager:getFarmById(contract.contractorFarmId)
+      acceptCell:setText(contractor and contractor.name or "-")
+    else
+      acceptCell:setText("-")
+    end
+  end
+end
+
+function MenuCustomContracts:populateYourContractsCell(contract, cell)
+  if contract == nil then return end
+
+  local farm = g_farmManager:getFarmById(contract.creatorFarmId)
+
+  -- Contract details
+  cell:getAttribute("field"):setText("Field " .. contract.fieldId)
+  cell:getAttribute("reward"):setText(g_i18n:formatMoney(contract.reward))
+
+  -- Icon
+  local icon = cell:getAttribute("icon")
+  if icon ~= nil then
+    icon:setImageFilename("dataS/gui/icons/empty.dds")
+    icon:setImageUVs(0, 0, 1, 1)
+    icon:setImageColor(1, 1, 1, 0.35)
+    icon:setVisible(true)
+  end
 end
 
 function MenuCustomContracts:onCreateContract()

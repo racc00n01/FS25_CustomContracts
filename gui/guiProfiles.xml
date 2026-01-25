@@ -36,6 +36,124 @@
     <position value="8px 4px" />
   </Profile>
 
+  <Profile name="CC_ContractContent" extends="emptyPanel" value="anchorStretchingYStretchingX">
+    <width value="1140px"/>
+    <position value="300px 0px"/>
+  </Profile>
+
+  <Profile name="CC_ContractVerticalSeperator" extends="fs25_pricesSeparator" with="anchorTopRight">
+    <position value="0.03 0.0"/>
+    <size value="1px 0.70"/>
+  </Profile>
+
+  <Profile name="CC_ContractFarmName" extends="fs25_contractsContractTitle">
+    <position value="0px 0px"/>
+    <textBold value="false"/>
+    <textColor value="$preset_fs25_colorMainDefault"/>
+  </Profile>
+
+  <Profile name="CC_ContractTitle" extends="fs25_contractsContractTitle">
+    <position value="0px -40px"/>
+  </Profile>
+
+  <Profile name="CC_ContractList" extends="emptyPanel" value="anchorStretchingYStretchingX">
+    <showHighlights value="true"/>
+    <listItemSpacing value="-20px"/>
+  </Profile>
+
+  <Profile name="CC_ContractListItemTitle" extends="fs25_subCategoryListItemName">
+    <width value="200px"/>
+    <position value="94px -18px"/>
+  </Profile>
+
+  <Profile name="CC_ContractListItemReward" extends="CC_ContractListItemTitle">
+    <width value="200px"/>
+    <position value="94px -48px"/>
+    <textSize value="24px"/>
+    <textBold value="false"/>
+    <textColor value="$preset_fs25_colorMainHighlight"/>
+  </Profile>
+
+  <Profile name="CC_ContractDetailContainer" extends="baseReference">
+    <width value="1140px"/>
+    <position value="-150px 0px"/>
+  </Profile>
+
+  <Profile name="CC_ContractDetailColumnLeft" extends="baseReference" with="anchorBottomLeft">
+    <width value="300px"/>
+    <position value="200px 0px"/>
+  </Profile>
+
+  <Profile name="CC_ContractDetailColumnRight" extends="baseReference" with="anchorBottomRight">
+    <width value="700px"/>
+    <position value="0px 0px"/>
+  </Profile>
+
+  <Profile name="CC_ContractDetailItem" extends="baseReference" with="anchorTopStretchingX alternating">
+    <width value="300px"/>
+    <height value="32px"/>
+    <imageColor value="$preset_fs25_colorGrey" />
+    <imageSelectedColor value="$preset_fs25_colorMainHighlight" />
+    <alternateBackgroundColor value="$preset_fs25_colorGreyDark_50" />
+    <backgroundColor value="$preset_fs25_colorDark" />
+  </Profile>
+
+  <Profile name="CC_ContractDetailItemAlt" extends="CC_ContractDetailItem" with="anchorTopStretchingX alternating">
+    <backgroundColor value="$preset_fs25_colorGreyDark_100" />
+  </Profile>
+
+
+
+  <Profile name="ose_objectsListContainer" extends="emptyPanel" with="anchorBottomStretchingX pivotBottomLeft">
+    <position value="20px 30px"/>
+    <absoluteSizeOffset value="80px 80px"/>
+  </Profile>
+
+  <Profile name="ose_detailsContainer" extends="baseReference" with="anchorMiddleRight">
+    <size value="680px 860px"/>
+    <position value="0px 0px"/>
+  </Profile>
+
+  <Profile name="ose_detailsIconGradient" extends="baseReference" with="anchorTopCenter">
+    <position value="0px -10px"/>
+    <size value="680px 307px"/>
+    <imageSliceId value="gui.grey_gradient"/>
+  </Profile>
+
+  <Profile name="ose_detailsIcon" extends="baseReference" with="anchorTopCenter">
+    <size value="340px 340px"/>
+    <position value="0px -10px"/>
+    <imageSliceId value="noSlice"/>
+  </Profile>
+
+  <Profile name="ose_detailsIconTitle" extends="fs25_textDefault" with="anchorTopCenter">
+    <position value="0px -360px"/>
+    <width value="450px"/>
+    <textAlignment value="center"/>
+    <textMaxWidth value="450px"/>
+    <textSize value="32px"/>
+    <textMaxNumLines value="2"/>
+    <textUpperCase value="true"/>
+  </Profile>
+
+  <Profile name="ose_detailsTitle" extends="fs25_textDefault" with="anchorTopLeft">
+    <textBold value="true"/>
+    <textSize value="16px"/>
+    <textUpperCase value="true"/>
+    <textMaxWidth value="190px"/>
+  </Profile>
+
+  <Profile name="ose_detailsValue" extends="fs25_textDefault" with="anchorTopRight">
+    <textMaxWidth value="190px"/>
+    <textUpperCase value="true"/>
+    <textAlignment value="right"/>
+  </Profile>
+
+  <Profile name="ose_separator" extends="fs25_lineSeparatorTop">
+    <size value="730px 1dp"/>
+    <absoluteSizeOffset value="-10px 0px"/>
+    <imageColor value="$preset_fs25_colorGrey"/>
+  </Profile>
 
 
 

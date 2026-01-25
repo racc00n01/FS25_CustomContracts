@@ -53,7 +53,7 @@
 
         <!-- SCROLLBAR -->
         <ThreePartBitmap profile="rt_slider_box_right" position="960px -260px" size="6px 300px">
-          <Slider profile="fs25_listSlider" dataElementId="contractsList"/>
+          <Slider profile="fs25_listSlider" dataElementId="newContractsList"/>
         </ThreePartBitmap>
       </GuiElement>
 
@@ -87,7 +87,7 @@
 
         <!-- SCROLLBAR -->
         <ThreePartBitmap profile="rt_slider_box_right" position="960px -260px" size="6px 300px">
-          <Slider profile="fs25_listSlider" dataElementId="contractsList"/>
+          <Slider profile="fs25_listSlider" dataElementId="activeContractsList"/>
         </ThreePartBitmap>
       </GuiElement>
 
@@ -95,34 +95,52 @@
 
     <!-- Page your contracts contracts -->
     <GuiElement profile="fs25_subCategorySelectorTabbedContainer" id="inGameMenuYoursPage">
-      <GuiElement position="0px -20px">
-        <!-- TABLE HEADER -->
-        <Bitmap profile="fs25_statisticsHeaderBox" size="1480px 40px">
-          <Button profile="rtTableHeader" position="15px 0px" size="247px 40px" text="Farm" handleFocus="true"/>
-          <Button profile="rtTableHeader" position="335px 0px" size="247px 40px" text="Field" handleFocus="false"/>
-          <Button profile="rtTableHeader" position="475px 0px" size="247px 40px" text="Work" handleFocus="false"/>
-          <Button profile="rtTableHeader" position="695px 0px" size="247px 40px" text="Reward" handleFocus="false"/>
-          <Button profile="rtTableHeader" position="875px 0px" size="247px 40px" text="Status" handleFocus="false"/>
-          <Button profile="rtTableHeader" position="1055px 0px" size="247px 40px" text="Accepted by" handleFocus="false"/>
-          <ThreePartBitmap profile="fs25_lineSeparatorBottom" position="0px 2px" />
-        </Bitmap>
 
-        <!-- TABLE BODY -->
-        <SmoothList id="yourContractsList" profile="rt_table" position="40px -30px" size="1480px 1280px">
-          <ListItem profile="rtTableListItem">
-            <Text profile="rtListRowCellLeft" position="15px 0px" size="247px 44px" name="farm"/>
-            <Text profile="rtListRowCellLeft" position="335px 0px" size="247px 44px" name="field"/>
-            <Text profile="rtListRowCellLeft" position="475px 0px" size="247px 44px" name="work"/>
-            <Text profile="rtListRowCellLeft" position="695px 0px" size="247px 44px" name="reward"/>
-            <Text profile="rtListRowCellLeft" position="875px 0px" size="247px 44px" name="status"/>
-            <Text profile="rtListRowCellLeft" position="1055px 0px" size="247px 44px" name="accept"/>
+      <GuiElement profile="fs25_subCategoryContainer">
+        <Bitmap profile="fs25_subCategoryStartClipper" name="startClipper"/>
+        <Bitmap profile="fs25_subCategoryStopClipper" name="endClipper"/>
+
+        <SmoothList profile="CC_ContractList" id="yourContractsList" startClipperElementName="startClipper" endClipperElementName="endClipper" onDoubleClick="onButtonSelect" focusChangeLeft="objectStorageListsSelector" focusChangeRight="objectsList" focusChangeBottom="nil" focusChangeTop="nil">
+          <ListItem profile="fs25_subCategoryListItem">
+            <Bitmap profile="fs25_subCategoryListItemIcon" name="icon"/>
+            <Text profile="CC_ContractListItemTitle" name="field"/>
+            <Text profile="CC_ContractListItemReward" name="reward"/>
           </ListItem>
+
+          <ListItem profile="fs25_subCategoryListItemEmpty" name="empty"/>
         </SmoothList>
 
-        <!-- SCROLLBAR -->
-        <ThreePartBitmap profile="rt_slider_box_right" position="960px -260px" size="6px 300px">
-          <Slider profile="fs25_listSlider" dataElementId="contractsList"/>
+        <ThreePartBitmap profile="fs25_subCategoryListSliderBox">
+          <Slider profile="fs25_listSlider" dataElementId="yourContractsList"/>
         </ThreePartBitmap>
+      </GuiElement>
+
+      <GuiElement profile="CC_ContractContent">
+        <GuiElement profile="CC_ContractDetailColumnLeft">
+
+          <Text profile="CC_ContractFarmName" id="contractFarmName"/>
+          <Text profile="CC_ContractTitle" id="contractWorkType"/>
+
+          <GuiElement profile="CC_ContractDetailItem">
+            <Text profile="ose_detailsTitle" position="15px -430px" id="contractFieldLabel" text="Field ID"/>
+            <Text profile="ose_detailsValue" position="-15px -430px" id="contractFieldValue" name="field" textUpperCase="false"/>
+          </GuiElement>
+
+          <GuiElement profile="CC_ContractDetailItemAlt">
+            <Text profile="ose_detailsTitle" position="15px -460px" id="contractWorkTypeLabel" text="Work type"/>
+            <Text profile="ose_detailsValue" position="-15px -460px" id="contractWorkTypeValue" name="worktype" textUpperCase="false"/>
+          </GuiElement>
+
+          <GuiElement profile="CC_ContractDetailItem">
+            <Text profile="ose_detailsTitle" position="15px -490px" id="contractRewardLabel" text="Reward"/>
+            <Text profile="ose_detailsValue" position="-15px -490px" id="contractRewardValue" name="reward" textUpperCase="false"/>
+          </GuiElement>
+
+          <Bitmap profile="CC_ContractVerticalSeperator"/>
+        </GuiElement>
+        <GuiElement profile="CC_ContractDetailColumnRight">
+          <Text text="More information coming soon"/>
+        </GuiElement>
       </GuiElement>
 
     </GuiElement>
