@@ -10,41 +10,29 @@ function CompleteContractEvent.emptyNew()
 end
 
 -- Used by client UI
-function CompleteContractEvent.new(contractId)
+function CompleteContractEvent.new(contractId, farmId)
   local self = CompleteContractEvent.emptyNew()
+  self.farmId = farmId
   self.contractId = contractId
   return self
 end
 
 function CompleteContractEvent:writeStream(streamId, connection)
+  streamWriteInt32(streamId, self.farmId)
   streamWriteInt32(streamId, self.contractId)
 end
 
 function CompleteContractEvent:readStream(streamId, connection)
+  self.farmId = streamReadInt32(streamId)
   self.contractId = streamReadInt32(streamId)
   self:run(connection)
 end
 
 function CompleteContractEvent:run(connection)
-  -- 🔒 Server only
-  if g_server == nil then
-    return
-  end
-
-  -- 🔒 Ignore server-originated runs
-  if connection == nil or connection:getIsServer() then
-    return
+  if not connection:getIsServer() then
+    g_server:broadcastEvent(CompleteContractEvent.new(self.contractId, self.farmId))
   end
 
   local contractManager = g_currentMission.customContracts.ContractManager
-  if contractManager == nil then
-    return
-  end
-
-  local farmId = connection.farmId
-  if farmId == nil or farmId == FarmManager.SPECTATOR_FARM_ID then
-    return
-  end
-
-  contractManager:handleCompleteRequest(farmId, self.contractId)
+  contractManager:handleCompleteRequest(self.farmId, self.contractId)
 end

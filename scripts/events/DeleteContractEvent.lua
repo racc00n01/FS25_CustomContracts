@@ -10,41 +10,29 @@ function DeleteContractEvent.emptyNew()
 end
 
 -- Used by client UI
-function DeleteContractEvent.new(contractId)
+function DeleteContractEvent.new(contractId, farmId)
   local self = DeleteContractEvent.emptyNew()
   self.contractId = contractId
+  self.farmId = farmId
   return self
 end
 
 function DeleteContractEvent:writeStream(streamId, connection)
   streamWriteInt32(streamId, self.contractId)
+  streamWriteInt32(streamId, self.farmId)
 end
 
 function DeleteContractEvent:readStream(streamId, connection)
   self.contractId = streamReadInt32(streamId)
+  self.farmId = streamReadInt32(streamId)
   self:run(connection)
 end
 
 function DeleteContractEvent:run(connection)
-  -- 🔒 Server only
-  if g_server == nil then
-    return
-  end
-
-  -- 🔒 Ignore server-originated runs
-  if connection == nil or connection:getIsServer() then
-    return
+  if not connection:getIsServer() then
+    g_server:broadcastEvent(AcceptContractEvent.new(self.contractId, self.farmId))
   end
 
   local contractManager = g_currentMission.customContracts.ContractManager
-  if contractManager == nil then
-    return
-  end
-
-  local farmId = connection.farmId
-  if farmId == nil or farmId == FarmManager.SPECTATOR_FARM_ID then
-    return
-  end
-
-  contractManager:handleDeleteRequest(farmId, self.contractId)
+  contractManager:handleDeleteRequest(self.farmId, self.contractId)
 end

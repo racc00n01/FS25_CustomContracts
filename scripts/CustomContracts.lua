@@ -42,10 +42,6 @@ function CustomContracts:loadMap()
   g_messageCenter:subscribe(MessageType.PLAYER_FARM_CHANGED, CustomContracts.playerFarmChanged)
 
   self:loadFromXmlFile()
-
-  -- if g_currentMission:getIsServer() then
-  --   self.ContractManager:syncContracts()
-  -- end
 end
 
 function CustomContracts:makeIsTaskListCheckEnabledPredicate()

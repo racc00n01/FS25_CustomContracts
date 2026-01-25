@@ -37,7 +37,7 @@ end
 
 function CreateContractEvent:run(connection)
   if not connection:getIsServer() then
-    g_server:broadcastEvent(CreateContractEvent.new(self.payload))
+    g_server:broadcastEvent(CreateContractEvent.new(self.payload, self.farmId))
   end
 
   local farmId = self.farmId

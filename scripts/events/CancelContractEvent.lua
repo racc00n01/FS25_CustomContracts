@@ -10,41 +10,29 @@ function CancelContractEvent.emptyNew()
 end
 
 -- Used by client UI
-function CancelContractEvent.new(contractId)
+function CancelContractEvent.new(contractId, farmId)
   local self = CancelContractEvent.emptyNew()
+  self.farmId = farmId
   self.contractId = contractId
   return self
 end
 
 function CancelContractEvent:writeStream(streamId, connection)
+  streamWriteInt32(streamId, self.farmId)
   streamWriteInt32(streamId, self.contractId)
 end
 
 function CancelContractEvent:readStream(streamId, connection)
+  self.farmId = streamReadInt32(streamId)
   self.contractId = streamReadInt32(streamId)
   self:run(connection)
 end
 
 function CancelContractEvent:run(connection)
-  -- 🔒 Server only
-  if g_server == nil then
-    return
-  end
-
-  -- 🔒 Ignore server-originated runs
-  if connection == nil or connection:getIsServer() then
-    return
+  if not connection:getIsServer() then
+    g_server:broadcastEvent(CancelContractEvent.new(self.contractId, self.farmId))
   end
 
   local contractManager = g_currentMission.customContracts.ContractManager
-  if contractManager == nil then
-    return
-  end
-
-  local farmId = connection.farmId
-  if farmId == nil or farmId == FarmManager.SPECTATOR_FARM_ID then
-    return
-  end
-
-  contractManager:handleCancelRequest(farmId, self.contractId)
+  contractManager:handleCancelRequest(self.farmId, self.contractId)
 end

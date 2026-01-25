@@ -259,7 +259,7 @@ function CustomContractManager:handleCancelRequest(farmId, contractId)
   local contract = self.contracts[contractId]
   if contract == nil then return end
   if contract.contractorFarmId ~= farmId then return end
-  if contract.status ~= CustomContract.STATUS.OPEN and contract.status ~= CustomContract.STATUS.ACCEPTED then
+  if contract.status ~= CustomContract.STATUS.OPEN or contract.status ~= CustomContract.STATUS.ACCEPTED then
     return
   end
 

@@ -391,7 +391,7 @@ function MenuCustomContracts:onCompleteContract()
     function(_, yes)
       if yes then
         g_client:getServerConnection():sendEvent(
-          CompleteContractEvent.new(contract.id)
+          CompleteContractEvent.new(contract.id, g_currentMission:getFarmId())
         )
       end
     end,
@@ -430,7 +430,7 @@ function MenuCustomContracts:onAcceptContract()
     function(_, yes)
       if yes then
         g_client:getServerConnection():sendEvent(
-          AcceptContractEvent.new(contract.id)
+          AcceptContractEvent.new(contract.id, g_currentMission:getFarmId())
         )
       end
     end,
@@ -455,7 +455,7 @@ function MenuCustomContracts:onCancelContract()
     function(_, yes)
       if yes then
         g_client:getServerConnection():sendEvent(
-          CancelContractEvent.new(contract.id)
+          CancelContractEvent.new(contract.id, g_currentMission:getFarmId())
         )
       end
     end,
@@ -478,7 +478,7 @@ function MenuCustomContracts:onDeleteContract()
     function(_, yes)
       if yes then
         g_client:getServerConnection():sendEvent(
-          DeleteContractEvent.new(contract.id)
+          DeleteContractEvent.new(contract.id, g_currentMission:getFarmId())
         )
       end
     end,
