@@ -47,6 +47,7 @@
   </Profile>
 
   <Profile name="CC_ContractFarmName" extends="fs25_contractsContractTitle">
+    <textSize value="28px"/>
     <position value="0px 0px"/>
     <textBold value="false"/>
     <textColor value="$preset_fs25_colorMainDefault"/>
@@ -92,17 +93,11 @@
   <Profile name="CC_ContractDetailItem" extends="baseReference" with="anchorTopStretchingX alternating">
     <width value="300px"/>
     <height value="32px"/>
-    <imageColor value="$preset_fs25_colorGrey" />
-    <imageSelectedColor value="$preset_fs25_colorMainHighlight" />
-    <alternateBackgroundColor value="$preset_fs25_colorGreyDark_50" />
-    <backgroundColor value="$preset_fs25_colorDark" />
   </Profile>
 
   <Profile name="CC_ContractDetailItemAlt" extends="CC_ContractDetailItem" with="anchorTopStretchingX alternating">
-    <backgroundColor value="$preset_fs25_colorGreyDark_100" />
+    <backgroundColor value="$preset_fs25_colorGreyDark_50" />
   </Profile>
-
-
 
   <Profile name="ose_objectsListContainer" extends="emptyPanel" with="anchorBottomStretchingX pivotBottomLeft">
     <position value="20px 30px"/>
@@ -137,15 +132,15 @@
   </Profile>
 
   <Profile name="ose_detailsTitle" extends="fs25_textDefault" with="anchorTopLeft">
-    <textBold value="true"/>
+    <textBold value="false"/>
     <textSize value="16px"/>
-    <textUpperCase value="true"/>
+    <textUpperCase value="false"/>
     <textMaxWidth value="190px"/>
   </Profile>
 
   <Profile name="ose_detailsValue" extends="fs25_textDefault" with="anchorTopRight">
     <textMaxWidth value="190px"/>
-    <textUpperCase value="true"/>
+    <textUpperCase value="false"/>
     <textAlignment value="right"/>
   </Profile>
 

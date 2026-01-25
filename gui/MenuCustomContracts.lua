@@ -212,9 +212,14 @@ function MenuCustomContracts:updateYourContractDetails(contract)
     return
   end
 
+  local field = g_fieldManager:getFieldById(contract.fieldId)
+
   -- Field
   self.contractFieldValue:setText(
     string.format("Field %d", contract.fieldId)
+  )
+  self.contractFieldSizeValue:setText(
+    string.format("%d ha", field.areaHa)
   )
 
   -- Worktype
@@ -233,7 +238,6 @@ function MenuCustomContracts:updateYourContractDetails(contract)
   else
     self.contractFarmName:setText("-")
     self.contractWorkType:setText("-")
-    self.detailsIcon:setVisible(false)
   end
 end
 
@@ -243,7 +247,6 @@ function MenuCustomContracts:clearYourContractDetails()
   self.contractRewardValue:setText("-")
   self.contractFarmName:setText("")
   self.contractWorkType:setText("")
-  self.detailsIcon:setVisible(false)
 end
 
 function MenuCustomContracts:initialize()
@@ -468,15 +471,6 @@ function MenuCustomContracts:populateYourContractsCell(contract, cell)
   -- Contract details
   cell:getAttribute("field"):setText("Field " .. contract.fieldId)
   cell:getAttribute("reward"):setText(g_i18n:formatMoney(contract.reward))
-
-  -- Icon
-  local icon = cell:getAttribute("icon")
-  if icon ~= nil then
-    icon:setImageFilename("dataS/gui/icons/empty.dds")
-    icon:setImageUVs(0, 0, 1, 1)
-    icon:setImageColor(1, 1, 1, 0.35)
-    icon:setVisible(true)
-  end
 end
 
 function MenuCustomContracts:onCreateContract()

@@ -121,6 +121,12 @@
           <Text profile="CC_ContractFarmName" id="contractFarmName"/>
           <Text profile="CC_ContractTitle" id="contractWorkType"/>
 
+
+          <GuiElement profile="CC_ContractDetailItem">
+            <Text profile="fs25_contractsContentTitle" position="15px -150px" text="Contract information"/>
+            <Text profile="fs25_contractsContractInfo" position="0px -170px" id="contractDescription" text="Information about the contract will be shown here"/>
+          </GuiElement>
+
           <GuiElement profile="CC_ContractDetailItem">
             <Text profile="ose_detailsTitle" position="15px -430px" id="contractFieldLabel" text="Field ID"/>
             <Text profile="ose_detailsValue" position="-15px -430px" id="contractFieldValue" name="field" textUpperCase="false"/>
@@ -136,10 +142,15 @@
             <Text profile="ose_detailsValue" position="-15px -490px" id="contractRewardValue" name="reward" textUpperCase="false"/>
           </GuiElement>
 
+          <GuiElement profile="CC_ContractDetailItem">
+            <Text profile="ose_detailsTitle" position="15px -520px" id="contractFieldSizeLabel" text="Size"/>
+            <Text profile="ose_detailsValue" position="-15px -520px" id="contractFieldSizeValue" name="size" textUpperCase="false"/>
+          </GuiElement>
+
           <Bitmap profile="CC_ContractVerticalSeperator"/>
         </GuiElement>
         <GuiElement profile="CC_ContractDetailColumnRight">
-          <Text text="More information coming soon"/>
+          <Text profile="fs25_contractsEmptyText" text="More information coming soon"/>
         </GuiElement>
       </GuiElement>
 
