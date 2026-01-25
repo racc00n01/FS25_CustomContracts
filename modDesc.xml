@@ -2,7 +2,7 @@
 <modDesc descVersion="104">
   <author>Racc00n</author>
 
-  <version>0.0.0.4</version>
+  <version>0.0.0.5</version>
 
   <iconFilename>icon_taskList.dds</iconFilename>
 
@@ -42,6 +42,7 @@ Egal ob du einem Nachbarn hilfst oder einen landwirtschaftlichen Betrieb führst
     <sourceFile filename="scripts/events/CompleteContractEvent.lua"/>
     <sourceFile filename="scripts/events/DeleteContractEvent.lua"/>
     <sourceFile filename="scripts/events/SyncContractsEvent.lua"/>
+    <sourceFile filename="scripts/events/InitialClientStateEvent.lua"/>
 
   </extraSourceFiles>
 </modDesc>

@@ -92,6 +92,34 @@ function CustomContractManager:loadFromXmlFile(xmlFile)
   self:syncContracts()
 end
 
+function CustomContractManager:writeInitialClientState(streamId, connection)
+  -- nextId
+  streamWriteInt32(streamId, self.nextId)
+
+  -- contract count
+  local count = table.size(self.contracts)
+  streamWriteInt32(streamId, count)
+
+  for _, contract in pairs(self.contracts) do
+    contract:writeStream(streamId)
+  end
+end
+
+function CustomContractManager:readInitialClientState(streamId, connection)
+  self.contracts = {}
+
+  self.nextId = streamReadInt32(streamId)
+  local count = streamReadInt32(streamId)
+
+  for i = 1, count do
+    local contract = CustomContract.newFromStream(streamId)
+    self.contracts[contract.id] = contract
+  end
+
+  -- notify UI
+  g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
+end
+
 -- Function to sync contracts to clients
 function CustomContractManager:syncContracts(connection)
   if not g_currentMission:getIsServer() then return end
@@ -106,6 +134,7 @@ function CustomContractManager:syncContracts(connection)
 
 
   if connection ~= nil then
+    print("[CustomContracts][SERVER] sending SyncContractsEvent to a single client")
     connection:sendEvent(event)
   else
     print("[CustomContracts][SERVER] broadcasting SyncContractsEvent")
@@ -125,9 +154,15 @@ end
 -- Called by CreateContractEvent, runs on server
 function CustomContractManager:handleCreateRequest(farmId, payload)
   if not g_currentMission:getIsServer() then return end
-  if farmId == FarmManager.SPECTATOR_FARM_ID then return end
+  print(
+    "[CustomContracts] handleCreateRequest called",
+    "farmId:", farmId,
+    "payload:", payload
+  )
+  -- if farmId == FarmManager.SPECTATOR_FARM_ID then return end
 
   if payload.fieldId == nil or payload.workType == nil or payload.reward <= 0 then
+    print("[CustomContracts] Invalid contract payload")
     return
   end
 
@@ -143,6 +178,14 @@ function CustomContractManager:handleCreateRequest(farmId, payload)
   )
 
   self.contracts[id] = contract
+  print(
+    "[CustomContracts] Created new contract:",
+    "id:", self.contracts[id].id,
+    "creatorFarmId:", self.contracts[id].creatorFarmId,
+    "fieldId:", self.contracts[id].fieldId,
+    "workType:", self.contracts[id].workType,
+    "reward:", self.contracts[id].reward
+  )
 
   self:syncContracts()
 end

@@ -230,11 +230,12 @@ function MenuCustomContracts:getContractsBasedOnFilter(filter)
   local farmId = g_currentMission:getFarmId()
   local filteredContracts = {}
 
-  if g_customContractManager == nil then
+  local contractManager = g_currentMission.customContracts.ContractManager
+  if contractManager == nil then
     return filteredContracts
   end
 
-  for _, contract in pairs(g_customContractManager.contracts) do
+  for _, contract in pairs(contractManager.contracts) do
     if filter == MenuCustomContracts.FILTER.NEW then
       -- Open contracts NOT created by you
       if contract.status == CustomContract.STATUS.OPEN

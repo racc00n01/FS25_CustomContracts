@@ -36,7 +36,8 @@ function CancelContractEvent:run(connection)
     return
   end
 
-  if g_customContractManager == nil then
+  local contractManager = g_currentMission.customContracts.ContractManager
+  if contractManager == nil then
     return
   end
 
@@ -45,5 +46,5 @@ function CancelContractEvent:run(connection)
     return
   end
 
-  g_customContractManager:handleCancelRequest(farmId, self.contractId)
+  contractManager:handleCancelRequest(farmId, self.contractId)
 end

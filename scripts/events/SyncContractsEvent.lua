@@ -1,4 +1,3 @@
-print("[CustomContracts] SyncContractsEvent file loaded")
 SyncContractsEvent = {}
 local SyncContractsEvent_mt = Class(SyncContractsEvent, Event)
 
@@ -13,6 +12,12 @@ function SyncContractsEvent.new(contracts, nextId)
   local self = SyncContractsEvent.emptyNew()
   self.contracts = contracts
   self.nextId = nextId
+
+  print(
+    "[CustomContracts] SyncContractsEvent created",
+    "contracts:", table.size(self.contracts),
+    "nextId:", self.nextId
+  )
   return self
 end
 
@@ -70,20 +75,21 @@ end
 
 function SyncContractsEvent:run(connection)
   print("[CustomContracts] SyncContractsEvent received on client")
-  if g_customContractManager == nil then
+  local contractManager = g_currentMission.customContracts.ContractManager
+  if contractManager == nil then
     return
   end
 
   print(
-    "[CustomContracts] Publishing CUSTOM_CONTRACTS_UPDATED, contracts:",
-    table.size(self.contracts)
+    "[CustomContracts][CLIENT]",
+    "manager:", contractManager ~= nil,
+    "contracts:", table.size(self.contracts)
   )
-
   print("[CustomContracts][CLIENT] SyncContractsEvent received")
 
   -- overwrite local (client) state
-  g_customContractManager.contracts = self.contracts
-  g_customContractManager.nextId = self.nextId
+  contractManager.contracts = self.contracts
+  contractManager.nextId = self.nextId
 
   -- notify UI
   g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)

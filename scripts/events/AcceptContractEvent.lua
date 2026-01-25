@@ -36,14 +36,16 @@ function AcceptContractEvent:run(connection)
         return
     end
 
-    if g_customContractManager == nil then
+    local contractManager = g_currentMission.customContracts.ContractManager
+    if contractManager == nil then
         return
     end
+
 
     local farmId = connection.farmId
     if farmId == nil or farmId == FarmManager.SPECTATOR_FARM_ID then
         return
     end
 
-    g_customContractManager:handleAcceptRequest(farmId, self.contractId)
+    contractManager:handleAcceptRequest(farmId, self.contractId)
 end

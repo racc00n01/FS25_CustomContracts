@@ -14,6 +14,7 @@ CustomContracts.SaveKey = "CustomContracts"
 source(CustomContracts.dir .. "gui/MenuCustomContracts.lua")
 source(CustomContracts.dir .. "gui/MenuCreateContract.lua")
 source(CustomContracts.dir .. "scripts/events/SyncContractsEvent.lua")
+source(CustomContracts.dir .. "scripts/events/InitialClientStateEvent.lua")
 
 function CustomContracts:loadMap()
   g_currentMission.customContracts = self
@@ -23,9 +24,7 @@ function CustomContracts:loadMap()
 
   g_gui:loadProfiles(CustomContracts.dir .. "gui/guiProfiles.xml")
 
-  if g_customContractManager == nil then
-    g_customContractManager = CustomContractManager:new()
-  end
+  self.ContractManager = CustomContractManager:new()
 
   -- Register menu page
   local menuCustomContracts = MenuCustomContracts.new(g_i18n)
@@ -34,66 +33,63 @@ function CustomContracts:loadMap()
   CustomContracts.addIngameMenuPage(menuCustomContracts, "menuCustomContracts", { 0, 0, 1024, 1024 },
     CustomContracts:makeIsTaskListCheckEnabledPredicate(), "pageSettings")
 
-
   -- Register Create contract dialog
   local createContractDialog = MenuCreateContract.new(g_i18n)
   g_gui:loadGui(CustomContracts.dir .. "gui/MenuCreateContract.xml", "menuCreateContract", createContractDialog)
 
+  g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
+
+  g_messageCenter:subscribe(MessageType.PLAYER_FARM_CHANGED, CustomContracts.playerFarmChanged)
+
   self:loadFromXmlFile()
 
-  if g_currentMission:getIsServer() then
-    g_customContractManager:syncContracts()
-  end
-
-  g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
-  g_messageCenter:publish(MessageType.PLAYER_CONNECTED)
+  -- if g_currentMission:getIsServer() then
+  --   self.ContractManager:syncContracts()
+  -- end
 end
 
 function CustomContracts:makeIsTaskListCheckEnabledPredicate()
   return function() return true end
 end
 
-function CustomContracts:saveToXmlFile()
-  if not g_currentMission:getIsServer() then
-    return
-  end
-
-  local path = g_currentMission.missionInfo.savegameDirectory
-  if path == nil then
-    path = ('%ssavegame%d'):format(
-      getUserProfileAppPath(),
-      g_currentMission.missionInfo.savegameIndex
-    )
-  end
-  path = path .. "/"
-
-  local xmlFile = createXMLFile(
-    CustomContracts.SaveKey,
-    path .. CustomContracts.SaveKey .. ".xml",
-    CustomContracts.SaveKey
-  )
-
-  g_customContractManager:saveToXmlFile(xmlFile)
-  saveXMLFile(xmlFile)
-  delete(xmlFile)
-end
-
 function CustomContracts:loadFromXmlFile()
-  if not g_currentMission:getIsServer() then return end
+  if (not g_currentMission:getIsServer()) then return end
 
   local savegameFolderPath = g_currentMission.missionInfo.savegameDirectory;
   if savegameFolderPath == nil then
     savegameFolderPath = ('%ssavegame%d'):format(getUserProfileAppPath(), g_currentMission.missionInfo.savegameIndex)
   end
-
   savegameFolderPath = savegameFolderPath .. "/"
 
   if fileExists(savegameFolderPath .. CustomContracts.SaveKey .. ".xml") then
     local xmlFile = loadXMLFile(CustomContracts.SaveKey, savegameFolderPath .. CustomContracts.SaveKey .. ".xml");
-    g_customContractManager:loadFromXmlFile(xmlFile)
+    g_currentMission.customContracts.ContractManager:loadFromXmlFile(xmlFile)
 
     delete(xmlFile)
   end
+end
+
+function CustomContracts:saveToXmlFile()
+  if (not g_currentMission:getIsServer()) then return end
+
+  local savegameFolderPath = g_currentMission.missionInfo.savegameDirectory;
+  if savegameFolderPath == nil then
+    savegameFolderPath = ('%ssavegame%d'):format(getUserProfileAppPath(), g_currentMission.missionInfo.savegameIndex)
+  end
+  savegameFolderPath = savegameFolderPath .. "/"
+
+  local xmlFile = createXMLFile(CustomContracts.SaveKey, savegameFolderPath .. CustomContracts.SaveKey .. ".xml",
+    CustomContracts.SaveKey)
+
+  g_currentMission.customContracts.ContractManager:saveToXmlFile(xmlFile)
+
+  saveXMLFile(xmlFile)
+  delete(xmlFile)
+end
+
+function CustomContracts:sendInitialClientState(connection, user, farm)
+  print("[CustomContracts] Sending initial client state to player")
+  connection:sendEvent(InitialClientStateEvent:new())
 end
 
 -- from Courseplay
@@ -172,6 +168,13 @@ function CustomContracts:registerMenu()
   menu:addFrame(frame)
 end
 
+function CustomContracts:playerFarmChanged()
+  print("[CustomContracts] Player farm changed, updating menus")
+  g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
+end
+
+FSBaseMission.sendInitialClientState = Utils.appendedFunction(FSBaseMission.sendInitialClientState,
+  CustomContracts.sendInitialClientState)
 FSBaseMission.saveSavegame = Utils.appendedFunction(FSBaseMission.saveSavegame, CustomContracts.saveToXmlFile)
 
 addModEventListener(CustomContracts)

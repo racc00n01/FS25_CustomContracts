@@ -10,19 +10,22 @@ function CreateContractEvent.emptyNew()
 end
 
 -- Used by client UI
-function CreateContractEvent.new(payload)
+function CreateContractEvent.new(payload, farmId)
   local self = CreateContractEvent.emptyNew()
   self.payload = payload
+  self.farmId = farmId
   return self
 end
 
 function CreateContractEvent:writeStream(streamId, connection)
+  streamWriteInt32(streamId, self.farmId)
   streamWriteInt32(streamId, self.payload.fieldId)
   streamWriteString(streamId, self.payload.workType)
   streamWriteInt32(streamId, self.payload.reward)
 end
 
 function CreateContractEvent:readStream(streamId, connection)
+  self.farmId = streamReadInt32(streamId)
   self.payload = {
     fieldId  = streamReadInt32(streamId),
     workType = streamReadString(streamId),
@@ -33,24 +36,16 @@ function CreateContractEvent:readStream(streamId, connection)
 end
 
 function CreateContractEvent:run(connection)
-  -- 🔒 Server only
-  if g_server == nil then
-    return
+  if not connection:getIsServer() then
+    g_server:broadcastEvent(CreateContractEvent.new(self.payload))
   end
 
-  -- 🔒 Ignore server-originated runs
-  if connection == nil or connection:getIsServer() then
-    return
-  end
-
-  if g_customContractManager == nil then
-    return
-  end
-
-  local farmId = connection.farmId
+  local farmId = self.farmId
   if farmId == nil or farmId == FarmManager.SPECTATOR_FARM_ID then
+    print("[CustomContracts] Invalid farmId in CreateContractEvent: ", tostring(farmId))
     return
   end
 
-  g_customContractManager:handleCreateRequest(farmId, self.payload)
+  local contractManager = g_currentMission.customContracts.ContractManager
+  contractManager:handleCreateRequest(farmId, self.payload)
 end

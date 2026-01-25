@@ -36,7 +36,8 @@ function DeleteContractEvent:run(connection)
     return
   end
 
-  if g_customContractManager == nil then
+  local contractManager = g_currentMission.customContracts.ContractManager
+  if contractManager == nil then
     return
   end
 
@@ -45,5 +46,5 @@ function DeleteContractEvent:run(connection)
     return
   end
 
-  g_customContractManager:handleDeleteRequest(farmId, self.contractId)
+  contractManager:handleDeleteRequest(farmId, self.contractId)
 end
