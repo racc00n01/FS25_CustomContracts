@@ -38,7 +38,7 @@
 
   <Profile name="CC_ContractContent" extends="emptyPanel" value="anchorStretchingYStretchingX">
     <width value="1140px"/>
-    <position value="300px 0px"/>
+    <position value="275px 0px"/>
   </Profile>
 
   <Profile name="CC_ContractVerticalSeperator" extends="fs25_pricesSeparator" with="anchorTopRight">
@@ -51,6 +51,14 @@
     <position value="0px 0px"/>
     <textBold value="false"/>
     <textColor value="$preset_fs25_colorMainDefault"/>
+  </Profile>
+
+  <Profile name="CC_ContractContractorName" extends="fs25_textDefault" with="anchorTopLeft">
+    <textSize value="16px"/>
+    <textBold value="false"/>
+    <textUpperCase value="false"/>
+    <textAlignment value="left"/>
+    <position value="0px -70px"/>
   </Profile>
 
   <Profile name="CC_ContractTitle" extends="fs25_contractsContractTitle">
@@ -99,6 +107,16 @@
     <backgroundColor value="$preset_fs25_colorGreyDark_50" />
   </Profile>
 
+  <Profile name="CC_ContractDetailItemBg" extends="baseReference" with="anchorTopCenter">
+    <size value="312px 32px"/>
+    <imageColor value="$preset_fs25_colorGreyLight_20"/>
+  </Profile>
+
+  <Profile name="CC_ContractDetailItemBgAlt" extends="baseReference" with="anchorTopCenter">
+    <size value="312px 32px"/>
+    <imageColor value="$preset_fs25_colorGrey_20"/>
+  </Profile>
+
   <Profile name="ose_objectsListContainer" extends="emptyPanel" with="anchorBottomStretchingX pivotBottomLeft">
     <position value="20px 30px"/>
     <absoluteSizeOffset value="80px 80px"/>
@@ -131,17 +149,19 @@
     <textUpperCase value="true"/>
   </Profile>
 
-  <Profile name="ose_detailsTitle" extends="fs25_textDefault" with="anchorTopLeft">
+  <Profile name="ose_detailsTitle" extends="fs25_textDefault" with="anchorTopCenter">
+    <size value="280px 30px"/>
     <textBold value="false"/>
-    <textSize value="16px"/>
     <textUpperCase value="false"/>
     <textMaxWidth value="190px"/>
   </Profile>
 
   <Profile name="ose_detailsValue" extends="fs25_textDefault" with="anchorTopRight">
+    <size value="180px 30px"/>
     <textMaxWidth value="190px"/>
     <textUpperCase value="false"/>
     <textAlignment value="right"/>
+    <textBold value="true"/>
   </Profile>
 
   <Profile name="ose_separator" extends="fs25_lineSeparatorTop">

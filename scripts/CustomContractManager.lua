@@ -44,6 +44,7 @@ function CustomContractManager:saveToXmlFile(xmlFile)
     setXMLString(xmlFile, key .. "#workType", contract.workType)
     setXMLInt(xmlFile, key .. "#reward", contract.reward)
     setXMLString(xmlFile, key .. "#status", contract.status)
+    setXMLString(xmlFile, key .. "#description", contract.description or '-')
 
     count = count + 1
   end
@@ -71,13 +72,15 @@ function CustomContractManager:loadFromXmlFile(xmlFile)
     local workType = getXMLString(xmlFile, contractKey .. "#workType")
     local reward = getXMLInt(xmlFile, contractKey .. "#reward")
     local status = getXMLString(xmlFile, contractKey .. "#status")
+    local description = getXMLString(xmlFile, contractKey .. "#description")
 
     local contract = CustomContract.new(
       id,
       creatorFarmId,
       fieldId,
       workType,
-      reward
+      reward,
+      description
     )
 
     contract.contractorFarmId = contractorFarmId ~= -1 and contractorFarmId or nil
@@ -174,7 +177,8 @@ function CustomContractManager:handleCreateRequest(farmId, payload)
     farmId,
     payload.fieldId,
     payload.workType,
-    payload.reward
+    payload.reward,
+    payload.description
   )
 
   self.contracts[id] = contract
@@ -184,7 +188,8 @@ function CustomContractManager:handleCreateRequest(farmId, payload)
     "creatorFarmId:", self.contracts[id].creatorFarmId,
     "fieldId:", self.contracts[id].fieldId,
     "workType:", self.contracts[id].workType,
-    "reward:", self.contracts[id].reward
+    "reward:", self.contracts[id].reward,
+    "description:", self.contracts[id].description
   )
 
   self:syncContracts()

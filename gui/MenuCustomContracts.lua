@@ -219,18 +219,10 @@ function MenuCustomContracts:updateYourContractDetails(contract)
     string.format("Field %d", contract.fieldId)
   )
   self.contractFieldSizeValue:setText(
-    string.format("%d ha", field.areaHa)
+    string.format("%.2f ha", field.areaHa)
   )
 
-  -- Worktype
-  self.contractWorkTypeValue:setText(contract.workType)
-
-  -- Reward
-  self.contractRewardValue:setText(
-    g_i18n:formatMoney(contract.reward, 0, true, true)
-  )
-
-  -- Farm name + icon
+  --Contract info
   local farm = g_farmManager:getFarmById(contract.creatorFarmId)
   if farm ~= nil then
     self.contractFarmName:setText(farm.name)
@@ -239,14 +231,43 @@ function MenuCustomContracts:updateYourContractDetails(contract)
     self.contractFarmName:setText("-")
     self.contractWorkType:setText("-")
   end
+
+  local contractorFarm = g_farmManager:getFarmById(contract.contractorFarmId)
+  if contractorFarm ~= nil then
+    self.contractContractorValue:setText(contractorFarm.name)
+  else
+    self.contractContractorValue:setText("-")
+  end
+
+  self.contractWorkTypeValue:setText(contract.workType)
+
+  self.contractRewardValue:setText(
+    g_i18n:formatMoney(contract.reward, 0, true, true)
+  )
+
+  self.contractStatusValue:setText(
+    g_i18n:getText("cc_status_" .. string.lower(contract.status))
+    or contract.status
+  )
+
+  self.contractDescriptionValue:setText(
+    contract.description or "-"
+  )
 end
 
 function MenuCustomContracts:clearYourContractDetails()
   self.contractFieldValue:setText("-")
+  self.contractFieldSizeValue:setText("-")
+  self.contractFieldOwnerValue:setText("-")
+
   self.contractWorkTypeValue:setText("-")
   self.contractRewardValue:setText("-")
-  self.contractFarmName:setText("")
-  self.contractWorkType:setText("")
+  self.contractStatusValue:setText("-")
+
+  self.contractFarmName:setText("-")
+  self.contractContractorValue:setText("-")
+
+  self.contractDescriptionValue:setText("-")
 end
 
 function MenuCustomContracts:initialize()

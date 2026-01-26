@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+  <texts>
+    <text name="cc_contract_contractor_label" text="Accepted by"/>
+    <text name="cc_contract_status_label" text="Status"/>
+    <text name="cc_contract_field_label" text="Field ID"/>
+    <text name="cc_contract_worktype_label" text="Work type"/>
+    <text name="cc_contract_reward_label" text="Reward"/>
+    <text name="cc_contract_size_label" text="Size"/>
+    <text name="cc_status_open" text="Open"/>
+    <text name="cc_status_accepted" text="Accepted"/>
+    <text name="cc_status_completed" text="Completed"/>
+    <text name="cc_status_cancelled" text="Cancelled"/>
+  </texts>
+</l10n>

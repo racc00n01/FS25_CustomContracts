@@ -27,6 +27,8 @@ Egal ob du einem Nachbarn hilfst oder einen landwirtschaftlichen Betrieb führst
 
   <multiplayer supported="true"/>
 
+  <l10n filenamePrefix="translations/translation" />
+
   <extraSourceFiles>
 
     <sourceFile filename="gui/MenuCustomContracts.xml"/>

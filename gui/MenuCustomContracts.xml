@@ -121,31 +121,36 @@
           <Text profile="CC_ContractFarmName" id="contractFarmName"/>
           <Text profile="CC_ContractTitle" id="contractWorkType"/>
 
-
           <GuiElement profile="CC_ContractDetailItem">
-            <Text profile="fs25_contractsContentTitle" position="15px -150px" text="Contract information"/>
-            <Text profile="fs25_contractsContractInfo" position="0px -170px" id="contractDescription" text="Information about the contract will be shown here"/>
+            <Text profile="fs25_contractsContentTitle" position="-20px -250px" text="Contract information"/>
+            <Text profile="fs25_contractsContractInfo" position="-40px -280px" id="contractDescriptionValue" name="description"/>
           </GuiElement>
 
-          <GuiElement profile="CC_ContractDetailItem">
-            <Text profile="ose_detailsTitle" position="15px -430px" id="contractFieldLabel" text="Field ID"/>
-            <Text profile="ose_detailsValue" position="-15px -430px" id="contractFieldValue" name="field" textUpperCase="false"/>
-          </GuiElement>
 
-          <GuiElement profile="CC_ContractDetailItemAlt">
-            <Text profile="ose_detailsTitle" position="15px -460px" id="contractWorkTypeLabel" text="Work type"/>
-            <Text profile="ose_detailsValue" position="-15px -460px" id="contractWorkTypeValue" name="worktype" textUpperCase="false"/>
-          </GuiElement>
+          <Bitmap profile="CC_ContractDetailItemBg" position="-6px -370px"/>
+          <Bitmap profile="CC_ContractDetailItemBgAlt" position="-6px -400px"/>
+          <Bitmap profile="CC_ContractDetailItemBg" position="-6px -430px"/>
+          <Bitmap profile="CC_ContractDetailItemBgAlt" position="-6px -460px"/>
+          <Bitmap profile="CC_ContractDetailItemBg" position="-6px -490px"/>
+          <Bitmap profile="CC_ContractDetailItemBgAlt" position="-6px -520px"/>
 
-          <GuiElement profile="CC_ContractDetailItem">
-            <Text profile="ose_detailsTitle" position="15px -490px" id="contractRewardLabel" text="Reward"/>
-            <Text profile="ose_detailsValue" position="-15px -490px" id="contractRewardValue" name="reward" textUpperCase="false"/>
-          </GuiElement>
+          <Text profile="ose_detailsTitle" position="-15px -370px" id="contractContractorLabel" text="$l10n_cc_contract_contractor_label"/>
+          <Text profile="ose_detailsValue" position="-15px -370px" id="contractContractorValue" name="contractor" textUpperCase="false"/>
 
-          <GuiElement profile="CC_ContractDetailItem">
-            <Text profile="ose_detailsTitle" position="15px -520px" id="contractFieldSizeLabel" text="Size"/>
-            <Text profile="ose_detailsValue" position="-15px -520px" id="contractFieldSizeValue" name="size" textUpperCase="false"/>
-          </GuiElement>
+          <Text profile="ose_detailsTitle" position="-15px -400px" id="contractStatusLabel" text="$l10n_cc_contract_status_label"/>
+          <Text profile="ose_detailsValue" position="-15px -400px" id="contractStatusValue" name="status" textUpperCase="false"/>
+
+          <Text profile="ose_detailsTitle" position="-15px -430px" id="contractFieldLabel" text="$l10n_cc_contract_field_label"/>
+          <Text profile="ose_detailsValue" position="-15px -430px" id="contractFieldValue" name="field" textUpperCase="false"/>
+
+          <Text profile="ose_detailsTitle" position="-15px -460px" id="contractWorkTypeLabel" text="$l10n_cc_contract_worktype_label"/>
+          <Text profile="ose_detailsValue" position="-15px -460px" id="contractWorkTypeValue" name="worktype" textUpperCase="false"/>
+
+          <Text profile="ose_detailsTitle" position="-15px -490px" id="contractRewardLabel" text="$l10n_cc_contract_reward_label"/>
+          <Text profile="ose_detailsValue" position="-15px -490px" id="contractRewardValue" name="reward" textUpperCase="false"/>
+
+          <Text profile="ose_detailsTitle" position="-15px -520px" id="contractFieldSizeLabel" text="$l10n_cc_contract_size_label"/>
+          <Text profile="ose_detailsValue" position="-15px -520px" id="contractFieldSizeValue" name="size" textUpperCase="false"/>
 
           <Bitmap profile="CC_ContractVerticalSeperator"/>
         </GuiElement>

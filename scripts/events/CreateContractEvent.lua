@@ -22,14 +22,16 @@ function CreateContractEvent:writeStream(streamId, connection)
   streamWriteInt32(streamId, self.payload.fieldId)
   streamWriteString(streamId, self.payload.workType)
   streamWriteInt32(streamId, self.payload.reward)
+  streamWriteString(streamId, self.payload.description)
 end
 
 function CreateContractEvent:readStream(streamId, connection)
   self.farmId = streamReadInt32(streamId)
   self.payload = {
-    fieldId  = streamReadInt32(streamId),
-    workType = streamReadString(streamId),
-    reward   = streamReadInt32(streamId)
+    fieldId     = streamReadInt32(streamId),
+    workType    = streamReadString(streamId),
+    reward      = streamReadInt32(streamId),
+    description = streamReadString(streamId)
   }
 
   self:run(connection)
