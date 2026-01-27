@@ -37,8 +37,8 @@
   </Profile>
 
   <Profile name="CC_ContractContent" extends="emptyPanel" value="anchorStretchingYStretchingX">
-    <width value="1140px"/>
-    <position value="275px 0px"/>
+    <width value="500px"/>
+    <position value="460px -40px"/>
   </Profile>
 
   <Profile name="CC_ContractVerticalSeperator" extends="fs25_pricesSeparator" with="anchorTopRight">
@@ -69,6 +69,15 @@
     <showHighlights value="true"/>
     <listItemSpacing value="-20px"/>
   </Profile>
+
+
+  <Profile name="CC_ContractListItem" extends="fs25_subCategoryListItem">
+    <width value="400px"/>
+  </Profile>
+
+
+  <Profile name="CC_ContractListSlider" extends="fs25_listSliderBox" with="anchorTopRight" />
+  <Profile name="rt_slider_box_left" extends="fs25_listSliderBox" with="anchorTopLeft" />
 
   <Profile name="CC_ContractListItemTitle" extends="fs25_subCategoryListItemName">
     <width value="200px"/>

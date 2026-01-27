@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <l10n>
   <texts>
+    <text name="cc_header_contracts" text="Contracts"/>
+    <text name="cc_header_invoices" text="Invoices"/>
+    <text name="cc_new" text="New"/>
+    <text name="cc_active" text="Active"/>
+    <text name="cc_owned" text="Owned"/>
     <text name="cc_contract_contractor_label" text="Accepted by"/>
     <text name="cc_contract_status_label" text="Status"/>
     <text name="cc_contract_field_label" text="Field ID"/>

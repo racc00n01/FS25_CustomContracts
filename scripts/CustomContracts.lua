@@ -13,6 +13,7 @@ CustomContracts.SaveKey = "CustomContracts"
 
 source(CustomContracts.dir .. "gui/MenuCustomContracts.lua")
 source(CustomContracts.dir .. "gui/MenuCreateContract.lua")
+source(CustomContracts.dir .. "gui/ContractsRenderer.lua")
 source(CustomContracts.dir .. "scripts/events/SyncContractsEvent.lua")
 source(CustomContracts.dir .. "scripts/events/InitialClientStateEvent.lua")
 
@@ -36,6 +37,10 @@ function CustomContracts:loadMap()
   -- Register Create contract dialog
   local createContractDialog = MenuCreateContract.new(g_i18n)
   g_gui:loadGui(CustomContracts.dir .. "gui/MenuCreateContract.xml", "menuCreateContract", createContractDialog)
+
+  menuCustomContracts:initialize()
+
+  self.CustomContractsMenu = menuCustomContracts
 
   g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
 

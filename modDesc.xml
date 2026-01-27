@@ -30,9 +30,8 @@ Egal ob du einem Nachbarn hilfst oder einen landwirtschaftlichen Betrieb führst
   <l10n filenamePrefix="translations/translation" />
 
   <extraSourceFiles>
-
-    <sourceFile filename="gui/MenuCustomContracts.xml"/>
     <sourceFile filename="gui/MenuCreateContract.xml"/>
+    <sourceFile filename="gui/ContractsRenderer.lua"/>
 
     <sourceFile filename="scripts/CustomContract.lua"/>
     <sourceFile filename="scripts/CustomContracts.lua"/>

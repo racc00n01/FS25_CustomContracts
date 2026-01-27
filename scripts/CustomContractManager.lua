@@ -154,6 +154,68 @@ function CustomContractManager:onPlayerConnected(connection)
   self:syncContracts(connection)
 end
 
+function CustomContractManager:getNewContractsForCurrentFarm()
+  local newForFarm = {}
+
+  local farmId = g_currentMission:getFarmId();
+  if farmId == nil or farmId == 0 then
+    return newForFarm
+  end
+
+  local contractManager = g_currentMission.customContracts.ContractManager
+
+  for _, contract in pairs(contractManager.contracts) do
+    -- Open contracts NOT created by you
+    if contract.status == CustomContract.STATUS.OPEN
+        and contract.creatorFarmId ~= farmId then
+      table.insert(newForFarm, contract)
+    end
+  end
+
+  return newForFarm
+end
+
+function CustomContractManager:getActiveContractsForCurrentFarm()
+  local activeForFarm = {}
+
+  local farmId = g_currentMission:getFarmId();
+  if farmId == nil or farmId == 0 then
+    return activeForFarm
+  end
+
+  local contractManager = g_currentMission.customContracts.ContractManager
+
+  for _, contract in pairs(contractManager.contracts) do
+    -- Contracts accepted by you
+    if contract.status == CustomContract.STATUS.ACCEPTED
+        and contract.contractorFarmId == farmId then
+      table.insert(activeForFarm, contract)
+    end
+  end
+
+  return activeForFarm
+end
+
+function CustomContractManager:getOwnedContractsForCurrentFarm()
+  local ownedForFarm = {}
+
+  local farmId = g_currentMission:getFarmId();
+  if farmId == nil or farmId == 0 then
+    return ownedForFarm
+  end
+
+  local contractManager = g_currentMission.customContracts.ContractManager
+
+  for _, contract in pairs(contractManager.contracts) do
+    -- Contracts you created (any status)
+    if contract.creatorFarmId == farmId then
+      table.insert(ownedForFarm, contract)
+    end
+  end
+
+  return ownedForFarm
+end
+
 -- Called by CreateContractEvent, runs on server
 function CustomContractManager:handleCreateRequest(farmId, payload)
   if not g_currentMission:getIsServer() then return end

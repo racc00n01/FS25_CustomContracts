@@ -1,38 +1,127 @@
 MenuCustomContracts = {}
-
-MenuCustomContracts.FILTER = {
-  NEW    = 1, -- OPEN
-  ACTIVE = 2, -- ACCEPTED (your active contract)
-  YOURS  = 3  -- created by you
-}
-
-MenuCustomContracts.CATEGRORY_TEXTS = {
-  "New",
-  "Active",
-  "Your Contracts"
-}
-
-MenuCustomContracts.NUM_CATEGORIES = #MenuCustomContracts.CATEGRORY_TEXTS
-
 MenuCustomContracts._mt = Class(MenuCustomContracts, TabbedMenuFrameElement)
 
-function MenuCustomContracts.new(i18n)
+MenuCustomContracts.SUB_CATEGORY = {
+  CONTRACTS = 1,
+  INVOICES = 2,
+}
+
+MenuCustomContracts.CONTRACTS_LIST_TYPE = {
+  NEW = 1,
+  ACTIVE = 2,
+  OWNED = 3
+}
+MenuCustomContracts.CONTRACTS_STATE_TEXTS = { "cc_new", "cc_active", "cc_owned" }
+
+MenuCustomContracts.HEADER_TITLES = {
+  [MenuCustomContracts.SUB_CATEGORY.CONTRACTS] = "cc_header_contracts",
+  [MenuCustomContracts.SUB_CATEGORY.INVOICES] = "cc_header_invoices",
+}
+
+function MenuCustomContracts.new(i18n, messageCenter)
   local self = MenuCustomContracts:superClass().new(nil, MenuCustomContracts._mt)
-  self.name = "menuCustomContracts"
+  self.name = "MenuCustomContracts"
   self.i18n = i18n
+  self.messageCenter = messageCenter
+  self.menuButtonInfo = {}
 
-  self.newData = {}
-  self.activeData = {}
-  self.yourData = {}
+  self.contractsRenderer = ContractsRenderer.new()
 
-  self.subCategoryPages = {}
-  self.subCategoryTabs = {}
-  self.currentFilter = MenuCustomContracts.FILTER.NEW
+  return self
+end
+
+function MenuCustomContracts:displaySelectedContract()
+  local index = self.contractsTable.selectedIndex
+
+  if index ~= -1 then
+    local selection = self.contractDisplaySwitcher:getState()
+    local contract = self.contractsRenderer.data[selection][index]
+
+    if contract ~= nil then
+      local field = g_fieldManager:getFieldById(contract.fieldId)
+      self.contractsInfoContainer:setVisible(true)
+      self.noSelectedContractText:setVisible(false)
+
+      -- Field
+      self.contractFieldValue:setText(
+        string.format("Field %d", contract.fieldId)
+      )
+      self.contractFieldSizeValue:setText(
+        string.format("%.2f ha", field.areaHa)
+      )
+
+      --Contract info
+      local farm = g_farmManager:getFarmById(contract.creatorFarmId)
+      if farm ~= nil then
+        self.contractFarmName:setText(farm.name)
+        self.contractWorkType:setText(contract.workType)
+      else
+        self.contractFarmName:setText("-")
+        self.contractWorkType:setText("-")
+      end
+
+      local contractorFarm = g_farmManager:getFarmById(contract.contractorFarmId)
+      if contractorFarm ~= nil then
+        self.contractContractorValue:setText(contractorFarm.name)
+      else
+        self.contractContractorValue:setText("-")
+      end
+
+      self.contractWorkTypeValue:setText(contract.workType)
+
+      self.contractRewardValue:setText(
+        g_i18n:formatMoney(contract.reward, 0, true, true)
+      )
+
+      self.contractStatusValue:setText(
+        g_i18n:getText("cc_status_" .. string.lower(contract.status))
+        or contract.status
+      )
+
+      self.contractDescriptionValue:setText(
+        contract.description or "-"
+      )
+    else
+      self.contractsInfoContainer:setVisible(false)
+      self.noSelectedContractText:setVisible(true)
+    end
+  end
+end
+
+function MenuCustomContracts:onGuiSetupFinished()
+  MenuCustomContracts:superClass().onGuiSetupFinished(self)
+
+  self.contractsTable:setDataSource(self.contractsRenderer)
+  self.contractsTable:setDelegate(self.contractsRenderer)
+
+  self.contractsRenderer.indexChangedCallback = function(index)
+    self:displaySelectedContract()
+  end
+end
+
+function MenuCustomContracts:initialize()
+  MenuCustomContracts:superClass().initialize(self)
+  for i, tab in pairs(self.subCategoryTabs) do
+    tab:getDescendantByName("background").getIsSelected = function()
+      return i == self.subCategoryPaging:getState()
+    end
+    function tab.getIsSelected()
+      return i == self.subCategoryPaging:getState()
+    end
+  end
+
+
+  -- Set the new/active/owned contract switcher texts
+  local contractSwitcherTexts = {}
+  for k, v in pairs(MenuCustomContracts.CONTRACTS_STATE_TEXTS) do
+    table.insert(contractSwitcherTexts, g_i18n:getText(v))
+  end
+  self.contractDisplaySwitcher:setTexts(contractSwitcherTexts)
 
   --- Register custom bottom page buttons
   self.btnBack = { inputAction = InputAction.MENU_BACK }
   self.btnCreateContract = {
-    inputAction = InputAction.MENU_ACCEPT,
+    inputAction = InputAction.MENU_EXTRA_1,
     text = "Create contract",
     callback = function()
       self
@@ -65,88 +154,75 @@ function MenuCustomContracts.new(i18n)
 
   self.btnDelete = {
     text = "Delete contract",
-    inputAction = InputAction.MENU_ACCEPT,
+    inputAction = InputAction.MENU_EXTRA_2,
     callback = function()
       self:onDeleteContract()
     end
   }
 
-  self.selectedIndex = -1
+  self.contractButtonSets = {}
 
-  -- Set menu buttons, the bar at the bottom where buttons are in all UI
-  self:setMenuButtonInfo({
+  -- NEW contracts
+  self.contractButtonSets[MenuCustomContracts.CONTRACTS_LIST_TYPE.NEW] = {
     self.btnBack,
-    self.btnCreateContract,
     self.btnAccept,
-    self.btnComplete,
-    self.btnCancel
-  })
+    self.btnCreateContract
+  }
 
-  return self
+  -- ACTIVE contracts
+  self.contractButtonSets[MenuCustomContracts.CONTRACTS_LIST_TYPE.ACTIVE] = {
+    self.btnBack,
+    self.btnComplete,
+    self.btnCreateContract
+  }
+
+  -- OWNED contracts
+  self.contractButtonSets[MenuCustomContracts.CONTRACTS_LIST_TYPE.OWNED] = {
+    self.btnBack,
+    self.btnDelete,
+    self.btnCancel,
+    self.btnCreateContract
+  }
+
+  self.menuButtonInfo[MenuCustomContracts.SUB_CATEGORY.CONTRACTS] = {
+    self.btnBack -- will be overridden dynamically
+  }
+
+  -- Any other subcategory → Back only
+  for _, subCategory in pairs(MenuCustomContracts.SUB_CATEGORY) do
+    if subCategory ~= MenuCustomContracts.SUB_CATEGORY.CONTRACTS then
+      self.menuButtonInfo[subCategory] = {
+        self.btnBack
+      }
+    end
+  end
+
+  self.currentContractsListType =
+      self.contractDisplaySwitcher:getState()
+      or MenuCustomContracts.CONTRACTS_LIST_TYPE.NEW
+
+  self:updateMenuButtons()
 end
 
-function MenuCustomContracts:onGuiSetupFinished()
-  MenuCustomContracts:superClass().onGuiSetupFinished(self)
-
-  self:initialize()
-
-  self.newContractsList:setDataSource(self)
-  self.newContractsList:setDelegate(self)
-
-  self.activeContractsList:setDataSource(self)
-  self.activeContractsList:setDelegate(self)
-
-  self.yourContractsList:setDataSource(self)
-  self.yourContractsList:setDelegate(self)
-
-  self.btnCreateContract.onClickCallback = self.onCreateContract
+function MenuCustomContracts:getMenuButtonInfo()
+  return self.menuButtonInfo[self.subCategoryPaging:getState()]
 end
 
 function MenuCustomContracts:onFrameOpen()
-  MenuCustomContracts:superClass().onFrameOpen(self)
-
-  print("[CustomContracts] Menu opened, subscribing to updates")
+  local texts = {}
+  for k, tab in pairs(self.subCategoryTabs) do
+    tab:setVisible(true)
+    table.insert(texts, tostring(k))
+  end
+  self.subCategoryBox:invalidateLayout()
+  self.subCategoryPaging:setTexts(texts)
+  self.subCategoryPaging:setSize(self.subCategoryBox.maxFlowSize + 140 * g_pixelSizeScaledX)
 
   self:onMoneyChange()
   g_messageCenter:subscribe(MessageType.MONEY_CHANGED, self.onMoneyChange, self)
   g_messageCenter:subscribe(MessageType.CUSTOM_CONTRACTS_UPDATED, self.updateContent, self)
-
-
   self:updateContent()
-  self:updateSubCategoryPages(self.FILTER.NEW)
-  self:updateMenuButtons()
-
-  FocusManager:setFocus(self.subCategoryPages[self.FILTER.NEW]:getDescendantByName("layout"))
-end
-
-function MenuCustomContracts:updateContent()
-  self.newData    = self:getContractsBasedOnFilter(MenuCustomContracts.FILTER.NEW)
-  self.activeData = self:getContractsBasedOnFilter(MenuCustomContracts.FILTER.ACTIVE)
-  self.yourData   = self:getContractsBasedOnFilter(MenuCustomContracts.FILTER.YOURS)
-
-  self.newContractsList:reloadData()
-  self.activeContractsList:reloadData()
-  self.yourContractsList:reloadData()
-
-  print(
-    "[CustomContracts] updateContent called",
-    "new:", #self.newData,
-    "active:", #self.activeData,
-    "yours:", #self.yourData
-  )
-
-  -- Redirect to "Yours" tab after creating a contract
-  if self.redirectToYoursAfterCreate then
-    self.redirectToYoursAfterCreate = false
-
-    self:updateSubCategoryPages(MenuCustomContracts.FILTER.YOURS)
-    FocusManager:setFocus(
-      self.subCategoryPages[MenuCustomContracts.FILTER.YOURS]
-      :getDescendantByName("layout")
-    )
-  end
-
-  self:updateMenuButtons()
+  self:setMenuButtonInfoDirty()
 end
 
 function MenuCustomContracts:onFrameClose()
@@ -154,257 +230,94 @@ function MenuCustomContracts:onFrameClose()
   g_messageCenter:unsubscribeAll(self)
 end
 
-function MenuCustomContracts:getNumberOfSections()
-  return 1
+function MenuCustomContracts:onClickContracts()
+  self.subCategoryPaging:setState(MenuCustomContracts.SUB_CATEGORY.CONTRACTS, true)
+
+  self:setMenuButtonInfoDirty()
 end
 
-function MenuCustomContracts:getNumberOfItemsInSection(list, section)
-  if list == self.newContractsList then
-    return #self.newData
-  elseif list == self.activeContractsList then
-    return #self.activeData
-  elseif list == self.yourContractsList then
-    return #self.yourData
+function MenuCustomContracts:onClickInvoices()
+  self.subCategoryPaging:setState(MenuCustomContracts.SUB_CATEGORY.INVOICES, true)
+
+  self:setMenuButtonInfoDirty()
+end
+
+function MenuCustomContracts:updateSubCategoryPages(subCategoryIndex)
+  self:updateContent()
+  self:setMenuButtonInfoDirty()
+  -- FocusManager:setFocus(self.subCategoryPaging)
+end
+
+function MenuCustomContracts:onSwitchContractDisplay()
+  self.contractsTable:reloadData()
+  self.currentContractsListType = self.contractDisplaySwitcher:getState()
+  local hasItem = self.contractsTable:getItemCount() > 0
+  self.contractsContainer:setVisible(hasItem)
+  self.contractsInfoContainer:setVisible(hasItem)
+  self.noContractsContainer:setVisible(not hasItem)
+  if hasItem then
+    self.contractsTable:setSelectedIndex(1)
   end
-  return 0
-end
-
-function MenuCustomContracts:getTitleForSectionHeader()
-  return ""
-end
-
--- Handler for changes on the smoothlist selection.
-function MenuCustomContracts:onListSelectionChanged(list, section, index)
-  self.selectedIndex = index
-  self.selectedList = list
-
-  local contract = self:getSelectedContract()
-
-  if list == self.yourContractsList then
-    self:updateYourContractDetails(contract)
-  else
-    self:clearYourContractDetails()
-  end
+  self:displaySelectedContract()
 
   self:updateMenuButtons()
   self:setMenuButtonInfoDirty()
 end
 
-function MenuCustomContracts:getSelectedContract()
-  if self.selectedIndex == nil or self.selectedIndex < 1 then
-    return nil
+function MenuCustomContracts:updateContent()
+  local state = self.subCategoryPaging:getState()
+
+  self.categoryHeaderText:setText(g_i18n:getText(MenuCustomContracts.HEADER_TITLES[state]))
+
+  for k, v in pairs(self.subCategoryPages) do
+    v:setVisible(k == state)
   end
 
-  if self.selectedList == self.newContractsList then
-    return self.newData[self.selectedIndex]
-  elseif self.selectedList == self.activeContractsList then
-    return self.activeData[self.selectedIndex]
-  elseif self.selectedList == self.yourContractsList then
-    return self.yourData[self.selectedIndex]
+  if state == MenuCustomContracts.SUB_CATEGORY.CONTRACTS then
+    local contractManager = g_currentMission.customContracts.ContractManager
+    local newContracts = contractManager:getNewContractsForCurrentFarm()
+    local activeContracts = contractManager:getActiveContractsForCurrentFarm()
+    local ownedContracts = contractManager:getOwnedContractsForCurrentFarm()
+
+    print("[CustomContracts] New contracts count: " .. #newContracts)
+    print("[CustomContracts] Active contracts count: " .. #activeContracts)
+    print("[CustomContracts] Owned contracts count: " .. #ownedContracts)
+
+    local renderData = {
+      [MenuCustomContracts.CONTRACTS_LIST_TYPE.NEW] = newContracts,
+      [MenuCustomContracts.CONTRACTS_LIST_TYPE.ACTIVE] = activeContracts,
+      [MenuCustomContracts.CONTRACTS_LIST_TYPE.OWNED] = ownedContracts
+    }
+
+    self.contractsRenderer:setData(renderData)
+    self.contractsTable:reloadData()
+
+    self.contractsContainer:setVisible(self.contractsTable:getItemCount() > 0)
+    self.contractsInfoContainer:setVisible(self.contractsTable:getItemCount() > 0)
+    self.noContractsContainer:setVisible(self.contractsTable:getItemCount() == 0)
   end
 
-  return nil
-end
-
-function MenuCustomContracts:updateYourContractDetails(contract)
-  if contract == nil then
-    self:clearYourContractDetails()
-    return
-  end
-
-  local field = g_fieldManager:getFieldById(contract.fieldId)
-
-  -- Field
-  self.contractFieldValue:setText(
-    string.format("Field %d", contract.fieldId)
-  )
-  self.contractFieldSizeValue:setText(
-    string.format("%.2f ha", field.areaHa)
-  )
-
-  --Contract info
-  local farm = g_farmManager:getFarmById(contract.creatorFarmId)
-  if farm ~= nil then
-    self.contractFarmName:setText(farm.name)
-    self.contractWorkType:setText(contract.workType)
-  else
-    self.contractFarmName:setText("-")
-    self.contractWorkType:setText("-")
-  end
-
-  local contractorFarm = g_farmManager:getFarmById(contract.contractorFarmId)
-  if contractorFarm ~= nil then
-    self.contractContractorValue:setText(contractorFarm.name)
-  else
-    self.contractContractorValue:setText("-")
-  end
-
-  self.contractWorkTypeValue:setText(contract.workType)
-
-  self.contractRewardValue:setText(
-    g_i18n:formatMoney(contract.reward, 0, true, true)
-  )
-
-  self.contractStatusValue:setText(
-    g_i18n:getText("cc_status_" .. string.lower(contract.status))
-    or contract.status
-  )
-
-  self.contractDescriptionValue:setText(
-    contract.description or "-"
-  )
-end
-
-function MenuCustomContracts:clearYourContractDetails()
-  self.contractFieldValue:setText("-")
-  self.contractFieldSizeValue:setText("-")
-  self.contractFieldOwnerValue:setText("-")
-
-  self.contractWorkTypeValue:setText("-")
-  self.contractRewardValue:setText("-")
-  self.contractStatusValue:setText("-")
-
-  self.contractFarmName:setText("-")
-  self.contractContractorValue:setText("-")
-
-  self.contractDescriptionValue:setText("-")
-end
-
-function MenuCustomContracts:initialize()
-  -- Tabs
-  self.subCategoryTabs[self.FILTER.NEW]     = self.inGameMenuNew
-  self.subCategoryTabs[self.FILTER.ACTIVE]  = self.inGameMenuActive
-  self.subCategoryTabs[self.FILTER.YOURS]   = self.inGameMenuYours
-
-  -- Pages
-  self.subCategoryPages[self.FILTER.NEW]    = self.inGameMenuNewPage
-  self.subCategoryPages[self.FILTER.ACTIVE] = self.inGameMenuActivePage
-  self.subCategoryPages[self.FILTER.YOURS]  = self.inGameMenuYoursPage
-
-  for key = 1, MenuCustomContracts.NUM_CATEGORIES do
-    self.subCategoryPaging:addText(MenuCustomContracts.CATEGRORY_TEXTS[key])
-
-    self.subCategoryTabs[key]:getDescendantByName("background")
-        :setSize(self.subCategoryTabs[key].size[1], self.subCategoryTabs[key].size[2])
-
-    self.subCategoryTabs[key].onClickCallback = function()
-      self:updateSubCategoryPages(key)
-    end
-  end
-
-  self.subCategoryPaging:setSize(
-    self.subCategoryBox.maxFlowSize + 140 * g_pixelSizeScaledX
-  )
-end
-
-function MenuCustomContracts:updateSubCategoryPages(state)
-  for i, _ in ipairs(self.subCategoryPages) do
-    self.subCategoryPages[i]:setVisible(false)
-    self.subCategoryTabs[i]:setSelected(false)
-  end
-  self.subCategoryPages[state]:setVisible(true)
-  self.subCategoryTabs[state]:setSelected(true)
-  self.subCategoryPaging.state = state
-  self.newContractsList:reloadData()
-  self.activeContractsList:reloadData()
-  self.yourContractsList:reloadData()
-
-  self.currentFilter = state
-  self.selectedIndex = -1
   self:updateMenuButtons()
-  self:setMenuButtonInfoDirty()
-end
-
-function MenuCustomContracts:getContractsBasedOnFilter(filter)
-  local farmId = g_currentMission:getFarmId()
-  local filteredContracts = {}
-
-  local contractManager = g_currentMission.customContracts.ContractManager
-  if contractManager == nil then
-    return filteredContracts
-  end
-
-  for _, contract in pairs(contractManager.contracts) do
-    if filter == MenuCustomContracts.FILTER.NEW then
-      -- Open contracts NOT created by you
-      if contract.status == CustomContract.STATUS.OPEN
-          and contract.creatorFarmId ~= farmId then
-        table.insert(filteredContracts, contract)
-      end
-    elseif filter == MenuCustomContracts.FILTER.ACTIVE then
-      -- Contracts accepted by you
-      if contract.status == CustomContract.STATUS.ACCEPTED
-          and contract.contractorFarmId == farmId then
-        table.insert(filteredContracts, contract)
-      end
-    elseif filter == MenuCustomContracts.FILTER.YOURS then
-      -- Contracts you created (any status)
-      if contract.creatorFarmId == farmId then
-        table.insert(filteredContracts, contract)
-      end
-    end
-  end
-
-  return filteredContracts
 end
 
 function MenuCustomContracts:updateMenuButtons()
-  local state    = self.subCategoryPaging.state
-  local farmId   = g_currentMission:getFarmId()
+  local subCategory = self.subCategoryPaging:getState()
 
-  local buttons  = {
-    self.btnBack,
-    self.btnCreateContract
-  }
-
-  local contract = nil
-  if self.selectedIndex ~= nil and self.selectedIndex > 0 then
-    if state == MenuCustomContracts.FILTER.NEW then
-      contract = self.newData[self.selectedIndex]
-    elseif state == MenuCustomContracts.FILTER.ACTIVE then
-      contract = self.activeData[self.selectedIndex]
-    elseif state == MenuCustomContracts.FILTER.YOURS then
-      contract = self.yourData[self.selectedIndex]
-    end
+  -- Not on Contracts page → Back only
+  if subCategory ~= MenuCustomContracts.SUB_CATEGORY.CONTRACTS then
+    self.menuButtonInfo[subCategory] = { self.btnBack }
+    self:setMenuButtonInfoDirty()
+    return
   end
 
-  -- NEW → Accept
-  if state == MenuCustomContracts.FILTER.NEW then
-    table.insert(buttons, self.btnAccept)
+  -- Contracts page → based on NEW / ACTIVE / OWNED
+  local buttons = self.contractButtonSets[self.currentContractsListType]
+      or { self.btnBack }
 
-    self.btnAccept.disabled =
-        contract == nil
-        or contract.status ~= CustomContract.STATUS.OPEN
-        or contract.creatorFarmId == farmId
-
-    -- ACTIVE → Complete
-  elseif state == MenuCustomContracts.FILTER.ACTIVE then
-    table.insert(buttons, self.btnComplete)
-
-    self.btnComplete.disabled =
-        contract == nil
-        or contract.status ~= CustomContract.STATUS.ACCEPTED
-        or contract.contractorFarmId ~= farmId
-
-    -- YOURS → Cancel
-  elseif state == MenuCustomContracts.FILTER.YOURS then
-    table.insert(buttons, self.btnCancel)
-    table.insert(buttons, self.btnDelete)
-
-    self.btnCancel.disabled =
-        contract == nil
-        or contract.creatorFarmId ~= farmId
-        or contract.status ~= CustomContract.STATUS.OPEN
-
-    self.btnDelete.disabled =
-        contract == nil
-        or contract.creatorFarmId ~= farmId
-  end
-
-  self:setMenuButtonInfo(buttons)
+  self.menuButtonInfo[MenuCustomContracts.SUB_CATEGORY.CONTRACTS] = buttons
+  self:setMenuButtonInfoDirty()
 end
 
--- Credits Red Tape
 function MenuCustomContracts:onMoneyChange()
   if g_localPlayer ~= nil then
     local farm = g_farmManager:getFarmById(g_localPlayer.farmId)
@@ -422,88 +335,15 @@ function MenuCustomContracts:onMoneyChange()
   end
 end
 
-function MenuCustomContracts:populateCellForItemInSection(list, section, index, cell)
-  local contract
-
-  if list == self.newContractsList then
-    contract = self.newData[index]
-    self:populateNewOrActiveCell(contract, cell)
-  elseif list == self.activeContractsList then
-    contract = self.activeData[index]
-    self:populateNewOrActiveCell(contract, cell)
-  elseif list == self.yourContractsList then
-    contract = self.yourData[index]
-    self:populateYourContractsCell(contract, cell)
-  end
-
-  -- -- Creator farm (always exists)
-  -- local creatorFarm = g_farmManager:getFarmById(contract.creatorFarmId)
-  -- if creatorFarm ~= nil then
-  --   cell:getAttribute("farm"):setText(creatorFarm.name)
-  -- end
-
-  -- -- Contractor farm (optional)
-  -- local acceptCell = cell:getAttribute("accept")
-  -- if acceptCell ~= nil then
-  --   if contract.contractorFarmId ~= nil then
-  --     local contractorFarm = g_farmManager:getFarmById(contract.contractorFarmId)
-  --     if contractorFarm ~= nil then
-  --       acceptCell:setText(contractorFarm.name)
-  --     else
-  --       acceptCell:setText("-")
-  --     end
-  --   else
-  --     acceptCell:setText("-")
-  --   end
-  -- end
-
-  -- cell:getAttribute("field"):setText("Field " .. contract.fieldId)
-  -- cell:getAttribute("work"):setText(contract.workType)
-  -- cell:getAttribute("reward"):setText(g_i18n:formatMoney(contract.reward))
-  -- cell:getAttribute("status"):setText(string.lower(contract.status))
-end
-
-function MenuCustomContracts:populateNewOrActiveCell(contract, cell)
-  if contract == nil then return end
-
-  local farm = g_farmManager:getFarmById(contract.creatorFarmId)
-  cell:getAttribute("farm"):setText(farm and farm.name or "-")
-  cell:getAttribute("field"):setText("Field " .. contract.fieldId)
-  cell:getAttribute("work"):setText(contract.workType)
-  cell:getAttribute("reward"):setText(g_i18n:formatMoney(contract.reward))
-  cell:getAttribute("status"):setText(string.lower(contract.status))
-
-  local acceptCell = cell:getAttribute("accept")
-  if acceptCell ~= nil then
-    if contract.contractorFarmId then
-      local contractor = g_farmManager:getFarmById(contract.contractorFarmId)
-      acceptCell:setText(contractor and contractor.name or "-")
-    else
-      acceptCell:setText("-")
-    end
-  end
-end
-
-function MenuCustomContracts:populateYourContractsCell(contract, cell)
-  if contract == nil then return end
-
-  local farm = g_farmManager:getFarmById(contract.creatorFarmId)
-
-  -- Contract details
-  cell:getAttribute("field"):setText("Field " .. contract.fieldId)
-  cell:getAttribute("reward"):setText(g_i18n:formatMoney(contract.reward))
-end
-
 function MenuCustomContracts:onCreateContract()
   self.redirectToYoursAfterCreate = true
   local dialog = g_gui:showDialog("menuCreateContract")
 end
 
 function MenuCustomContracts:onCompleteContract()
-  if self.selectedIndex < 1 then return end
-
-  local contract = self.activeData[self.selectedIndex]
-  if contract == nil then return end
+  local index = self.contractsTable.selectedIndex
+  local selection = self.contractDisplaySwitcher:getState()
+  local contract = self.contractsRenderer.data[selection][index]
 
   YesNoDialog.show(
     function(_, yes)
@@ -525,19 +365,10 @@ end
 
 -- Function triggered when clicking on the "Accept contract" button
 function MenuCustomContracts:onAcceptContract()
-  if self.selectedIndex == nil or self.selectedIndex < 1 then
-    InfoDialog.show("No contract selected")
-    return
-  end
+  local index = self.contractsTable.selectedIndex
+  local selection = self.contractDisplaySwitcher:getState()
+  local contract = self.contractsRenderer.data[selection][index]
 
-  local contract
-  if self.selectedList == self.newContractsList then
-    contract = self.newData[self.selectedIndex]
-  elseif self.selectedList == self.activeContractsList then
-    contract = self.activeData[self.selectedIndex]
-  elseif self.selectedList == self.yourContractsList then
-    contract = self.yourData[self.selectedIndex]
-  end
   if contract == nil then
     InfoDialog.show("No contract found")
     return
@@ -564,9 +395,10 @@ function MenuCustomContracts:onAcceptContract()
 end
 
 function MenuCustomContracts:onCancelContract()
-  if self.selectedIndex < 1 then return end
+  local index = self.contractsTable.selectedIndex
+  local selection = self.contractDisplaySwitcher:getState()
+  local contract = self.contractsRenderer.data[selection][index]
 
-  local contract = self.yourData[self.selectedIndex]
   if contract == nil then return end
 
   YesNoDialog.show(
@@ -587,9 +419,10 @@ function MenuCustomContracts:onCancelContract()
 end
 
 function MenuCustomContracts:onDeleteContract()
-  if self.selectedIndex < 1 then return end
+  local index = self.contractsTable.selectedIndex
+  local selection = self.contractDisplaySwitcher:getState()
+  local contract = self.contractsRenderer.data[selection][index]
 
-  local contract = self.yourData[self.selectedIndex]
   if contract == nil then return end
 
   YesNoDialog.show(
