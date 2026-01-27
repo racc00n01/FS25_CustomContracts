@@ -21,7 +21,6 @@ function MenuCustomContracts.new(i18n)
   self.name = "menuCustomContracts"
   self.i18n = i18n
 
-  self.data = {}
   self.newData = {}
   self.activeData = {}
   self.yourData = {}
@@ -106,6 +105,8 @@ end
 function MenuCustomContracts:onFrameOpen()
   MenuCustomContracts:superClass().onFrameOpen(self)
 
+  print("[CustomContracts] Menu opened, subscribing to updates")
+
   self:onMoneyChange()
   g_messageCenter:subscribe(MessageType.MONEY_CHANGED, self.onMoneyChange, self)
   g_messageCenter:subscribe(MessageType.CUSTOM_CONTRACTS_UPDATED, self.updateContent, self)
@@ -126,6 +127,13 @@ function MenuCustomContracts:updateContent()
   self.newContractsList:reloadData()
   self.activeContractsList:reloadData()
   self.yourContractsList:reloadData()
+
+  print(
+    "[CustomContracts] updateContent called",
+    "new:", #self.newData,
+    "active:", #self.activeData,
+    "yours:", #self.yourData
+  )
 
   -- Redirect to "Yours" tab after creating a contract
   if self.redirectToYoursAfterCreate then
@@ -222,11 +230,12 @@ function MenuCustomContracts:getContractsBasedOnFilter(filter)
   local farmId = g_currentMission:getFarmId()
   local filteredContracts = {}
 
-  if g_customContractManager == nil then
+  local contractManager = g_currentMission.customContracts.ContractManager
+  if contractManager == nil then
     return filteredContracts
   end
 
-  for _, contract in pairs(g_customContractManager.contracts) do
+  for _, contract in pairs(contractManager.contracts) do
     if filter == MenuCustomContracts.FILTER.NEW then
       -- Open contracts NOT created by you
       if contract.status == CustomContract.STATUS.OPEN
@@ -325,46 +334,6 @@ function MenuCustomContracts:onMoneyChange()
   end
 end
 
--- Function triggered when clicking on the "Accept contract" button
-function MenuCustomContracts:onAcceptContract()
-  if self.selectedIndex == nil or self.selectedIndex < 1 then
-    InfoDialog.show("No contract selected")
-    return
-  end
-
-  local contract
-  if self.selectedList == self.newContractsList then
-    contract = self.newData[self.selectedIndex]
-  elseif self.selectedList == self.activeContractsList then
-    contract = self.activeData[self.selectedIndex]
-  elseif self.selectedList == self.yourContractsList then
-    contract = self.yourData[self.selectedIndex]
-  end
-  if contract == nil then
-    InfoDialog.show("No contract found")
-    return
-  end
-
-  -- Use in game YesNoDialog to confirm accepting the contract
-  YesNoDialog.show(
-    function(_, yes)
-      if yes then
-        g_client:getServerConnection():sendEvent(
-          AcceptContractEvent.new(contract.id)
-        )
-      end
-    end,
-    self,
-    string.format(
-      "Accept contract for Field %d (%s) for €%s?",
-      contract.fieldId,
-      contract.workType,
-      g_i18n:formatMoney(contract.reward)
-    ),
-    "Accept Contract"
-  )
-end
-
 function MenuCustomContracts:populateCellForItemInSection(list, section, index, cell)
   local contract
 
@@ -422,7 +391,7 @@ function MenuCustomContracts:onCompleteContract()
     function(_, yes)
       if yes then
         g_client:getServerConnection():sendEvent(
-          CompleteContractEvent.new(contract.id)
+          CompleteContractEvent.new(contract.id, g_currentMission:getFarmId())
         )
       end
     end,
@@ -436,6 +405,46 @@ function MenuCustomContracts:onCompleteContract()
   )
 end
 
+-- Function triggered when clicking on the "Accept contract" button
+function MenuCustomContracts:onAcceptContract()
+  if self.selectedIndex == nil or self.selectedIndex < 1 then
+    InfoDialog.show("No contract selected")
+    return
+  end
+
+  local contract
+  if self.selectedList == self.newContractsList then
+    contract = self.newData[self.selectedIndex]
+  elseif self.selectedList == self.activeContractsList then
+    contract = self.activeData[self.selectedIndex]
+  elseif self.selectedList == self.yourContractsList then
+    contract = self.yourData[self.selectedIndex]
+  end
+  if contract == nil then
+    InfoDialog.show("No contract found")
+    return
+  end
+
+  -- Use in game YesNoDialog to confirm accepting the contract
+  YesNoDialog.show(
+    function(_, yes)
+      if yes then
+        g_client:getServerConnection():sendEvent(
+          AcceptContractEvent.new(contract.id, g_currentMission:getFarmId())
+        )
+      end
+    end,
+    self,
+    string.format(
+      "Accept contract for Field %d (%s) for €%s?",
+      contract.fieldId,
+      contract.workType,
+      g_i18n:formatMoney(contract.reward)
+    ),
+    "Accept Contract"
+  )
+end
+
 function MenuCustomContracts:onCancelContract()
   if self.selectedIndex < 1 then return end
 
@@ -446,7 +455,7 @@ function MenuCustomContracts:onCancelContract()
     function(_, yes)
       if yes then
         g_client:getServerConnection():sendEvent(
-          CancelContractEvent.new(contract.id)
+          CancelContractEvent.new(contract.id, g_currentMission:getFarmId())
         )
       end
     end,
@@ -469,7 +478,7 @@ function MenuCustomContracts:onDeleteContract()
     function(_, yes)
       if yes then
         g_client:getServerConnection():sendEvent(
-          DeleteContractEvent.new(contract.id)
+          DeleteContractEvent.new(contract.id, g_currentMission:getFarmId())
         )
       end
     end,

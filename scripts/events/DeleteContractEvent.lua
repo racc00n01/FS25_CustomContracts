@@ -1,40 +1,38 @@
 DeleteContractEvent = {}
-DeleteContractEvent_mt = Class(DeleteContractEvent, Event)
+local DeleteContractEvent_mt = Class(DeleteContractEvent, Event)
 
 InitEventClass(DeleteContractEvent, "DeleteContractEvent")
 
-function DeleteContractEvent.new(farmId, contractId)
+-- REQUIRED
+function DeleteContractEvent.emptyNew()
   local self = Event.new(DeleteContractEvent_mt)
-  self.farmId = farmId
-  self.contractId = contractId
   return self
 end
 
-function DeleteContractEvent:readStream(streamId, connection)
-  self.farmId = streamReadInt32(streamId)
-  self.contractId = streamReadInt32(streamId)
-  self:run(connection)
+-- Used by client UI
+function DeleteContractEvent.new(contractId, farmId)
+  local self = DeleteContractEvent.emptyNew()
+  self.contractId = contractId
+  self.farmId = farmId
+  return self
 end
 
 function DeleteContractEvent:writeStream(streamId, connection)
-  streamWriteInt32(streamId, self.farmId)
   streamWriteInt32(streamId, self.contractId)
+  streamWriteInt32(streamId, self.farmId)
+end
+
+function DeleteContractEvent:readStream(streamId, connection)
+  self.contractId = streamReadInt32(streamId)
+  self.farmId = streamReadInt32(streamId)
+  self:run(connection)
 end
 
 function DeleteContractEvent:run(connection)
-  -- Retrieve the contract
-  local contract = g_customContractManager.contracts[self.contractId]
-
-  if self.farmId == nil or self.farmId == FarmManager.SPECTATOR_FARM_ID then
-    return
+  if not connection:getIsServer() then
+    g_server:broadcastEvent(AcceptContractEvent.new(self.contractId, self.farmId))
   end
 
-
-  -- Validation if contract is open or accepted
-  if contract == nil then InfoDialog.show("Contract was not found.") end
-  if contract.status ~= CustomContract.STATUS.CANCELLED then
-    InfoDialog.show("Your first need to cancel this contract, before being able to delete it.")
-  end
-
-  g_customContractManager:deleteContract(self.contractId, self.farmId)
+  local contractManager = g_currentMission.customContracts.ContractManager
+  contractManager:handleDeleteRequest(self.farmId, self.contractId)
 end
