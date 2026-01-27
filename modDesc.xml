@@ -2,7 +2,7 @@
 <modDesc descVersion="104">
   <author>Racc00n</author>
 
-  <version>0.0.0.5</version>
+  <version>0.0.1.0</version>
 
   <iconFilename>icon_taskList.dds</iconFilename>
 
@@ -27,10 +27,11 @@ Egal ob du einem Nachbarn hilfst oder einen landwirtschaftlichen Betrieb führst
 
   <multiplayer supported="true"/>
 
-  <extraSourceFiles>
+  <l10n filenamePrefix="translations/translation" />
 
-    <sourceFile filename="gui/MenuCustomContracts.xml"/>
+  <extraSourceFiles>
     <sourceFile filename="gui/MenuCreateContract.xml"/>
+    <sourceFile filename="gui/ContractsRenderer.lua"/>
 
     <sourceFile filename="scripts/CustomContract.lua"/>
     <sourceFile filename="scripts/CustomContracts.lua"/>

@@ -20,7 +20,7 @@ CustomContract.STATUS = {
 }
 
 -- Intizialise function when creating a new CustomContract.
-function CustomContract.new(id, creatorFarmId, fieldId, workType, reward)
+function CustomContract.new(id, creatorFarmId, fieldId, workType, reward, description)
   local self = setmetatable({}, CustomContract_mt)
 
   self.id = id
@@ -30,6 +30,7 @@ function CustomContract.new(id, creatorFarmId, fieldId, workType, reward)
   self.workType = workType
   self.reward = reward
   self.status = CustomContract.STATUS.OPEN
+  self.description = description or ""
 
   return self
 end
@@ -42,6 +43,7 @@ function CustomContract:writeStream(streamId)
   streamWriteString(streamId, self.workType)
   streamWriteInt32(streamId, self.reward)
   streamWriteString(streamId, self.status)
+  streamWriteString(streamId, self.description)
 end
 
 function CustomContract.newFromStream(streamId)
@@ -52,13 +54,15 @@ function CustomContract.newFromStream(streamId)
   local workType = streamReadString(streamId)
   local reward = streamReadInt32(streamId)
   local status = streamReadString(streamId)
+  local description = streamReadString(streamId)
 
   local contract = CustomContract.new(
     id,
     creatorFarmId,
     fieldId,
     workType,
-    reward
+    reward,
+    description
   )
 
   contract.contractorFarmId = contractorFarmId ~= -1 and contractorFarmId or nil

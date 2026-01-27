@@ -44,6 +44,7 @@ function CustomContractManager:saveToXmlFile(xmlFile)
     setXMLString(xmlFile, key .. "#workType", contract.workType)
     setXMLInt(xmlFile, key .. "#reward", contract.reward)
     setXMLString(xmlFile, key .. "#status", contract.status)
+    setXMLString(xmlFile, key .. "#description", contract.description or '-')
 
     count = count + 1
   end
@@ -71,13 +72,15 @@ function CustomContractManager:loadFromXmlFile(xmlFile)
     local workType = getXMLString(xmlFile, contractKey .. "#workType")
     local reward = getXMLInt(xmlFile, contractKey .. "#reward")
     local status = getXMLString(xmlFile, contractKey .. "#status")
+    local description = getXMLString(xmlFile, contractKey .. "#description")
 
     local contract = CustomContract.new(
       id,
       creatorFarmId,
       fieldId,
       workType,
-      reward
+      reward,
+      description
     )
 
     contract.contractorFarmId = contractorFarmId ~= -1 and contractorFarmId or nil
@@ -151,6 +154,68 @@ function CustomContractManager:onPlayerConnected(connection)
   self:syncContracts(connection)
 end
 
+function CustomContractManager:getNewContractsForCurrentFarm()
+  local newForFarm = {}
+
+  local farmId = g_currentMission:getFarmId();
+  if farmId == nil or farmId == 0 then
+    return newForFarm
+  end
+
+  local contractManager = g_currentMission.customContracts.ContractManager
+
+  for _, contract in pairs(contractManager.contracts) do
+    -- Open contracts NOT created by you
+    if contract.status == CustomContract.STATUS.OPEN
+        and contract.creatorFarmId ~= farmId then
+      table.insert(newForFarm, contract)
+    end
+  end
+
+  return newForFarm
+end
+
+function CustomContractManager:getActiveContractsForCurrentFarm()
+  local activeForFarm = {}
+
+  local farmId = g_currentMission:getFarmId();
+  if farmId == nil or farmId == 0 then
+    return activeForFarm
+  end
+
+  local contractManager = g_currentMission.customContracts.ContractManager
+
+  for _, contract in pairs(contractManager.contracts) do
+    -- Contracts accepted by you
+    if contract.status == CustomContract.STATUS.ACCEPTED
+        and contract.contractorFarmId == farmId then
+      table.insert(activeForFarm, contract)
+    end
+  end
+
+  return activeForFarm
+end
+
+function CustomContractManager:getOwnedContractsForCurrentFarm()
+  local ownedForFarm = {}
+
+  local farmId = g_currentMission:getFarmId();
+  if farmId == nil or farmId == 0 then
+    return ownedForFarm
+  end
+
+  local contractManager = g_currentMission.customContracts.ContractManager
+
+  for _, contract in pairs(contractManager.contracts) do
+    -- Contracts you created (any status)
+    if contract.creatorFarmId == farmId then
+      table.insert(ownedForFarm, contract)
+    end
+  end
+
+  return ownedForFarm
+end
+
 -- Called by CreateContractEvent, runs on server
 function CustomContractManager:handleCreateRequest(farmId, payload)
   if not g_currentMission:getIsServer() then return end
@@ -174,7 +239,8 @@ function CustomContractManager:handleCreateRequest(farmId, payload)
     farmId,
     payload.fieldId,
     payload.workType,
-    payload.reward
+    payload.reward,
+    payload.description
   )
 
   self.contracts[id] = contract
@@ -184,7 +250,8 @@ function CustomContractManager:handleCreateRequest(farmId, payload)
     "creatorFarmId:", self.contracts[id].creatorFarmId,
     "fieldId:", self.contracts[id].fieldId,
     "workType:", self.contracts[id].workType,
-    "reward:", self.contracts[id].reward
+    "reward:", self.contracts[id].reward,
+    "description:", self.contracts[id].description
   )
 
   self:syncContracts()
@@ -259,7 +326,7 @@ function CustomContractManager:handleCancelRequest(farmId, contractId)
   local contract = self.contracts[contractId]
   if contract == nil then return end
   if contract.contractorFarmId ~= farmId then return end
-  if contract.status ~= CustomContract.STATUS.OPEN or contract.status ~= CustomContract.STATUS.ACCEPTED then
+  if contract.status ~= CustomContract.STATUS.OPEN and contract.status ~= CustomContract.STATUS.ACCEPTED then
     return
   end
 
@@ -276,10 +343,6 @@ function CustomContractManager:handleDeleteRequest(farmId, contractId)
   local contract = self.contracts[contractId]
   if contract == nil then return end
   if contract.creatorFarmId ~= farmId then return end
-
-  if contract.status ~= CustomContract.STATUS.CANCELLED then
-    return
-  end
 
   self.contracts[contractId] = nil
 

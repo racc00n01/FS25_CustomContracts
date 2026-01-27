@@ -2,50 +2,25 @@ MenuCreateContract = {}
 local MenuCreateContract_mt = Class(MenuCreateContract, MessageDialog)
 
 CustomContractWorkTypes = {
-  {
-    id = "CULTIVATE",
-    text = "Cultivate"
-  },
-  {
-    id = "PLOW",
-    text = "Plow"
-  },
-  {
-    id = "SEED",
-    text = "Seed"
-  },
-  {
-    id = "FERTILIZE",
-    text = "Fertilize"
-  },
-  {
-    id = "HARVEST",
-    text = "Harvest"
-  },
-  {
-    id = "ROLL",
-    text = "Roll"
-  },
-  {
-    id = "WEED",
-    text = "Weed"
-  },
-  {
-    id = "LIME",
-    text = "Lime"
-  },
-  {
-    id = "MULCH",
-    text = "Mulch"
-  },
-  {
-    id = "STONEPICK",
-    text = "Stone Pick"
-  },
-  {
-    id = "REMOVEFOLIAGE",
-    text = "Remove Foliage"
-  },
+  { id = "CULTIVATE",     text = "Cultivate" },
+  { id = "PLOW",          text = "Plow" },
+  { id = "SEED",          text = "Seed" },
+  { id = "FERTILIZE",     text = "Fertilize" },
+  { id = "HARVEST",       text = "Harvest" },
+  { id = "ROLL",          text = "Roll" },
+  { id = "WEED",          text = "Weed" },
+  { id = "LIME",          text = "Lime" },
+  { id = "MULCH",         text = "Mulch" },
+  { id = "STONEPICK",     text = "Stone Pick" },
+  { id = "REMOVEFOLIAGE", text = "Remove Foliage" },
+  { id = "REMOVEFOLIAGE", text = "Remove Foliage" },
+  { id = "MOW",           text = "Mowing" },
+  { id = "TEDDING",       text = "Tedding" },
+  { id = "WINDROWING",    text = "Windrowing" },
+  { id = "BALING",        text = "Baling" },
+  { id = "BALEWRAPPING",  text = "Bale Wrapping" },
+  { id = "SPRAYING",      text = "Spraying" },
+  { id = "OTHER",         text = "Other" }
 }
 
 function MenuCreateContract.new(target, custom_mt)
@@ -124,6 +99,7 @@ function MenuCreateContract:onConfirm(sender)
 
   local fieldId = self.fieldIds[self.selectedFieldIndex or 0]
   local reward = tonumber(self.rewardInput:getText())
+  local description = self.descriptionInput:getText()
 
   local index = self.selectedWorkTypeIndex or 1
   local workType = CustomContractWorkTypes[index].text
@@ -134,9 +110,10 @@ function MenuCreateContract:onConfirm(sender)
   end
 
   local contract = {
-    fieldId  = fieldId,
-    workType = workType,
-    reward   = reward
+    fieldId     = fieldId,
+    workType    = workType,
+    reward      = reward,
+    description = description or "-"
   }
 
   print(
