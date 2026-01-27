@@ -53,7 +53,8 @@ function MenuCustomContracts:displaySelectedContract()
       --Contract info
       local farm = g_farmManager:getFarmById(contract.creatorFarmId)
       if farm ~= nil then
-        self.contractFarmName:setText(farm.name)
+        self.contractId:setText(string.format("Contract #%d", contract.id))
+        self.contractFarmName:setText(string.format("Owned by: %s", farm.name))
         self.contractWorkType:setText(contract.workType)
       else
         self.contractFarmName:setText("-")
