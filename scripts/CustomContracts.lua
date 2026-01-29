@@ -32,7 +32,7 @@ function CustomContracts:loadMap()
   g_gui:loadGui(CustomContracts.dir .. "gui/MenuCustomContracts.xml", "menuCustomContracts", menuCustomContracts, true)
 
   CustomContracts.addIngameMenuPage(menuCustomContracts, "menuCustomContracts", { 0, 0, 1024, 1024 },
-    CustomContracts:makeIsTaskListCheckEnabledPredicate(), "pageSettings")
+    CustomContracts:makeIsCustomContractsCheckEnabledPredicate(), "pageSettings")
 
   -- Register Create contract dialog
   local createContractDialog = MenuCreateContract.new(g_i18n)
@@ -49,7 +49,7 @@ function CustomContracts:loadMap()
   self:loadFromXmlFile()
 end
 
-function CustomContracts:makeIsTaskListCheckEnabledPredicate()
+function CustomContracts:makeIsCustomContractsCheckEnabledPredicate()
   return function() return true end
 end
 

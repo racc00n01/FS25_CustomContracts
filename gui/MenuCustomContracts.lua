@@ -42,14 +42,6 @@ function MenuCustomContracts:displaySelectedContract()
       self.contractsInfoContainer:setVisible(true)
       self.noSelectedContractText:setVisible(false)
 
-      -- Field
-      self.contractFieldValue:setText(
-        string.format("Field %d", contract.fieldId)
-      )
-      self.contractFieldSizeValue:setText(
-        string.format("%.2f ha", field.areaHa)
-      )
-
       --Contract info
       local farm = g_farmManager:getFarmById(contract.creatorFarmId)
       if farm ~= nil then
@@ -61,26 +53,44 @@ function MenuCustomContracts:displaySelectedContract()
         self.contractWorkType:setText("-")
       end
 
-      local contractorFarm = g_farmManager:getFarmById(contract.contractorFarmId)
-      if contractorFarm ~= nil then
-        self.contractContractorValue:setText(contractorFarm.name)
-      else
-        self.contractContractorValue:setText("-")
-      end
-
-      self.contractWorkTypeValue:setText(contract.workType)
+      -- local contractorFarm = g_farmManager:getFarmById(contract.contractorFarmId)
+      -- if contractorFarm ~= nil then
+      --   self.contractContractorValue:setText(contractorFarm.name)
+      -- else
+      --   self.contractContractorValue:setText("-")
+      -- end
 
       self.contractRewardValue:setText(
         g_i18n:formatMoney(contract.reward, 0, true, true)
       )
 
-      self.contractStatusValue:setText(
-        g_i18n:getText("cc_status_" .. string.lower(contract.status))
-        or contract.status
+      local statusText
+
+      if contract.contractorFarmId ~= nil then
+        local contractorFarm = g_farmManager:getFarmById(contract.contractorFarmId)
+
+        if contractorFarm ~= nil then
+          statusText = string.format(
+            "%s: %s",
+            g_i18n:getText("cc_ownedBy"),
+            contractorFarm.name
+          )
+        else
+          statusText = contract.status
+        end
+      else
+        statusText = g_i18n:getText("cc_status_" .. string.lower(contract.status))
+            or contract.status
+      end
+
+      self.contractStatusValue:setText(statusText)
+
+      self.contractNotesValue:setText(
+        contract.description or "-"
       )
 
       self.contractDescriptionValue:setText(
-        contract.description or "-"
+        string.format("%s on Field %d (%.2f ha)", contract.workType, contract.fieldId, field.areaHa)
       )
     else
       self.contractsInfoContainer:setVisible(false)
