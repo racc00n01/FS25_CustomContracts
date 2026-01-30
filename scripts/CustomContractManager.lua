@@ -45,6 +45,10 @@ function CustomContractManager:saveToXmlFile(xmlFile)
     setXMLInt(xmlFile, key .. "#reward", contract.reward)
     setXMLString(xmlFile, key .. "#status", contract.status)
     setXMLString(xmlFile, key .. "#description", contract.description or '-')
+    setXMLInt(xmlFile, key .. "#startPeriod", contract.startPeriod or -1)
+    setXMLInt(xmlFile, key .. "#startDay", contract.startDay or -1)
+    setXMLInt(xmlFile, key .. "#duePeriod", contract.duePeriod or -1)
+    setXMLInt(xmlFile, key .. "#dueDay", contract.dueDay or -1)
 
     count = count + 1
   end
@@ -65,31 +69,47 @@ function CustomContractManager:loadFromXmlFile(xmlFile)
       break
     end
 
-    local id = getXMLInt(xmlFile, contractKey .. "#id")
-    local creatorFarmId = getXMLInt(xmlFile, contractKey .. "#creatorFarmId")
+    local id               = getXMLInt(xmlFile, contractKey .. "#id")
+    local creatorFarmId    = getXMLInt(xmlFile, contractKey .. "#creatorFarmId")
     local contractorFarmId = getXMLInt(xmlFile, contractKey .. "#contractorFarmId")
-    local fieldId = getXMLInt(xmlFile, contractKey .. "#fieldId")
-    local workType = getXMLString(xmlFile, contractKey .. "#workType")
-    local reward = getXMLInt(xmlFile, contractKey .. "#reward")
-    local status = getXMLString(xmlFile, contractKey .. "#status")
-    local description = getXMLString(xmlFile, contractKey .. "#description")
+    local fieldId          = getXMLInt(xmlFile, contractKey .. "#fieldId")
+    local workType         = getXMLString(xmlFile, contractKey .. "#workType")
+    local reward           = getXMLInt(xmlFile, contractKey .. "#reward")
+    local status           = getXMLString(xmlFile, contractKey .. "#status")
+    local description      = getXMLString(xmlFile, contractKey .. "#description")
+    local startPeriod      = getXMLInt(xmlFile, contractKey .. "#startPeriod")
+    local startDay         = getXMLInt(xmlFile, contractKey .. "#startDay")
+    local duePeriod        = getXMLInt(xmlFile, contractKey .. "#duePeriod")
+    local dueDay           = getXMLInt(xmlFile, contractKey .. "#dueDay")
 
-    local contract = CustomContract.new(
+    local contract         = CustomContract.new(
       id,
       creatorFarmId,
       fieldId,
       workType,
       reward,
-      description
+      description,
+      startDate,
+      dueDate
     )
 
+    if startPeriod ~= nil and startPeriod ~= -1 and startDay ~= nil and startDay ~= -1 then
+      contract.startPeriod = startPeriod
+      contract.startDay    = startDay
+    end
+
+    if duePeriod ~= nil and duePeriod ~= -1 and dueDay ~= nil and dueDay ~= -1 then
+      contract.duePeriod = duePeriod
+      contract.dueDay    = dueDay
+    end
+
     contract.contractorFarmId = contractorFarmId ~= -1 and contractorFarmId or nil
-    contract.status = status
+    contract.status           = status
 
-    self.contracts[id] = contract
-    self.nextId = math.max(self.nextId, id + 1)
+    self.contracts[id]        = contract
+    self.nextId               = math.max(self.nextId, id + 1)
 
-    i = i + 1
+    i                         = i + 1
   end
 
   self:syncContracts()
@@ -127,20 +147,12 @@ end
 function CustomContractManager:syncContracts(connection)
   if not g_currentMission:getIsServer() then return end
 
-  print(
-    "[CustomContracts][SERVER] syncContracts called",
-    "contracts:", table.size(self.contracts),
-    "nextId:", self.nextId
-  )
-
   local event = SyncContractsEvent.new(self.contracts, self.nextId)
 
 
   if connection ~= nil then
-    print("[CustomContracts][SERVER] sending SyncContractsEvent to a single client")
     connection:sendEvent(event)
   else
-    print("[CustomContracts][SERVER] broadcasting SyncContractsEvent")
     g_server:broadcastEvent(event, true)
   end
 end
@@ -148,8 +160,6 @@ end
 function CustomContractManager:onPlayerConnected(connection)
   if not g_currentMission:getIsServer() then return end
   if connection == nil then return end
-
-  print("[CustomContracts][SERVER] player connected → syncing contracts")
 
   self:syncContracts(connection)
 end
@@ -231,19 +241,24 @@ function CustomContractManager:handleCreateRequest(farmId, payload)
     return
   end
 
-  local id = self.nextId
-  self.nextId = self.nextId + 1
+  local id           = self.nextId
+  self.nextId        = self.nextId + 1
 
-  local contract = CustomContract.new(
+  local contract     = CustomContract.new(
     id,
     farmId,
     payload.fieldId,
     payload.workType,
     payload.reward,
-    payload.description
+    payload.description,
+    payload.startPeriod,
+    payload.startDay,
+    payload.duePeriod,
+    payload.dueDay
   )
 
   self.contracts[id] = contract
+
   print(
     "[CustomContracts] Created new contract:",
     "id:", self.contracts[id].id,
@@ -251,7 +266,8 @@ function CustomContractManager:handleCreateRequest(farmId, payload)
     "fieldId:", self.contracts[id].fieldId,
     "workType:", self.contracts[id].workType,
     "reward:", self.contracts[id].reward,
-    "description:", self.contracts[id].description
+    "description:", self.contracts[id].description,
+    "startPeriod:", self.contracts[id].startPeriod
   )
 
   self:syncContracts()
@@ -347,4 +363,59 @@ function CustomContractManager:handleDeleteRequest(farmId, contractId)
   self.contracts[contractId] = nil
 
   self:syncContracts()
+end
+
+local function toOrdinal(period, day, daysPerPeriod)
+  return (period - 1) * daysPerPeriod + (day - 1)
+end
+
+function CustomContractManager:getCurrentPeriodDay()
+  local env = g_currentMission.environment
+  local period = (env and env.currentPeriod) or 1
+  local dpp = (env and env.daysPerPeriod) or 1
+
+  -- Try common names; fallback to 1
+  local day = (env and (env.currentDayInPeriod or env.currentPeriodDay)) or 1
+  day = math.max(1, math.min(day, dpp))
+
+  return period, day, dpp
+end
+
+function CustomContractManager:isPastDue(contract, curPeriod, curDay, dpp)
+  if contract.duePeriod == nil or contract.duePeriod == -1 then return false end
+  if contract.dueDay == nil or contract.dueDay == -1 then return false end
+
+  local curOrd = toOrdinal(curPeriod, curDay, dpp)
+  local dueOrd = toOrdinal(contract.duePeriod, contract.dueDay, dpp)
+
+  -- Optional support if you stored dueYearOffset (0/1)
+  local yearLen = 12 * dpp
+  if (contract.dueYearOffset or 0) > 0 then
+    dueOrd = dueOrd + yearLen
+    -- if we are early in the year, current also needs shifting to compare properly
+    if curPeriod <= contract.duePeriod then
+      curOrd = curOrd + yearLen
+    end
+  end
+
+  return curOrd > dueOrd
+end
+
+function CustomContractManager:updateExpiredContracts()
+  if not g_currentMission:getIsServer() then return false end
+
+
+  local curP, curD, dpp = DateUtil.getCurrentPeriodDay()
+  local changed = false
+
+  for _, c in pairs(self.contracts) do
+    if c.status == CustomContract.STATUS.OPEN or c.status == CustomContract.STATUS.ACCEPTED then
+      if DateUtil.isPastDue(c, curP, curD, dpp) then
+        c.status = CustomContract.STATUS.EXPIRED
+        changed = true
+      end
+    end
+  end
+
+  return changed
 end

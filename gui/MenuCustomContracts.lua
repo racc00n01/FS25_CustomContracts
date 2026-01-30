@@ -92,6 +92,10 @@ function MenuCustomContracts:displaySelectedContract()
       self.contractDescriptionValue:setText(
         string.format("%s on Field %d (%.2f ha)", contract.workType, contract.fieldId, field.areaHa)
       )
+      print('contract st' .. contract.startPeriod)
+      print('contract du' .. contract.duePeriod)
+      self.contractStartDateValue:setText(self:formatPeriodDay(contract.startPeriod, contract.startDay))
+      self.contractDueDateValue:setText(self:formatPeriodDay(contract.duePeriod, contract.dueDay))
     else
       self.contractsInfoContainer:setVisible(false)
       self.noSelectedContractText:setVisible(true)
@@ -451,4 +455,28 @@ function MenuCustomContracts:onDeleteContract()
     ),
     "Delete Contract"
   )
+end
+
+function MenuCustomContracts:periodToMonth(period)
+  -- Your confirmed mapping: Period 1 = March
+  return ((period + 1) % 12) + 1
+end
+
+function MenuCustomContracts:formatPeriodDay(period, day)
+  if period == nil or period <= 0 then
+    return "-"
+  end
+
+  local month = self:periodToMonth(period)
+
+  local monthName = DateUtil.getMonthName(month) or tostring(month)
+
+  local env = g_currentMission.environment
+  local daysPerPeriod = (env and env.daysPerPeriod) or 1
+
+  if daysPerPeriod > 1 then
+    return string.format("%s %d", monthName, day or 1)
+  end
+
+  return monthName
 end

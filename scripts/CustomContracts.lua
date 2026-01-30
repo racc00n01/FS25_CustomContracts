@@ -16,6 +16,7 @@ source(CustomContracts.dir .. "gui/MenuCreateContract.lua")
 source(CustomContracts.dir .. "gui/ContractsRenderer.lua")
 source(CustomContracts.dir .. "scripts/events/SyncContractsEvent.lua")
 source(CustomContracts.dir .. "scripts/events/InitialClientStateEvent.lua")
+source(CustomContracts.dir .. "scripts/util/DateUtil.lua")
 
 function CustomContracts:loadMap()
   g_currentMission.customContracts = self
@@ -47,6 +48,52 @@ function CustomContracts:loadMap()
   g_messageCenter:subscribe(MessageType.PLAYER_FARM_CHANGED, CustomContracts.playerFarmChanged)
 
   self:loadFromXmlFile()
+end
+
+function CustomContracts:update(dt)
+  if not g_currentMission:getIsServer() then
+    return
+  end
+
+  local env = g_currentMission.environment
+  if env == nil then
+    return
+  end
+
+  -- throttle so we don't do anything every frame
+  self._expiryTimer = (self._expiryTimer or 0) + dt
+  if self._expiryTimer < 2000 then -- check every ~2 seconds
+    return
+  end
+  self._expiryTimer = 0
+
+  local curPeriod = env.currentPeriod or 1
+  local dpp = env.daysPerPeriod or 1
+
+  -- Day within period (defensive)
+  local curDay = env.currentDayInPeriod or env.currentPeriodDay or 1
+  curDay = math.max(1, math.min(curDay, dpp))
+
+  -- Time-of-day gate: only do this after 00:01
+  -- dayTime is usually ms since midnight in Giants environments
+  local dayTimeMs = env.dayTime or 0
+  if dayTimeMs < 60 * 1000 then
+    return
+  end
+
+  -- Only process once per new (period,day)
+  if self._lastExpiredCheckPeriod == curPeriod and self._lastExpiredCheckDay == curDay then
+    return
+  end
+  self._lastExpiredCheckPeriod = curPeriod
+  self._lastExpiredCheckDay = curDay
+
+  local mgr = self.ContractManager
+  if mgr ~= nil then
+    if mgr:updateExpiredContracts() then
+      mgr:syncContracts()
+    end
+  end
 end
 
 function CustomContracts:makeIsCustomContractsCheckEnabledPredicate()
