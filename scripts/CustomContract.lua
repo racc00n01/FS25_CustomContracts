@@ -65,10 +65,10 @@ function CustomContract.newFromStream(streamId)
   local reward = streamReadInt32(streamId)
   local status = streamReadString(streamId)
   local description = streamReadString(streamId)
-  local startPeriod = streamReadString(streamId)
-  local startDay = streamReadString(streamId)
-  local duePeriod = streamReadString(streamId)
-  local dueDay = streamReadString(streamId)
+  local startPeriod = streamReadInt32(streamId)
+  local startDay = streamReadInt32(streamId)
+  local duePeriod = streamReadInt32(streamId)
+  local dueDay = streamReadInt32(streamId)
 
   local contract = CustomContract.new(
     id,

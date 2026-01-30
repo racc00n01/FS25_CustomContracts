@@ -69,39 +69,31 @@ function CustomContractManager:loadFromXmlFile(xmlFile)
       break
     end
 
-    local id               = getXMLInt(xmlFile, contractKey .. "#id")
-    local creatorFarmId    = getXMLInt(xmlFile, contractKey .. "#creatorFarmId")
-    local contractorFarmId = getXMLInt(xmlFile, contractKey .. "#contractorFarmId")
-    local fieldId          = getXMLInt(xmlFile, contractKey .. "#fieldId")
-    local workType         = getXMLString(xmlFile, contractKey .. "#workType")
-    local reward           = getXMLInt(xmlFile, contractKey .. "#reward")
-    local status           = getXMLString(xmlFile, contractKey .. "#status")
-    local description      = getXMLString(xmlFile, contractKey .. "#description")
-    local startPeriod      = getXMLInt(xmlFile, contractKey .. "#startPeriod")
-    local startDay         = getXMLInt(xmlFile, contractKey .. "#startDay")
-    local duePeriod        = getXMLInt(xmlFile, contractKey .. "#duePeriod")
-    local dueDay           = getXMLInt(xmlFile, contractKey .. "#dueDay")
+    local id                  = getXMLInt(xmlFile, contractKey .. "#id")
+    local creatorFarmId       = getXMLInt(xmlFile, contractKey .. "#creatorFarmId")
+    local contractorFarmId    = getXMLInt(xmlFile, contractKey .. "#contractorFarmId")
+    local fieldId             = getXMLInt(xmlFile, contractKey .. "#fieldId")
+    local workType            = getXMLString(xmlFile, contractKey .. "#workType")
+    local reward              = getXMLInt(xmlFile, contractKey .. "#reward")
+    local status              = getXMLString(xmlFile, contractKey .. "#status")
+    local description         = getXMLString(xmlFile, contractKey .. "#description")
+    local startPeriod         = getXMLInt(xmlFile, contractKey .. "#startPeriod")
+    local startDay            = getXMLInt(xmlFile, contractKey .. "#startDay")
+    local duePeriod           = getXMLInt(xmlFile, contractKey .. "#duePeriod")
+    local dueDay              = getXMLInt(xmlFile, contractKey .. "#dueDay")
 
-    local contract         = CustomContract.new(
+    local contract            = CustomContract.new(
       id,
       creatorFarmId,
       fieldId,
       workType,
       reward,
       description,
-      startDate,
-      dueDate
+      startPeriod,
+      startDay,
+      duePeriod,
+      dueDay
     )
-
-    if startPeriod ~= nil and startPeriod ~= -1 and startDay ~= nil and startDay ~= -1 then
-      contract.startPeriod = startPeriod
-      contract.startDay    = startDay
-    end
-
-    if duePeriod ~= nil and duePeriod ~= -1 and dueDay ~= nil and dueDay ~= -1 then
-      contract.duePeriod = duePeriod
-      contract.dueDay    = dueDay
-    end
 
     contract.contractorFarmId = contractorFarmId ~= -1 and contractorFarmId or nil
     contract.status           = status
@@ -229,15 +221,8 @@ end
 -- Called by CreateContractEvent, runs on server
 function CustomContractManager:handleCreateRequest(farmId, payload)
   if not g_currentMission:getIsServer() then return end
-  print(
-    "[CustomContracts] handleCreateRequest called",
-    "farmId:", farmId,
-    "payload:", payload
-  )
-  -- if farmId == FarmManager.SPECTATOR_FARM_ID then return end
 
   if payload.fieldId == nil or payload.workType == nil or payload.reward <= 0 then
-    print("[CustomContracts] Invalid contract payload")
     return
   end
 
@@ -258,17 +243,6 @@ function CustomContractManager:handleCreateRequest(farmId, payload)
   )
 
   self.contracts[id] = contract
-
-  print(
-    "[CustomContracts] Created new contract:",
-    "id:", self.contracts[id].id,
-    "creatorFarmId:", self.contracts[id].creatorFarmId,
-    "fieldId:", self.contracts[id].fieldId,
-    "workType:", self.contracts[id].workType,
-    "reward:", self.contracts[id].reward,
-    "description:", self.contracts[id].description,
-    "startPeriod:", self.contracts[id].startPeriod
-  )
 
   self:syncContracts()
 end

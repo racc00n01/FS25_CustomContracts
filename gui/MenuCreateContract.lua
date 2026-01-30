@@ -89,6 +89,10 @@ function MenuCreateContract:onClose()
   MenuCreateContract:superClass().onClose(self)
 end
 
+function MenuCreateContract:onFieldSelectChange(state)
+  self.selectedFieldIndex = state
+end
+
 function MenuCreateContract:onGroupSelectChange(state)
   self.selectedWorkTypeIndex = state
 end

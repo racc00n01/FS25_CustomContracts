@@ -136,7 +136,6 @@ function CustomContracts:saveToXmlFile()
 end
 
 function CustomContracts:sendInitialClientState(connection, user, farm)
-  print("[CustomContracts] Sending initial client state to player")
   connection:sendEvent(InitialClientStateEvent:new())
 end
 
@@ -217,7 +216,6 @@ function CustomContracts:registerMenu()
 end
 
 function CustomContracts:playerFarmChanged()
-  print("[CustomContracts] Player farm changed, updating menus")
   g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
 end
 

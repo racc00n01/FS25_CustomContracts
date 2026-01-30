@@ -35,10 +35,11 @@ function CreateContractEvent:readStream(streamId, connection)
     fieldId     = streamReadInt32(streamId),
     workType    = streamReadString(streamId),
     reward      = streamReadInt32(streamId),
-    startPeriod = streamReadString(streamId),
-    startDay    = streamReadString(streamId),
-    duePeriod   = streamReadString(streamId),
-    dueDay      = streamReadString(streamId)
+    description = streamReadString(streamId),
+    startPeriod = streamReadInt32(streamId),
+    startDay    = streamReadInt32(streamId),
+    duePeriod   = streamReadInt32(streamId),
+    dueDay      = streamReadInt32(streamId)
   }
 
   self:run(connection)
@@ -51,7 +52,6 @@ function CreateContractEvent:run(connection)
 
   local farmId = self.farmId
   if farmId == nil or farmId == FarmManager.SPECTATOR_FARM_ID then
-    print("[CustomContracts] Invalid farmId in CreateContractEvent: ", tostring(farmId))
     return
   end
 

@@ -92,8 +92,6 @@ function MenuCustomContracts:displaySelectedContract()
       self.contractDescriptionValue:setText(
         string.format("%s on Field %d (%.2f ha)", contract.workType, contract.fieldId, field.areaHa)
       )
-      print('contract st' .. contract.startPeriod)
-      print('contract du' .. contract.duePeriod)
       self.contractStartDateValue:setText(self:formatPeriodDay(contract.startPeriod, contract.startDay))
       self.contractDueDateValue:setText(self:formatPeriodDay(contract.duePeriod, contract.dueDay))
     else
@@ -293,10 +291,6 @@ function MenuCustomContracts:updateContent()
     local newContracts = contractManager:getNewContractsForCurrentFarm()
     local activeContracts = contractManager:getActiveContractsForCurrentFarm()
     local ownedContracts = contractManager:getOwnedContractsForCurrentFarm()
-
-    print("[CustomContracts] New contracts count: " .. #newContracts)
-    print("[CustomContracts] Active contracts count: " .. #activeContracts)
-    print("[CustomContracts] Owned contracts count: " .. #ownedContracts)
 
     local renderData = {
       [MenuCustomContracts.CONTRACTS_LIST_TYPE.NEW] = newContracts,
