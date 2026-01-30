@@ -1,3 +1,10 @@
+--
+-- FS25 CustomContracts
+--
+-- @Author: Racc00n
+-- @Version: 0.0.1.1
+--
+
 SyncContractsEvent = {}
 local SyncContractsEvent_mt = Class(SyncContractsEvent, Event)
 
@@ -13,11 +20,6 @@ function SyncContractsEvent.new(contracts, nextId)
   self.contracts = contracts
   self.nextId = nextId
 
-  print(
-    "[CustomContracts] SyncContractsEvent created",
-    "contracts:", table.size(self.contracts),
-    "nextId:", self.nextId
-  )
   return self
 end
 
@@ -37,6 +39,11 @@ function SyncContractsEvent:writeStream(streamId, connection)
     streamWriteString(streamId, contract.workType)
     streamWriteInt32(streamId, contract.reward)
     streamWriteString(streamId, contract.status)
+    streamWriteString(streamId, contract.description or "")
+    streamWriteInt32(streamId, contract.startPeriod)
+    streamWriteInt32(streamId, contract.startDay)
+    streamWriteInt32(streamId, contract.duePeriod)
+    streamWriteInt32(streamId, contract.dueDay)
   end
 end
 
@@ -47,45 +54,47 @@ function SyncContractsEvent:readStream(streamId, connection)
   self.contracts = {}
 
   for i = 1, count do
-    local id = streamReadInt32(streamId)
-    local creatorFarmId = streamReadInt32(streamId)
-    local contractorFarmId = streamReadInt32(streamId)
-    local fieldId = streamReadInt32(streamId)
-    local workType = streamReadString(streamId)
-    local reward = streamReadInt32(streamId)
-    local status = streamReadString(streamId)
+    local id                  = streamReadInt32(streamId)
+    local creatorFarmId       = streamReadInt32(streamId)
+    local contractorFarmId    = streamReadInt32(streamId)
+    local fieldId             = streamReadInt32(streamId)
+    local workType            = streamReadString(streamId)
+    local reward              = streamReadInt32(streamId)
+    local status              = streamReadString(streamId)
+    local description         = streamReadString(streamId)
+    local startPeriod         = streamReadInt32(streamId)
+    local startDay            = streamReadInt32(streamId)
+    local duePeriod           = streamReadInt32(streamId)
+    local dueDay              = streamReadInt32(streamId)
 
-    local contract = CustomContract.new(
+    local contract            = CustomContract.new(
       id,
       creatorFarmId,
       fieldId,
       workType,
-      reward
+      reward,
+      description,
+      startPeriod,
+      startDay,
+      duePeriod,
+      dueDay
     )
 
     contract.contractorFarmId =
         contractorFarmId ~= -1 and contractorFarmId or nil
-    contract.status = status
+    contract.status           = status
 
-    self.contracts[id] = contract
+    self.contracts[id]        = contract
   end
 
   self:run(connection)
 end
 
 function SyncContractsEvent:run(connection)
-  print("[CustomContracts] SyncContractsEvent received on client")
   local contractManager = g_currentMission.customContracts.ContractManager
   if contractManager == nil then
     return
   end
-
-  print(
-    "[CustomContracts][CLIENT]",
-    "manager:", contractManager ~= nil,
-    "contracts:", table.size(self.contracts)
-  )
-  print("[CustomContracts][CLIENT] SyncContractsEvent received")
 
   -- overwrite local (client) state
   contractManager.contracts = self.contracts

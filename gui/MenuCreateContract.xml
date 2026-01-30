@@ -37,6 +37,20 @@
             <ThreePartBitmap profile="fs25_textInputBg" absoluteSizeOffset="0px 0px"/>
           </TextInput>
 
+          <!-- Start date -->
+          <Text text="Start date" profile="CC_ContractInputLabel" />
+          <MultiTextOption id="startDateSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onStartDateSelectChange">
+            <Text profile="fs25_multiTextOptionText" name="text" />
+          </MultiTextOption>
+
+
+          <!-- Due date -->
+          <Text text="Due date" profile="CC_ContractInputLabel" />
+          <MultiTextOption id="dueDateSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onDueDateSelectChange">
+            <Text profile="fs25_multiTextOptionText" name="text" />
+          </MultiTextOption>
+
+
         </BoxLayout>
       </BoxLayout>
     </GuiElement>

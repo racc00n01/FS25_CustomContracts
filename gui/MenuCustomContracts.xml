@@ -67,6 +67,12 @@
           <Text profile="CC_ContractTaglineRight" text="Current status:" position="0px -20px"/>
           <Text profile="CC_ContractStatus" id="contractStatusValue" position="0px -60px"/>
 
+          <Text profile="CC_ContractH6" text="Start:" position="300px -30px"/>
+          <Text profile="CC_ContractTagline" id="contractStartDateValue" position="300px -50px"/>
+
+          <Text profile="CC_ContractH6" text="Due:" position="500px -30px"/>
+          <Text profile="CC_ContractTagline" id="contractDueDateValue" position="500px -50px"/>
+
           <ThreePartBitmap profile="fs25_lineSeparatorTop" position="0px -120px"/>
 
           <Text profile="CC_ContractH6" position="0px -150px" text="$l10n_cc_contract_info_title"/>

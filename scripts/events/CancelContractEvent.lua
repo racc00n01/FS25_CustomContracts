@@ -1,15 +1,20 @@
+--
+-- FS25 CustomContracts
+--
+-- @Author: Racc00n
+-- @Version: 0.0.1.1
+--
+
 CancelContractEvent = {}
 local CancelContractEvent_mt = Class(CancelContractEvent, Event)
 
 InitEventClass(CancelContractEvent, "CancelContractEvent")
 
--- REQUIRED
 function CancelContractEvent.emptyNew()
   local self = Event.new(CancelContractEvent_mt)
   return self
 end
 
--- Used by client UI
 function CancelContractEvent.new(contractId, farmId)
   local self = CancelContractEvent.emptyNew()
   self.farmId = farmId

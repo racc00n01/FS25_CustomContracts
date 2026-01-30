@@ -2,8 +2,7 @@
 -- FS25 CustomContracts
 --
 -- @Author: Racc00n
--- @Date: -
--- @Version: 0.0.0.1
+-- @Version: 0.0.1.1
 --
 
 CustomContracts = {}
@@ -16,6 +15,7 @@ source(CustomContracts.dir .. "gui/MenuCreateContract.lua")
 source(CustomContracts.dir .. "gui/ContractsRenderer.lua")
 source(CustomContracts.dir .. "scripts/events/SyncContractsEvent.lua")
 source(CustomContracts.dir .. "scripts/events/InitialClientStateEvent.lua")
+source(CustomContracts.dir .. "scripts/util/DateUtil.lua")
 
 function CustomContracts:loadMap()
   g_currentMission.customContracts = self
@@ -47,6 +47,48 @@ function CustomContracts:loadMap()
   g_messageCenter:subscribe(MessageType.PLAYER_FARM_CHANGED, CustomContracts.playerFarmChanged)
 
   self:loadFromXmlFile()
+end
+
+function CustomContracts:update(dt)
+  if not g_currentMission:getIsServer() then
+    return
+  end
+
+  local env = g_currentMission.environment
+  if env == nil then
+    return
+  end
+
+  -- throttle so we don't do anything every frame
+  self._expiryTimer = (self._expiryTimer or 0) + dt
+  if self._expiryTimer < 2000 then
+    return
+  end
+  self._expiryTimer = 0
+
+  local curPeriod = env.currentPeriod or 1
+  local dpp = env.daysPerPeriod or 1
+
+  local curDay = env.currentDayInPeriod or env.currentPeriodDay or 1
+  curDay = math.max(1, math.min(curDay, dpp))
+
+  local dayTimeMs = env.dayTime or 0
+  if dayTimeMs < 60 * 1000 then
+    return
+  end
+
+  if self._lastExpiredCheckPeriod == curPeriod and self._lastExpiredCheckDay == curDay then
+    return
+  end
+  self._lastExpiredCheckPeriod = curPeriod
+  self._lastExpiredCheckDay = curDay
+
+  local mgr = self.ContractManager
+  if mgr ~= nil then
+    if mgr:updateExpiredContracts() then
+      mgr:syncContracts()
+    end
+  end
 end
 
 function CustomContracts:makeIsCustomContractsCheckEnabledPredicate()
@@ -89,7 +131,6 @@ function CustomContracts:saveToXmlFile()
 end
 
 function CustomContracts:sendInitialClientState(connection, user, farm)
-  print("[CustomContracts] Sending initial client state to player")
   connection:sendEvent(InitialClientStateEvent:new())
 end
 
@@ -170,7 +211,6 @@ function CustomContracts:registerMenu()
 end
 
 function CustomContracts:playerFarmChanged()
-  print("[CustomContracts] Player farm changed, updating menus")
   g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
 end
 

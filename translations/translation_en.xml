@@ -16,6 +16,7 @@
     <text name="cc_status_accepted" text="Accepted"/>
     <text name="cc_status_completed" text="Completed"/>
     <text name="cc_status_cancelled" text="Cancelled"/>
+    <text name="cc_status_expired" text="Expired"/>
     <text name="cc_ownedBy" text="Taken By:"/>
     <text name="cc_contract_info_title" text="General information"/>
     <text name="cc_contract_notes_title" text="Notes"/>
