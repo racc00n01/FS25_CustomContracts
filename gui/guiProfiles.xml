@@ -36,6 +36,10 @@
     <position value="8px 4px" />
   </Profile>
 
+  <Profile name="CC_ContractListBg" extends="fs25_secondaryMenuContainerBg">
+    <position value="-30px 10px"/>
+  </Profile>
+
   <Profile name="CC_ContractContent" extends="emptyPanel" value="anchorStretchingYStretchingX">
     <width value="500px"/>
     <position value="460px -40px"/>
@@ -46,11 +50,101 @@
     <size value="1px 0.70"/>
   </Profile>
 
-  <Profile name="CC_ContractFarmName" extends="fs25_contractsContractTitle">
+  <!-- Contract specific content -->
+  <Profile name="CC_ContractTitle" extends="fs25_contractsContractTitle">
     <textSize value="28px"/>
-    <position value="0px 0px"/>
+    <textBold value="true"/>
+    <textColor value="$preset_fs25_colorMainHighlight"/>
+    <position value="0px -30px"/>
+    <textAlignment value="left"/>
+  </Profile>
+
+  <Profile name="CC_ContractTagline" extends="fs25_textDefault" with="anchorTopLeft">
+    <textSize value="18px"/>
+    <textColor value="$preset_fs25_colorMainDefault"/>
+    <position value="0px -10px"/>
+    <textAlignment value="left"/>
+    <textUpperCase value="true"/>
+  </Profile>
+
+  <Profile name="CC_ContractTaglineRight" extends="fs25_textDefault" with="anchorTopRight">
+    <textSize value="18px"/>
+    <textColor value="$preset_fs25_colorMainDefault"/>
+    <textAlignment value="right"/>
+  </Profile>
+
+  <Profile name="CC_ContractOwner" extends="fs25_textGrey" with="anchorTopLeft">
+    <textSize value="18px"/>
     <textBold value="false"/>
     <textColor value="$preset_fs25_colorMainDefault"/>
+    <textAlignment value="left"/>
+  </Profile>
+
+  <Profile name="CC_ContractStatus" extends="fs25_textDefault" with="anchorTopRight">
+    <textSize value="24px"/>
+    <textBold value="false"/>
+    <textColor value="$preset_fs25_colorMainDefault"/>
+    <textAlignment value="right"/>
+    <textUpperCase value="true"/>
+  </Profile>
+
+  <Profile name="CC_ContractReward" extends="fs25_textDefault" with="anchorTopLeft">
+    <textSize value="20px"/>
+    <textBold value="true"/>
+    <textUpperCase value="true"/>
+    <textColor value="$preset_fs25_colorMainHighlighted"/>
+    <textAlignment value="right"/>
+  </Profile>
+
+  <Profile name="CC_ContractFooter" extends="fs25_textDefault" with="anchorTopLeft">
+    <textSize value="16px" />
+    <textBold value="true" />
+    <textColor value="$preset_colorWhite_50" />
+  </Profile>
+
+  <Profile name="CC_ContractFooterRight" extends="CC_ContractFooter" with="anchorTopRight">
+    <textSize value="20px" />
+    <textBold value="true" />
+    <textAlignment value="right" />
+    <textColor value="$preset_fs25_colorMainHighlight" />
+  </Profile>
+
+  <!-- Typestyles -->
+  <Profile name="CC_ContractH6" extends="fs25_textDefault" with="anchorTopLeft">
+    <textSize value="14px"/>
+    <textBold value="true"/>
+    <textUpperCase value="true"/>
+    <textColor value="$preset_fs25_colorMainDefault"/>
+    <textAlignment value="left"/>
+  </Profile>
+
+  <Profile name="CC_ContractBody" extends="fs25_textGrey" with="anchorTopLeft">
+    <textMaxNumLines value="4"/>
+    <textVerticalAlignment value="top"/>
+  </Profile>
+
+  <Profile name="CC_ContractH6Right" extends="CC_ContractH6" with="anchorTopRight"/>
+
+  <Profile name="CC_ContractBodyRight" extends="CC_ContractBody" with="anchorTopRight"/>
+
+  <!-- Input -->
+  <Profile name="CC_ContractInputLabel" extends="baseReference" with="anchorStretchingYLeft">
+    <textBold value="true" />
+    <textAlignment value="left" />
+    <textColor value="$preset_fs25_colorMainLight" />
+    <size value="350px 20px"/>
+    <textSize value="16px"/>
+    <textWrapWidth value="350px"/>
+  </Profile>
+
+  <Profile name="CC_Input" extends="fs25_textInput">
+    <size value="100% 44px"/>
+    <maxCharacters value="9"/>
+  </Profile>
+  <Profile name="CC_InputTextArea" extends="CC_Input">
+    <size value="100% 44px"/>
+    <maxCharacters value="200"/>
+    <textAlignment value="left"/>
   </Profile>
 
   <Profile name="CC_ContractContractorName" extends="fs25_textDefault" with="anchorTopLeft">
@@ -61,23 +155,36 @@
     <position value="0px -70px"/>
   </Profile>
 
-  <Profile name="CC_ContractTitle" extends="fs25_contractsContractTitle">
-    <position value="0px -40px"/>
-  </Profile>
-
   <Profile name="CC_ContractList" extends="emptyPanel" value="anchorStretchingYStretchingX">
     <showHighlights value="true"/>
     <listItemSpacing value="-20px"/>
   </Profile>
 
 
+  <Profile name="CC_FilterSwitcher" extends="fs25_subCategorySelector" with="anchorTopLeft" />
+
+  <Profile name="CC_HeaderLeft" extends="fs25_statisticsHeaderText" with="anchorTopLeft" />
+
   <Profile name="CC_ContractListItem" extends="fs25_subCategoryListItem">
     <width value="400px"/>
   </Profile>
 
+  <Profile name="CC_ContractDetailTableLabel" extends="fs25_textDefault" with="anchorTopCenter">
+    <size value="280px 30px"/>
+    <textBold value="false"/>
+    <textUpperCase value="false"/>
+    <textMaxWidth value="190px"/>
+  </Profile>
+
+  <Profile name="CC_ContractDetailTableValue" extends="fs25_textDefault" with="anchorTopRight">
+    <size value="180px 30px"/>
+    <textMaxWidth value="190px"/>
+    <textUpperCase value="false"/>
+    <textAlignment value="right"/>
+    <textBold value="true"/>
+  </Profile>
 
   <Profile name="CC_ContractListSlider" extends="fs25_listSliderBox" with="anchorTopRight" />
-  <Profile name="rt_slider_box_left" extends="fs25_listSliderBox" with="anchorTopLeft" />
 
   <Profile name="CC_ContractListItemTitle" extends="fs25_subCategoryListItemName">
     <width value="200px"/>
@@ -98,7 +205,7 @@
   </Profile>
 
   <Profile name="CC_ContractDetailColumnLeft" extends="baseReference" with="anchorBottomLeft">
-    <width value="300px"/>
+    <width value="500px"/>
     <position value="200px 0px"/>
   </Profile>
 
@@ -124,190 +231,5 @@
   <Profile name="CC_ContractDetailItemBgAlt" extends="baseReference" with="anchorTopCenter">
     <size value="312px 32px"/>
     <imageColor value="$preset_fs25_colorGrey_20"/>
-  </Profile>
-
-  <Profile name="ose_objectsListContainer" extends="emptyPanel" with="anchorBottomStretchingX pivotBottomLeft">
-    <position value="20px 30px"/>
-    <absoluteSizeOffset value="80px 80px"/>
-  </Profile>
-
-  <Profile name="ose_detailsContainer" extends="baseReference" with="anchorMiddleRight">
-    <size value="680px 860px"/>
-    <position value="0px 0px"/>
-  </Profile>
-
-  <Profile name="ose_detailsIconGradient" extends="baseReference" with="anchorTopCenter">
-    <position value="0px -10px"/>
-    <size value="680px 307px"/>
-    <imageSliceId value="gui.grey_gradient"/>
-  </Profile>
-
-  <Profile name="ose_detailsIcon" extends="baseReference" with="anchorTopCenter">
-    <size value="340px 340px"/>
-    <position value="0px -10px"/>
-    <imageSliceId value="noSlice"/>
-  </Profile>
-
-  <Profile name="ose_detailsIconTitle" extends="fs25_textDefault" with="anchorTopCenter">
-    <position value="0px -360px"/>
-    <width value="450px"/>
-    <textAlignment value="center"/>
-    <textMaxWidth value="450px"/>
-    <textSize value="32px"/>
-    <textMaxNumLines value="2"/>
-    <textUpperCase value="true"/>
-  </Profile>
-
-  <Profile name="ose_detailsTitle" extends="fs25_textDefault" with="anchorTopCenter">
-    <size value="280px 30px"/>
-    <textBold value="false"/>
-    <textUpperCase value="false"/>
-    <textMaxWidth value="190px"/>
-  </Profile>
-
-  <Profile name="ose_detailsValue" extends="fs25_textDefault" with="anchorTopRight">
-    <size value="180px 30px"/>
-    <textMaxWidth value="190px"/>
-    <textUpperCase value="false"/>
-    <textAlignment value="right"/>
-    <textBold value="true"/>
-  </Profile>
-
-  <Profile name="ose_separator" extends="fs25_lineSeparatorTop">
-    <size value="730px 1dp"/>
-    <absoluteSizeOffset value="-10px 0px"/>
-    <imageColor value="$preset_fs25_colorGrey"/>
-  </Profile>
-
-
-
-
-
-  <Profile name="rtLabelTopLeft" extends="fs25_statisticsHeaderText" with="anchorTopLeft" />
-  <Profile name="rtTableHeader" extends="baseReference">
-    <imageColor value="0 0 0 0" />
-    <textFocusedColor value="$preset_fs25_colorMainHighlight" />
-    <textHighlightedColor value="$preset_fs25_colorMainHighlight" />
-    <textSize value="16px" />
-    <textBold value="true" />
-    <textUpperCase value="true" />
-    <textColor value="$preset_colorWhite_50" />
-    <textAlignment value="left" />
-    <textDisabledColor value="$preset_colorDisabled" />
-  </Profile>
-  <Profile name="rtTableHeaderRight" extends="rtTableHeader">
-    <textAlignment value="right" />
-  </Profile>
-  <Profile name="rtTableHeaderCenter" extends="rtTableHeader">
-    <textAlignment value="center" />
-  </Profile>
-  <Profile name="rtTableListItem" extends="baseReference" with="anchorTopStretchingX alternating">
-    <height value="32px"/>
-    <imageColor value="$preset_fs25_colorGrey" />
-    <imageSelectedColor value="$preset_fs25_colorMainHighlight" />
-    <alternateBackgroundColor value="$preset_fs25_colorGreyDark_50" />
-  </Profile>
-  <Profile name="rtListRowCellLeft" extends="baseReference" with="anchorStretchingYLeft">
-    <textBold value="false" />
-    <textSize value="16px" />
-    <textAlignment value="left" />
-    <textColor value="$preset_fs25_colorMainLight" />
-    <textSelectedColor value="$preset_fs25_colorMainDark" />
-    <textDisabledColor value="$preset_colorDisabled" />
-  </Profile>
-  <Profile name="rtListRowCellCenter" extends="baseReference" with="anchorStretchingYLeft">
-    <textBold value="false" />
-    <textSize value="16px" />
-    <textAlignment value="center" />
-    <textColor value="$preset_fs25_colorMainLight" />
-    <textSelectedColor value="$preset_fs25_colorMainDark" />
-    <textDisabledColor value="$preset_colorDisabled" />
-  </Profile>
-  <Profile name="rtListRowCellRight" extends="rtListRowCellLeft">
-    <textBold value="false" />
-    <textSize value="16px" />
-    <textAlignment value="right" />
-    <textColor value="$preset_fs25_colorMainLight" />
-    <textSelectedColor value="$preset_fs25_colorMainDark" />
-    <textDisabledColor value="$preset_colorDisabled" />
-  </Profile>
-  <Profile name="rt_header_top_center" extends="fs25_statisticsHeaderText" with="anchorTopCenter" />
-  <Profile name="rt_header_top_left" extends="fs25_statisticsHeaderText" with="anchorTopLeft" />
-  <Profile name="rt_header_top_left_l" extends="fs25_statisticsHeaderText" with="anchorTopLeft">
-    <textSize value="20px" />
-  </Profile>
-  <Profile name="rt_table" extends="emptyPanel" with="anchorStretchingYLeft pivotTopLeft" />
-  <Profile name="rt_slider_box" extends="fs25_listSliderBox" with="anchorTopRight" />
-  <Profile name="rt_slider_box_right" extends="fs25_listSliderBox" with="anchorTopRight" />
-  <Profile name="rt_scheme_display_switcher" extends="fs25_subCategorySelector" with="anchorTopLeft" />
-  <Profile name="rt_scheme_policy_info" extends="fs25_textGrey" with="anchorTopLeft">
-    <textMaxNumLines value="4"/>
-    <textVerticalAlignment value="top"/>
-  </Profile>
-  <Profile name="taskListMenuHeaderIcon" extends="baseReference" with="anchorMiddleCenter">
-    <imageSliceId value="gui.icon_ingameMenu_contracts" />
-    <imageColor value="$preset_fs25_colorMainDark" />
-  </Profile>
-  <Profile name="taskListHeader" extends="baseReference">
-    <imageColor value="0 0 0 0" />
-    <textFocusedColor value="$preset_fs25_colorMainHighlight" />
-    <textHighlightedColor value="$preset_fs25_colorMainHighlight" />
-    <textSize value="16px" />
-    <textBold value="true" />
-    <textUpperCase value="true" />
-    <textColor value="$preset_colorWhite_50" />
-    <textAlignment value="left" />
-    <textDisabledColor value="$preset_colorDisabled" />
-  </Profile>
-  <Profile name="taskListDueNowText" extends="fs25_statisticsHeaderText" with="anchorTopLeft" />
-  <Profile name="taskListNoUpcomingText" extends="fs25_statisticsHeaderText" with="anchorTopCenter" />
-  <Profile name="taskListIntroText" extends="baseReference" with="anchorTopLeft">
-    <imageColor value="0 0 0 0" />
-    <textFocusedColor value="$preset_fs25_colorMainHighlight" />
-    <textHighlightedColor value="$preset_fs25_colorMainHighlight" />
-    <textSize value="18px" />
-    <textColor value="$preset_colorWhite_50" />
-    <textAlignment value="left" />
-  </Profile>
-  <Profile name="taskListHeaderRight" extends="baseReference">
-    <imageColor value="0 0 0 0" />
-    <textFocusedColor value="$preset_fs25_colorMainHighlight" />
-    <textHighlightedColor value="$preset_fs25_colorMainHighlight" />
-    <textSize value="16px" />
-    <textBold value="true" />
-    <textUpperCase value="true" />
-    <textColor value="$preset_colorWhite_50" />
-    <textAlignment value="right" />
-    <textDisabledColor value="$preset_colorDisabled" />
-  </Profile>
-  <Profile name="taskListTable" extends="emptyPanel" with="anchorStretchingYLeft pivotTopLeft" />
-  <Profile name="taskListListItem" extends="baseReference" with="anchorTopStretchingX alternating">
-    <height value="32px"/>
-    <imageColor value="$preset_fs25_colorGrey" />
-    <imageSelectedColor value="$preset_fs25_colorMainHighlight" />
-    <alternateBackgroundColor value="$preset_fs25_colorGreyDark_50" />
-  </Profile>
-  <Profile name="taskListRowCellLeft" extends="baseReference" with="anchorStretchingYLeft">
-    <textBold value="false" />
-    <textSize value="15px" />
-    <textAlignment value="left" />
-    <textColor value="$preset_fs25_colorMainLight" />
-    <textSelectedColor value="$preset_fs25_colorMainDark" />
-    <textDisabledColor value="$preset_colorDisabled" />
-  </Profile>
-  <Profile name="taskListRowCellRight" extends="taskListRowCellLeft">
-    <textAlignment value="right" />
-  </Profile>
-  <Profile name="taskListGroupsSliderBox" extends="fs25_listSliderBox" with="anchorTopRight" />
-  <Profile name="taskListpricesMonthText" extends="fs25_pricesMonthText">
-    <width value="122px" />
-  </Profile>
-  <Profile name="customContractsLabelText" extends="baseReference" with="anchorStretchingYLeft">
-    <textBold value="true" />
-    <textAlignment value="left" />
-    <textColor value="$preset_fs25_colorMainLight" />
-    <size value="350px 20px"/>
-    <textSize value="16px"/>
-    <textWrapWidth value="350px"/>
   </Profile>
 </GUIProfiles>

@@ -14,28 +14,42 @@
         <BoxLayout flowDirection="vertical" size="435px 400px" elementSpacing="5px" extends="emptyPanel" with="anchorTopLeft">
 
           <!-- Field -->
-          <Text text="Field ID" profile="customContractsLabelText"/>
+          <Text text="Field ID" profile="CC_ContractInputLabel"/>
           <MultiTextOption id="fieldSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onFieldSelectChange">
             <Text profile="fs25_multiTextOptionText" name="text" />
           </MultiTextOption>
 
           <!-- Work type -->
-          <Text text="Work Type" profile="customContractsLabelText" />
+          <Text text="Work Type" profile="CC_ContractInputLabel" />
           <MultiTextOption id="workTypeSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onGroupSelectChange">
             <Text profile="fs25_multiTextOptionText" name="text" />
           </MultiTextOption>
 
           <!-- Reward -->
-          <Text text="Reward (€)" profile="customContractsLabelText"/>
-          <TextInput profile="CC_dialogInput" id="rewardInput" onEnterPressed="onEnterPressed" onTextChanged="onTextChanged" enterWhenClickOutside="false">
+          <Text text="Reward (€)" profile="CC_ContractInputLabel"/>
+          <TextInput profile="CC_Input" id="rewardInput" onEnterPressed="onEnterPressed" onTextChanged="onTextChanged" enterWhenClickOutside="false">
             <ThreePartBitmap profile="fs25_textInputBg" absoluteSizeOffset="0px 0px"/>
           </TextInput>
 
           <!-- Description -->
-          <Text text="Description (optional)" profile="customContractsLabelText" />
-          <TextInput profile="CC_dialogInputTextArea" id="descriptionInput" onEnterPressed="onEnterPressed" onTextChanged="onTextChanged" enterWhenClickOutside="false">
+          <Text text="Description (optional)" profile="CC_ContractInputLabel" />
+          <TextInput profile="CC_InputTextArea" id="descriptionInput" onEnterPressed="onEnterPressed" onTextChanged="onTextChanged" enterWhenClickOutside="false">
             <ThreePartBitmap profile="fs25_textInputBg" absoluteSizeOffset="0px 0px"/>
           </TextInput>
+
+          <!-- Start date -->
+          <Text text="Start date" profile="CC_ContractInputLabel" />
+          <MultiTextOption id="startDateSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onStartDateSelectChange">
+            <Text profile="fs25_multiTextOptionText" name="text" />
+          </MultiTextOption>
+
+
+          <!-- Due date -->
+          <Text text="Due date" profile="CC_ContractInputLabel" />
+          <MultiTextOption id="dueDateSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onDueDateSelectChange">
+            <Text profile="fs25_multiTextOptionText" name="text" />
+          </MultiTextOption>
+
 
         </BoxLayout>
       </BoxLayout>
@@ -48,14 +62,6 @@
   </GuiElement>
 
   <GUIProfiles>
-    <Profile name="CC_dialogInput" extends="fs25_textInput">
-      <size value="100% 44px"/>
-      <maxCharacters value="9"/>
-    </Profile>
-    <Profile name="CC_dialogInputTextArea" extends="CC_dialogInput">
-      <size value="100% 44px"/>
-      <maxCharacters value="200"/>
-      <textAlignment value="left"/>
-    </Profile>
+
   </GUIProfiles>
 </GUI>
