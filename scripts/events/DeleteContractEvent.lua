@@ -1,15 +1,20 @@
+--
+-- FS25 CustomContracts
+--
+-- @Author: Racc00n
+-- @Version: 0.0.1.1
+--
+
 DeleteContractEvent = {}
 local DeleteContractEvent_mt = Class(DeleteContractEvent, Event)
 
 InitEventClass(DeleteContractEvent, "DeleteContractEvent")
 
--- REQUIRED
 function DeleteContractEvent.emptyNew()
   local self = Event.new(DeleteContractEvent_mt)
   return self
 end
 
--- Used by client UI
 function DeleteContractEvent.new(contractId, farmId)
   local self = DeleteContractEvent.emptyNew()
   self.contractId = contractId

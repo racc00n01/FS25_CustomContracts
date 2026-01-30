@@ -1,15 +1,20 @@
+--
+-- FS25 CustomContracts
+--
+-- @Author: Racc00n
+-- @Version: 0.0.1.1
+--
+
 CreateContractEvent = {}
 local CreateContractEvent_mt = Class(CreateContractEvent, Event)
 
 InitEventClass(CreateContractEvent, "CreateContractEvent")
 
--- REQUIRED by Giants networking
 function CreateContractEvent.emptyNew()
   local self = Event.new(CreateContractEvent_mt)
   return self
 end
 
--- Used by client UI
 function CreateContractEvent.new(payload, farmId)
   local self = CreateContractEvent.emptyNew()
   self.payload = payload

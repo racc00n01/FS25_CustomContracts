@@ -2,8 +2,7 @@
 -- FS25 CustomContracts
 --
 -- @Author: Racc00n
--- @Date: -
--- @Version: 0.0.0.1
+-- @Version: 0.0.1.1
 --
 
 CustomContracts = {}
@@ -62,7 +61,7 @@ function CustomContracts:update(dt)
 
   -- throttle so we don't do anything every frame
   self._expiryTimer = (self._expiryTimer or 0) + dt
-  if self._expiryTimer < 2000 then -- check every ~2 seconds
+  if self._expiryTimer < 2000 then
     return
   end
   self._expiryTimer = 0
@@ -70,18 +69,14 @@ function CustomContracts:update(dt)
   local curPeriod = env.currentPeriod or 1
   local dpp = env.daysPerPeriod or 1
 
-  -- Day within period (defensive)
   local curDay = env.currentDayInPeriod or env.currentPeriodDay or 1
   curDay = math.max(1, math.min(curDay, dpp))
 
-  -- Time-of-day gate: only do this after 00:01
-  -- dayTime is usually ms since midnight in Giants environments
   local dayTimeMs = env.dayTime or 0
   if dayTimeMs < 60 * 1000 then
     return
   end
 
-  -- Only process once per new (period,day)
   if self._lastExpiredCheckPeriod == curPeriod and self._lastExpiredCheckDay == curDay then
     return
   end

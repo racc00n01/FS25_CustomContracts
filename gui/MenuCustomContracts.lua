@@ -1,3 +1,10 @@
+--
+-- FS25 CustomContracts
+--
+-- @Author: Racc00n
+-- @Version: 0.0.1.1
+--
+
 MenuCustomContracts = {}
 MenuCustomContracts._mt = Class(MenuCustomContracts, TabbedMenuFrameElement)
 
@@ -52,13 +59,6 @@ function MenuCustomContracts:displaySelectedContract()
         self.contractFarmName:setText("-")
         self.contractWorkType:setText("-")
       end
-
-      -- local contractorFarm = g_farmManager:getFarmById(contract.contractorFarmId)
-      -- if contractorFarm ~= nil then
-      --   self.contractContractorValue:setText(contractorFarm.name)
-      -- else
-      --   self.contractContractorValue:setText("-")
-      -- end
 
       self.contractRewardValue:setText(
         g_i18n:formatMoney(contract.reward, 0, true, true)
@@ -198,10 +198,9 @@ function MenuCustomContracts:initialize()
   }
 
   self.menuButtonInfo[MenuCustomContracts.SUB_CATEGORY.CONTRACTS] = {
-    self.btnBack -- will be overridden dynamically
+    self.btnBack
   }
 
-  -- Any other subcategory → Back only
   for _, subCategory in pairs(MenuCustomContracts.SUB_CATEGORY) do
     if subCategory ~= MenuCustomContracts.SUB_CATEGORY.CONTRACTS then
       self.menuButtonInfo[subCategory] = {
@@ -258,7 +257,6 @@ end
 function MenuCustomContracts:updateSubCategoryPages(subCategoryIndex)
   self:updateContent()
   self:setMenuButtonInfoDirty()
-  -- FocusManager:setFocus(self.subCategoryPaging)
 end
 
 function MenuCustomContracts:onSwitchContractDisplay()
@@ -312,7 +310,6 @@ end
 function MenuCustomContracts:updateMenuButtons()
   local subCategory = self.subCategoryPaging:getState()
 
-  -- Not on Contracts page → Back only
   if subCategory ~= MenuCustomContracts.SUB_CATEGORY.CONTRACTS then
     self.menuButtonInfo[subCategory] = { self.btnBack }
     self:setMenuButtonInfoDirty()
@@ -383,7 +380,6 @@ function MenuCustomContracts:onAcceptContract()
     return
   end
 
-  -- Use in game YesNoDialog to confirm accepting the contract
   YesNoDialog.show(
     function(_, yes)
       if yes then
@@ -452,7 +448,6 @@ function MenuCustomContracts:onDeleteContract()
 end
 
 function MenuCustomContracts:periodToMonth(period)
-  -- Your confirmed mapping: Period 1 = March
   return ((period + 1) % 12) + 1
 end
 

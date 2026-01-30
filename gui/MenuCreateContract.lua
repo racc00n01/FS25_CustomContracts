@@ -1,3 +1,10 @@
+--
+-- FS25 CustomContracts
+--
+-- @Author: Racc00n
+-- @Version: 0.0.1.1
+--
+
 MenuCreateContract = {}
 local MenuCreateContract_mt = Class(MenuCreateContract, MessageDialog)
 
@@ -39,7 +46,6 @@ end
 function MenuCreateContract:onOpen()
   MenuCreateContract:superClass().onOpen(self)
 
-  -- Intialize worktype list to the GUI
   local workTypeTexts = {}
 
   for _, workType in ipairs(CustomContractWorkTypes) do
@@ -49,7 +55,6 @@ function MenuCreateContract:onOpen()
   self.workTypeSelector:setTexts(workTypeTexts)
   self.workTypeSelector:setState(1, false)
 
-  -- Initialize field list to the GUI
   local fieldIds = {}
 
   local farmId = g_currentMission:getFarmId()
@@ -75,7 +80,6 @@ function MenuCreateContract:onOpen()
   self.fieldSelector:setTexts(fieldTexts)
   self.fieldSelector:setState(1, false)
 
-  -- Start/due date dropdowns
   self:fillMonthMultiTextOption(self.startDateSelector, "startDateValues")
   self:fillMonthMultiTextOption(self.dueDateSelector, "dueDateValues")
 
@@ -123,7 +127,6 @@ function MenuCreateContract:onConfirm(sender)
     return
   end
 
-  -- Resolve start/due selection -> period/day
   local startIdx = self.selectedStartDateIndex or 1
   local dueIdx   = self.selectedDueDateIndex or 1
 
@@ -135,7 +138,6 @@ function MenuCreateContract:onConfirm(sender)
     return
   end
 
-  -- (Optional) validate due >= start (same list timeline, so index compare is enough)
   if dueIdx < startIdx then
     InfoDialog.show("Due date cannot be before start date")
     return
@@ -177,10 +179,8 @@ function MenuCreateContract:buildMonthOptionData()
     return {}, {}
   end
 
-  -- In Giants env, currentPeriod is usually 1..12 (month index)
   local currentPeriod = env.currentPeriod
 
-  -- Days per month / period (1,2,3... depending on the setting)
   local daysPerPeriod = env.daysPerPeriod or 1
 
   local texts = {}
@@ -217,7 +217,6 @@ end
 function MenuCreateContract:fillMonthMultiTextOption(multiTextOption, valuesFieldName)
   local texts, values = self:buildMonthOptionData()
 
-  -- store mapping for later submit
   self[valuesFieldName] = values
 
   multiTextOption:setTexts(texts)

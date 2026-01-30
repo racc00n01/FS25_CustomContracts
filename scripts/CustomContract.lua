@@ -2,9 +2,9 @@
 -- FS25 CustomContracts
 --
 -- @Author: Racc00n
--- @Date: -
--- @Version: 0.0.0.1
+-- @Version: 0.0.1.1
 --
+
 CustomContract = {}
 CustomContract.dir = g_currentModDirectory
 CustomContract.modName = g_currentModName

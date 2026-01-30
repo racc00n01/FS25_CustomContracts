@@ -2,8 +2,7 @@
 -- FS25 CustomContracts
 --
 -- @Author: Racc00n
--- @Date: -
--- @Version: 0.0.0.1
+-- @Version: 0.0.1.1
 --
 
 CustomContractManager    = {}
@@ -362,11 +361,9 @@ function CustomContractManager:isPastDue(contract, curPeriod, curDay, dpp)
   local curOrd = toOrdinal(curPeriod, curDay, dpp)
   local dueOrd = toOrdinal(contract.duePeriod, contract.dueDay, dpp)
 
-  -- Optional support if you stored dueYearOffset (0/1)
   local yearLen = 12 * dpp
   if (contract.dueYearOffset or 0) > 0 then
     dueOrd = dueOrd + yearLen
-    -- if we are early in the year, current also needs shifting to compare properly
     if curPeriod <= contract.duePeriod then
       curOrd = curOrd + yearLen
     end

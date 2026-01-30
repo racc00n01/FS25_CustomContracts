@@ -1,15 +1,20 @@
+--
+-- FS25 CustomContracts
+--
+-- @Author: Racc00n
+-- @Version: 0.0.1.1
+--
+
 CompleteContractEvent = {}
 local CompleteContractEvent_mt = Class(CompleteContractEvent, Event)
 
 InitEventClass(CompleteContractEvent, "CompleteContractEvent")
 
--- REQUIRED
 function CompleteContractEvent.emptyNew()
   local self = Event.new(CompleteContractEvent_mt)
   return self
 end
 
--- Used by client UI
 function CompleteContractEvent.new(contractId, farmId)
   local self = CompleteContractEvent.emptyNew()
   self.farmId = farmId
