@@ -1,3 +1,10 @@
+--
+-- FS25 CustomContracts
+--
+-- @Author: Racc00n
+-- @Version: 0.0.1.1
+--
+
 MenuCreateContract = {}
 local MenuCreateContract_mt = Class(MenuCreateContract, MessageDialog)
 
@@ -39,7 +46,6 @@ end
 function MenuCreateContract:onOpen()
   MenuCreateContract:superClass().onOpen(self)
 
-  -- Intialize worktype list to the GUI
   local workTypeTexts = {}
 
   for _, workType in ipairs(CustomContractWorkTypes) do
@@ -49,7 +55,6 @@ function MenuCreateContract:onOpen()
   self.workTypeSelector:setTexts(workTypeTexts)
   self.workTypeSelector:setState(1, false)
 
-  -- Initialize field list to the GUI
   local fieldIds = {}
 
   local farmId = g_currentMission:getFarmId()
@@ -75,25 +80,38 @@ function MenuCreateContract:onOpen()
   self.fieldSelector:setTexts(fieldTexts)
   self.fieldSelector:setState(1, false)
 
-  self.selectedFieldIndex = 1
+  self:fillMonthMultiTextOption(self.startDateSelector, "startDateValues")
+  self:fillMonthMultiTextOption(self.dueDateSelector, "dueDateValues")
+
+  self.selectedStartDateIndex = 1
+  self.selectedDueDateIndex   = 1
+
+  self.selectedFieldIndex     = 1
 end
 
 function MenuCreateContract:onClose()
   MenuCreateContract:superClass().onClose(self)
 end
 
+function MenuCreateContract:onFieldSelectChange(state)
+  self.selectedFieldIndex = state
+end
+
 function MenuCreateContract:onGroupSelectChange(state)
   self.selectedWorkTypeIndex = state
 end
 
-function MenuCreateContract:onFieldSelectChange(state)
-  self.selectedFieldIndex = state
+function MenuCreateContract:onStartDateSelectChange(state)
+  self.selectedStartDateIndex = state
+end
+
+function MenuCreateContract:onDueDateSelectChange(state)
+  self.selectedDueDateIndex = state
 end
 
 -- XML onClick handlers
 function MenuCreateContract:onConfirm(sender)
   if g_client == nil then
-    print("CreateContract blocked: not running on client")
     return
   end
 
@@ -109,19 +127,32 @@ function MenuCreateContract:onConfirm(sender)
     return
   end
 
+  local startIdx = self.selectedStartDateIndex or 1
+  local dueIdx   = self.selectedDueDateIndex or 1
+
+  local startV   = self.startDateValues[self.selectedStartDateIndex or 1]
+  local dueV     = self.dueDateValues[self.selectedDueDateIndex or 1]
+
+  if startV == nil or dueV == nil then
+    InfoDialog.show("Please select start and due date")
+    return
+  end
+
+  if dueIdx < startIdx then
+    InfoDialog.show("Due date cannot be before start date")
+    return
+  end
+
   local contract = {
     fieldId     = fieldId,
     workType    = workType,
     reward      = reward,
-    description = description or "-"
+    description = description or "-",
+    startPeriod = startV.period,
+    startDay    = startV.day,
+    duePeriod   = dueV.period,
+    dueDay      = dueV.day
   }
-
-  print(
-    "Create button clicked",
-    "g_server:", g_server ~= nil,
-    "g_client:", g_client ~= nil,
-    "localFarm:", g_currentMission:getFarmId()
-  )
 
   g_client:getServerConnection():sendEvent(
     CreateContractEvent.new(contract, g_currentMission:getFarmId())
@@ -140,4 +171,54 @@ function MenuCreateContract:retrieveFieldInfo(fieldId)
   if field == nil then
     return nil
   end
+end
+
+function MenuCreateContract:buildMonthOptionData()
+  local env = g_currentMission.environment
+  if env == nil then
+    return {}, {}
+  end
+
+  local currentPeriod = env.currentPeriod
+
+  local daysPerPeriod = env.daysPerPeriod or 1
+
+  local texts = {}
+  local values = {}
+
+  for offset = 0, 11 do
+    local period = DateUtil.wrapPeriod(currentPeriod + offset)
+    local month = DateUtil.periodToMonth(period)
+
+    if daysPerPeriod > 1 then
+      for day = 1, daysPerPeriod do
+        table.insert(texts,
+          string.format("%s %d", DateUtil.getMonthName(month), day)
+        )
+        table.insert(values, {
+          period = period,
+          month  = month,
+          day    = day
+        })
+      end
+    else
+      table.insert(texts, DateUtil.getMonthName(month))
+      table.insert(values, {
+        period = period,
+        month  = month,
+        day    = 1
+      })
+    end
+  end
+
+  return texts, values
+end
+
+function MenuCreateContract:fillMonthMultiTextOption(multiTextOption, valuesFieldName)
+  local texts, values = self:buildMonthOptionData()
+
+  self[valuesFieldName] = values
+
+  multiTextOption:setTexts(texts)
+  multiTextOption:setState(1, true)
 end

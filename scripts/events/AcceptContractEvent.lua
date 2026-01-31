@@ -1,15 +1,20 @@
+--
+-- FS25 CustomContracts
+--
+-- @Author: Racc00n
+-- @Version: 0.0.1.1
+--
+
 AcceptContractEvent = {}
 local AcceptContractEvent_mt = Class(AcceptContractEvent, Event)
 
 InitEventClass(AcceptContractEvent, "AcceptContractEvent")
 
--- REQUIRED
 function AcceptContractEvent.emptyNew()
     local self = Event.new(AcceptContractEvent_mt)
     return self
 end
 
--- Used by client UI
 function AcceptContractEvent.new(contractId, farmId)
     local self = AcceptContractEvent.emptyNew()
     self.contractId = contractId

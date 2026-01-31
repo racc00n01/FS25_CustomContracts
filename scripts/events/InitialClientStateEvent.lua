@@ -1,3 +1,10 @@
+--
+-- FS25 CustomContracts
+--
+-- @Author: Racc00n
+-- @Version: 0.0.1.1
+--
+
 InitialClientStateEvent = {}
 local InitialClientStateEvent_mt = Class(InitialClientStateEvent, Event)
 

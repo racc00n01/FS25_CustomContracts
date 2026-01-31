@@ -1,15 +1,20 @@
+--
+-- FS25 CustomContracts
+--
+-- @Author: Racc00n
+-- @Version: 0.0.1.1
+--
+
 CreateContractEvent = {}
 local CreateContractEvent_mt = Class(CreateContractEvent, Event)
 
 InitEventClass(CreateContractEvent, "CreateContractEvent")
 
--- REQUIRED by Giants networking
 function CreateContractEvent.emptyNew()
   local self = Event.new(CreateContractEvent_mt)
   return self
 end
 
--- Used by client UI
 function CreateContractEvent.new(payload, farmId)
   local self = CreateContractEvent.emptyNew()
   self.payload = payload
@@ -23,6 +28,10 @@ function CreateContractEvent:writeStream(streamId, connection)
   streamWriteString(streamId, self.payload.workType)
   streamWriteInt32(streamId, self.payload.reward)
   streamWriteString(streamId, self.payload.description)
+  streamWriteInt32(streamId, self.payload.startPeriod)
+  streamWriteInt32(streamId, self.payload.startDay)
+  streamWriteInt32(streamId, self.payload.duePeriod)
+  streamWriteInt32(streamId, self.payload.dueDay)
 end
 
 function CreateContractEvent:readStream(streamId, connection)
@@ -31,7 +40,11 @@ function CreateContractEvent:readStream(streamId, connection)
     fieldId     = streamReadInt32(streamId),
     workType    = streamReadString(streamId),
     reward      = streamReadInt32(streamId),
-    description = streamReadString(streamId)
+    description = streamReadString(streamId),
+    startPeriod = streamReadInt32(streamId),
+    startDay    = streamReadInt32(streamId),
+    duePeriod   = streamReadInt32(streamId),
+    dueDay      = streamReadInt32(streamId)
   }
 
   self:run(connection)
@@ -44,7 +57,6 @@ function CreateContractEvent:run(connection)
 
   local farmId = self.farmId
   if farmId == nil or farmId == FarmManager.SPECTATOR_FARM_ID then
-    print("[CustomContracts] Invalid farmId in CreateContractEvent: ", tostring(farmId))
     return
   end
 

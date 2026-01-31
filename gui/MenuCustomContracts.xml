@@ -26,65 +26,67 @@
       <GuiElement position="0px -20px">
 
         <ThreePartBitmap profile="fs25_primaryMenuContainerBg">
-          <MultiTextOption profile="rt_scheme_display_switcher" id="contractDisplaySwitcher" onClick="onSwitchContractDisplay" size="380px 32px" position="20px -40px"/>
-          <GuiElement id="contractsContainer">
-            <SmoothList id="contractsTable" profile="CC_ContractList" position="20px -40px" size="400px 690px">
-              <ListItem profile="fs25_subCategoryListItem">
-                <Bitmap profile="fs25_subCategoryListItemIcon" name="icon"/>
-                <Text profile="CC_ContractListItemTitle" name="field"/>
-                <Text profile="CC_ContractListItemReward" name="reward"/>
-              </ListItem>
-            </SmoothList>
+          <Bitmap profile="fs25_menuContainerArrow"/>
+          <GuiElement profile="fs25_subCategoryContainer">
+            <MultiTextOption profile="CC_FilterSwitcher" id="contractDisplaySwitcher" onClick="onSwitchContractDisplay" size="380px 32px" position="20px -40px"/>
+            <BoxLayout profile="fs25_subCategorySelectorBox">
+              <RoundCorner profile="fs25_subCategorySelectorDot"/>
+              <RoundCorner profile="fs25_subCategorySelectorDot"/>
+              <RoundCorner profile="fs25_subCategorySelectorDot"/>
+            </BoxLayout>
+            <GuiElement profile="fs25_subCategoryListContainer" id="contractsContainer">
+              <Bitmap profile="fs25_subCategoryStartClipper" name="startClipper"/>
+              <Bitmap profile="fs25_subCategoryStopClipper" name="endClipper"/>
 
-            <ThreePartBitmap profile="rt_slider_box_left" position="440px -40px" size="6px 690px">
-              <Slider profile="fs25_listSlider" dataElementId="contractsTable" />
-            </ThreePartBitmap>
+              <SmoothList id="contractsTable" profile="CC_ContractList" startClipperElementName="startClipper" endClipperElementName="endClipper">
+                <ListItem profile="fs25_subCategoryListItem">
+                  <Bitmap profile="fs25_subCategoryListItemIcon" name="farmIcon"/>
+                  <Text profile="CC_ContractListItemTitle" name="field"/>
+                  <Text profile="CC_ContractListItemReward" name="reward"/>
+                </ListItem>
+              </SmoothList>
+
+              <ThreePartBitmap profile="fs25_subCategoryListSliderBox">
+                <Slider profile="fs25_listSlider" dataElementId="contractsTable" />
+              </ThreePartBitmap>
+            </GuiElement>
           </GuiElement>
         </ThreePartBitmap>
 
         <GuiElement id="noContractsContainer">
-          <Text profile="rt_header_top_left" text="$l10n_ui_noShopItems" position="0px -150px" width="350px" />
+          <Text profile="CC_HeaderLeft" text="$l10n_ui_noShopItems" position="0px -150px" width="350px" />
           <ThreePartBitmap profile="fs25_contractsContentSeparator"/>
         </GuiElement>
 
-        <Text id="noSelectedContractText" profile="rt_header_top_left" text="No contract selected" position="460px -230px" width="500px" />
-        <GuiElement id="contractsInfoContainer" profile="CC_ContractContent">
-          <GuiElement profile="CC_ContractDetailColumnLeft">
+        <Text id="noSelectedContractText" profile="CC_HeaderLeft" text="No contract selected" position="460px -230px" width="500px" />
+        <GuiElement id="contractsInfoContainer" width="1087px" position="460px -40px">
 
-            <Text profile="CC_ContractFarmName" id="contractFarmName"/>
-            <Text profile="CC_ContractTitle" id="contractWorkType"/>
+          <Text profile="CC_ContractTagline" id="contractId" position="0px -10px"/>
+          <Text profile="CC_ContractTitle" id="contractWorkType" position="0px -30px"/>
+          <Text profile="CC_ContractOwner" id="contractFarmName" position="0px -70px"/>
+          <Text profile="CC_ContractTaglineRight" text="Current status:" position="0px -20px"/>
+          <Text profile="CC_ContractStatus" id="contractStatusValue" position="0px -60px"/>
 
-            <GuiElement profile="CC_ContractDetailItem">
-              <Text profile="fs25_contractsContentTitle" position="-20px -250px" text="Contract information"/>
-              <Text profile="fs25_contractsContractInfo" position="-40px -280px" id="contractDescriptionValue" name="description"/>
-            </GuiElement>
+          <Text profile="CC_ContractH6" text="Start:" position="300px -30px"/>
+          <Text profile="CC_ContractTagline" id="contractStartDateValue" position="300px -50px"/>
+
+          <Text profile="CC_ContractH6" text="Due:" position="500px -30px"/>
+          <Text profile="CC_ContractTagline" id="contractDueDateValue" position="500px -50px"/>
+
+          <ThreePartBitmap profile="fs25_lineSeparatorTop" position="0px -120px"/>
+
+          <Text profile="CC_ContractH6" position="0px -150px" text="$l10n_cc_contract_info_title"/>
+          <Text profile="CC_ContractBody" position="0px -180px" id="contractDescriptionValue"/>
 
 
-            <Bitmap profile="CC_ContractDetailItemBg" position="-6px -370px"/>
-            <Bitmap profile="CC_ContractDetailItemBgAlt" position="-6px -400px"/>
-            <Bitmap profile="CC_ContractDetailItemBg" position="-6px -430px"/>
-            <Bitmap profile="CC_ContractDetailItemBgAlt" position="-6px -460px"/>
-            <Bitmap profile="CC_ContractDetailItemBg" position="-6px -490px"/>
-            <Bitmap profile="CC_ContractDetailItemBgAlt" position="-6px -520px"/>
+          <Text profile="CC_ContractH6Right" position="-150px -150px" with="anchorTopRight" text="$l10n_cc_contract_notes_title"/>
+          <Text profile="CC_ContractBodyRight" position="-150px -180px" with="anchorTopRight" id="contractNotesValue"/>
 
-            <Text profile="ose_detailsTitle" position="-15px -370px" id="contractContractorLabel" text="$l10n_cc_contract_contractor_label"/>
-            <Text profile="ose_detailsValue" position="-15px -370px" id="contractContractorValue" name="contractor" textUpperCase="false"/>
+          <Text profile="CC_ContractBody" width="800px" position="0px -560px" text="$l10n_cc_contract_disclaimer"/>
 
-            <Text profile="ose_detailsTitle" position="-15px -400px" id="contractStatusLabel" text="$l10n_cc_contract_status_label"/>
-            <Text profile="ose_detailsValue" position="-15px -400px" id="contractStatusValue" name="status" textUpperCase="false"/>
-
-            <Text profile="ose_detailsTitle" position="-15px -430px" id="contractFieldLabel" text="$l10n_cc_contract_field_label"/>
-            <Text profile="ose_detailsValue" position="-15px -430px" id="contractFieldValue" name="field" textUpperCase="false"/>
-
-            <Text profile="ose_detailsTitle" position="-15px -460px" id="contractWorkTypeLabel" text="$l10n_cc_contract_worktype_label"/>
-            <Text profile="ose_detailsValue" position="-15px -460px" id="contractWorkTypeValue" name="worktype" textUpperCase="false"/>
-
-            <Text profile="ose_detailsTitle" position="-15px -490px" id="contractRewardLabel" text="$l10n_cc_contract_reward_label"/>
-            <Text profile="ose_detailsValue" position="-15px -490px" id="contractRewardValue" name="reward" textUpperCase="false"/>
-
-            <Text profile="ose_detailsTitle" position="-15px -520px" id="contractFieldSizeLabel" text="$l10n_cc_contract_size_label"/>
-            <Text profile="ose_detailsValue" position="-15px -520px" id="contractFieldSizeValue" name="size" textUpperCase="false"/>
-          </GuiElement>
+          <ThreePartBitmap profile="fs25_lineSeparatorTop" position="0px -600px"/>
+          <Text profile="CC_ContractFooter" position="0px -620px" text="Total reward"/>
+          <Text profile="CC_ContractFooterRight" position="0px -620px" id="contractRewardValue"/>
         </GuiElement>
 
       </GuiElement>

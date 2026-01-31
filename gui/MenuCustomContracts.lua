@@ -1,3 +1,10 @@
+--
+-- FS25 CustomContracts
+--
+-- @Author: Racc00n
+-- @Version: 0.0.1.1
+--
+
 MenuCustomContracts = {}
 MenuCustomContracts._mt = Class(MenuCustomContracts, TabbedMenuFrameElement)
 
@@ -42,45 +49,51 @@ function MenuCustomContracts:displaySelectedContract()
       self.contractsInfoContainer:setVisible(true)
       self.noSelectedContractText:setVisible(false)
 
-      -- Field
-      self.contractFieldValue:setText(
-        string.format("Field %d", contract.fieldId)
-      )
-      self.contractFieldSizeValue:setText(
-        string.format("%.2f ha", field.areaHa)
-      )
-
       --Contract info
       local farm = g_farmManager:getFarmById(contract.creatorFarmId)
       if farm ~= nil then
-        self.contractFarmName:setText(farm.name)
+        self.contractId:setText(string.format("Contract #%d", contract.id))
+        self.contractFarmName:setText(string.format("Owned by: %s", farm.name))
         self.contractWorkType:setText(contract.workType)
       else
         self.contractFarmName:setText("-")
         self.contractWorkType:setText("-")
       end
 
-      local contractorFarm = g_farmManager:getFarmById(contract.contractorFarmId)
-      if contractorFarm ~= nil then
-        self.contractContractorValue:setText(contractorFarm.name)
-      else
-        self.contractContractorValue:setText("-")
-      end
-
-      self.contractWorkTypeValue:setText(contract.workType)
-
       self.contractRewardValue:setText(
         g_i18n:formatMoney(contract.reward, 0, true, true)
       )
 
-      self.contractStatusValue:setText(
-        g_i18n:getText("cc_status_" .. string.lower(contract.status))
-        or contract.status
+      local statusText
+
+      if contract.contractorFarmId ~= nil then
+        local contractorFarm = g_farmManager:getFarmById(contract.contractorFarmId)
+
+        if contractorFarm ~= nil then
+          statusText = string.format(
+            "%s: %s",
+            g_i18n:getText("cc_ownedBy"),
+            contractorFarm.name
+          )
+        else
+          statusText = contract.status
+        end
+      else
+        statusText = g_i18n:getText("cc_status_" .. string.lower(contract.status))
+            or contract.status
+      end
+
+      self.contractStatusValue:setText(statusText)
+
+      self.contractNotesValue:setText(
+        contract.description or "-"
       )
 
       self.contractDescriptionValue:setText(
-        contract.description or "-"
+        string.format("%s on Field %d (%.2f ha)", contract.workType, contract.fieldId, field.areaHa)
       )
+      self.contractStartDateValue:setText(self:formatPeriodDay(contract.startPeriod, contract.startDay))
+      self.contractDueDateValue:setText(self:formatPeriodDay(contract.duePeriod, contract.dueDay))
     else
       self.contractsInfoContainer:setVisible(false)
       self.noSelectedContractText:setVisible(true)
@@ -185,10 +198,9 @@ function MenuCustomContracts:initialize()
   }
 
   self.menuButtonInfo[MenuCustomContracts.SUB_CATEGORY.CONTRACTS] = {
-    self.btnBack -- will be overridden dynamically
+    self.btnBack
   }
 
-  -- Any other subcategory → Back only
   for _, subCategory in pairs(MenuCustomContracts.SUB_CATEGORY) do
     if subCategory ~= MenuCustomContracts.SUB_CATEGORY.CONTRACTS then
       self.menuButtonInfo[subCategory] = {
@@ -245,7 +257,6 @@ end
 function MenuCustomContracts:updateSubCategoryPages(subCategoryIndex)
   self:updateContent()
   self:setMenuButtonInfoDirty()
-  -- FocusManager:setFocus(self.subCategoryPaging)
 end
 
 function MenuCustomContracts:onSwitchContractDisplay()
@@ -279,10 +290,6 @@ function MenuCustomContracts:updateContent()
     local activeContracts = contractManager:getActiveContractsForCurrentFarm()
     local ownedContracts = contractManager:getOwnedContractsForCurrentFarm()
 
-    print("[CustomContracts] New contracts count: " .. #newContracts)
-    print("[CustomContracts] Active contracts count: " .. #activeContracts)
-    print("[CustomContracts] Owned contracts count: " .. #ownedContracts)
-
     local renderData = {
       [MenuCustomContracts.CONTRACTS_LIST_TYPE.NEW] = newContracts,
       [MenuCustomContracts.CONTRACTS_LIST_TYPE.ACTIVE] = activeContracts,
@@ -303,7 +310,6 @@ end
 function MenuCustomContracts:updateMenuButtons()
   local subCategory = self.subCategoryPaging:getState()
 
-  -- Not on Contracts page → Back only
   if subCategory ~= MenuCustomContracts.SUB_CATEGORY.CONTRACTS then
     self.menuButtonInfo[subCategory] = { self.btnBack }
     self:setMenuButtonInfoDirty()
@@ -374,7 +380,6 @@ function MenuCustomContracts:onAcceptContract()
     return
   end
 
-  -- Use in game YesNoDialog to confirm accepting the contract
   YesNoDialog.show(
     function(_, yes)
       if yes then
@@ -440,4 +445,27 @@ function MenuCustomContracts:onDeleteContract()
     ),
     "Delete Contract"
   )
+end
+
+function MenuCustomContracts:periodToMonth(period)
+  return ((period + 1) % 12) + 1
+end
+
+function MenuCustomContracts:formatPeriodDay(period, day)
+  if period == nil or period <= 0 then
+    return "-"
+  end
+
+  local month = self:periodToMonth(period)
+
+  local monthName = DateUtil.getMonthName(month) or tostring(month)
+
+  local env = g_currentMission.environment
+  local daysPerPeriod = (env and env.daysPerPeriod) or 1
+
+  if daysPerPeriod > 1 then
+    return string.format("%s %d", monthName, day or 1)
+  end
+
+  return monthName
 end
