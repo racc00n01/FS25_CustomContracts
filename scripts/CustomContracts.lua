@@ -18,14 +18,12 @@ source(CustomContracts.dir .. "scripts/events/InitialClientStateEvent.lua")
 source(CustomContracts.dir .. "scripts/util/DateUtil.lua")
 
 function CustomContracts:loadMap()
-  g_currentMission.customContracts = self
+  g_currentMission.CustomContracts = self
 
   MessageType.CUSTOM_CONTRACTS_UPDATED = nextMessageTypeId()
   MessageType.PLAYER_CONNECTED = nextMessageTypeId()
 
   g_gui:loadProfiles(CustomContracts.dir .. "gui/guiProfiles.xml")
-
-  self.ContractManager = CustomContractManager:new()
 
   -- Register menu page
   local menuCustomContracts = MenuCustomContracts.new(g_i18n)
@@ -40,55 +38,14 @@ function CustomContracts:loadMap()
 
   menuCustomContracts:initialize()
 
+  self.ContractManager = CustomContractManager:new()
   self.CustomContractsMenu = menuCustomContracts
+  self.currentPeriod = g_currentMission.environment.currentPeriod
+  self.currentDay = g_currentMission.environment.currentDay
 
   g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
 
-  g_messageCenter:subscribe(MessageType.PLAYER_FARM_CHANGED, CustomContracts.playerFarmChanged)
-
   self:loadFromXmlFile()
-end
-
-function CustomContracts:update(dt)
-  if not g_currentMission:getIsServer() then
-    return
-  end
-
-  local env = g_currentMission.environment
-  if env == nil then
-    return
-  end
-
-  -- throttle so we don't do anything every frame
-  self._expiryTimer = (self._expiryTimer or 0) + dt
-  if self._expiryTimer < 2000 then
-    return
-  end
-  self._expiryTimer = 0
-
-  local curPeriod = env.currentPeriod or 1
-  local dpp = env.daysPerPeriod or 1
-
-  local curDay = env.currentDayInPeriod or env.currentPeriodDay or 1
-  curDay = math.max(1, math.min(curDay, dpp))
-
-  local dayTimeMs = env.dayTime or 0
-  if dayTimeMs < 60 * 1000 then
-    return
-  end
-
-  if self._lastExpiredCheckPeriod == curPeriod and self._lastExpiredCheckDay == curDay then
-    return
-  end
-  self._lastExpiredCheckPeriod = curPeriod
-  self._lastExpiredCheckDay = curDay
-
-  local mgr = self.ContractManager
-  if mgr ~= nil then
-    if mgr:updateExpiredContracts() then
-      mgr:syncContracts()
-    end
-  end
 end
 
 function CustomContracts:makeIsCustomContractsCheckEnabledPredicate()
@@ -106,7 +63,7 @@ function CustomContracts:loadFromXmlFile()
 
   if fileExists(savegameFolderPath .. CustomContracts.SaveKey .. ".xml") then
     local xmlFile = loadXMLFile(CustomContracts.SaveKey, savegameFolderPath .. CustomContracts.SaveKey .. ".xml");
-    g_currentMission.customContracts.ContractManager:loadFromXmlFile(xmlFile)
+    g_currentMission.CustomContracts.ContractManager:loadFromXmlFile(xmlFile)
 
     delete(xmlFile)
   end
@@ -124,7 +81,7 @@ function CustomContracts:saveToXmlFile()
   local xmlFile = createXMLFile(CustomContracts.SaveKey, savegameFolderPath .. CustomContracts.SaveKey .. ".xml",
     CustomContracts.SaveKey)
 
-  g_currentMission.customContracts.ContractManager:saveToXmlFile(xmlFile)
+  g_currentMission.CustomContracts.ContractManager:saveToXmlFile(xmlFile)
 
   saveXMLFile(xmlFile)
   delete(xmlFile)
@@ -214,8 +171,40 @@ function CustomContracts:playerFarmChanged()
   g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
 end
 
+function CustomContracts:hourChanged()
+  g_currentMission.CustomContracts.ContractManager:syncContracts();
+
+  local period = g_currentMission.environment.currentPeriod
+  if period ~= g_currentMission.CustomContracts.currentPeriod then
+    g_currentMission.CustomContracts:onPeriodChanged()
+    return
+  end
+
+  local day = g_currentMission.environment.currentDay
+  if day ~= g_currentMission.CustomContracts.currentDay then
+    g_currentMission.CustomContracts:onDayChanged()
+    return
+  end
+end
+
+function CustomContracts:onPeriodChanged()
+  g_currentMission.CustomContracts.currentPeriod = g_currentMission.environment.currentPeriod
+  g_currentMission.CustomContracts.currentDay = g_currentMission.environment.currentDay
+
+  g_currentMission.CustomContracts.ContractManager:updateExpiredContracts()
+end
+
+function CustomContracts:onDayChanged()
+  g_currentMission.CustomContracts.currentDay = g_currentMission.environment.currentDay
+
+  g_currentMission.CustomContracts.ContractManager:updateExpiredContracts()
+end
+
 FSBaseMission.sendInitialClientState = Utils.appendedFunction(FSBaseMission.sendInitialClientState,
   CustomContracts.sendInitialClientState)
 FSBaseMission.saveSavegame = Utils.appendedFunction(FSBaseMission.saveSavegame, CustomContracts.saveToXmlFile)
+
+g_messageCenter:subscribe(MessageType.HOUR_CHANGED, CustomContracts.hourChanged)
+g_messageCenter:subscribe(MessageType.PLAYER_FARM_CHANGED, CustomContracts.playerFarmChanged)
 
 addModEventListener(CustomContracts)

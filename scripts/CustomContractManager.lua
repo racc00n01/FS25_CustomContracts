@@ -163,7 +163,7 @@ function CustomContractManager:getNewContractsForCurrentFarm()
     return newForFarm
   end
 
-  local contractManager = g_currentMission.customContracts.ContractManager
+  local contractManager = g_currentMission.CustomContracts.ContractManager
 
   for _, contract in pairs(contractManager.contracts) do
     -- Open contracts NOT created by you
@@ -184,7 +184,7 @@ function CustomContractManager:getActiveContractsForCurrentFarm()
     return activeForFarm
   end
 
-  local contractManager = g_currentMission.customContracts.ContractManager
+  local contractManager = g_currentMission.CustomContracts.ContractManager
 
   for _, contract in pairs(contractManager.contracts) do
     -- Contracts accepted by you
@@ -205,7 +205,7 @@ function CustomContractManager:getOwnedContractsForCurrentFarm()
     return ownedForFarm
   end
 
-  local contractManager = g_currentMission.customContracts.ContractManager
+  local contractManager = g_currentMission.CustomContracts.ContractManager
 
   for _, contract in pairs(contractManager.contracts) do
     -- Contracts you created (any status)
@@ -373,19 +373,26 @@ function CustomContractManager:isPastDue(contract, curPeriod, curDay, dpp)
 end
 
 function CustomContractManager:updateExpiredContracts()
-  if not g_currentMission:getIsServer() then return false end
+  if not g_currentMission:getIsServer() then return end
 
-
-  local curP, curD, dpp = DateUtil.getCurrentPeriodDay()
+  local curPeriod, curDay, daysPerPeriod = DateUtil.getCurrentPeriodDay()
   local changed = false
 
-  for _, c in pairs(self.contracts) do
-    if c.status == CustomContract.STATUS.OPEN or c.status == CustomContract.STATUS.ACCEPTED then
-      if DateUtil.isPastDue(c, curP, curD, dpp) then
-        c.status = CustomContract.STATUS.EXPIRED
+  for _, contract in pairs(self.contracts) do
+    -- Only check contracts that can expire
+    if contract.status == CustomContract.STATUS.OPEN
+        or contract.status == CustomContract.STATUS.ACCEPTED then
+      if DateUtil.isPastDue(contract, curPeriod, curDay, daysPerPeriod) then
+        contract.status = CustomContract.STATUS.EXPIRED
         changed = true
       end
     end
+  end
+
+  -- Only sync if something actually changed
+  if changed then
+    self:syncContracts()
+    g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
   end
 
   return changed

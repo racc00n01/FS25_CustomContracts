@@ -60,6 +60,6 @@ function CreateContractEvent:run(connection)
     return
   end
 
-  local contractManager = g_currentMission.customContracts.ContractManager
+  local contractManager = g_currentMission.CustomContracts.ContractManager
   contractManager:handleCreateRequest(farmId, self.payload)
 end

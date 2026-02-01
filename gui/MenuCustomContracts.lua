@@ -285,7 +285,7 @@ function MenuCustomContracts:updateContent()
   end
 
   if state == MenuCustomContracts.SUB_CATEGORY.CONTRACTS then
-    local contractManager = g_currentMission.customContracts.ContractManager
+    local contractManager = g_currentMission.CustomContracts.ContractManager
     local newContracts = contractManager:getNewContractsForCurrentFarm()
     local activeContracts = contractManager:getActiveContractsForCurrentFarm()
     local ownedContracts = contractManager:getOwnedContractsForCurrentFarm()

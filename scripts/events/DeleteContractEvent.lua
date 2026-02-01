@@ -38,6 +38,6 @@ function DeleteContractEvent:run(connection)
     g_server:broadcastEvent(AcceptContractEvent.new(self.contractId, self.farmId))
   end
 
-  local contractManager = g_currentMission.customContracts.ContractManager
+  local contractManager = g_currentMission.CustomContracts.ContractManager
   contractManager:handleDeleteRequest(self.farmId, self.contractId)
 end

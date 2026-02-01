@@ -91,7 +91,7 @@ function SyncContractsEvent:readStream(streamId, connection)
 end
 
 function SyncContractsEvent:run(connection)
-  local contractManager = g_currentMission.customContracts.ContractManager
+  local contractManager = g_currentMission.CustomContracts.ContractManager
   if contractManager == nil then
     return
   end
