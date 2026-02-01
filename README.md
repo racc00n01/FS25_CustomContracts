@@ -21,3 +21,7 @@ This is super early in development and might not work 100%. I hope to implement 
 - Price calculations: ⏳ Planned
 - Extended reward system (multiple lines, instead of 1 total): ⏳ Planned
 - And more...
+
+## Discord
+Join my discord for more updates and exlcusive insight on what's coming next
+https://discord.gg/fVYvxqSeA7
