@@ -36,6 +36,7 @@ https://github.com/racc00n01/FS25_CustomContracts
 
   <extraSourceFiles>
     <sourceFile filename="gui/MenuCreateContract.xml"/>
+    <sourceFile filename="gui/MenuSelectContractTemplate.xml"/>
     <sourceFile filename="gui/ContractsRenderer.lua"/>
 
     <sourceFile filename="scripts/CustomContract.lua"/>

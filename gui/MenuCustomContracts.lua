@@ -45,7 +45,7 @@ function MenuCustomContracts:displaySelectedContract()
     local contract = self.contractsRenderer.data[selection][index]
 
     if contract ~= nil then
-      local field = g_fieldManager:getFieldById(contract.fieldId)
+      local field = g_fieldManager:getFieldById(contract:getFieldId())
       self.contractsInfoContainer:setVisible(true)
       self.noSelectedContractText:setVisible(false)
 
@@ -54,7 +54,7 @@ function MenuCustomContracts:displaySelectedContract()
       if farm ~= nil then
         self.contractId:setText(string.format("Contract #%d", contract.id))
         self.contractFarmName:setText(string.format("Owned by: %s", farm.name))
-        self.contractWorkType:setText(contract.workType)
+        self.contractWorkType:setText(contract:getWorkType())
       else
         self.contractFarmName:setText("-")
         self.contractWorkType:setText("-")
@@ -71,16 +71,16 @@ function MenuCustomContracts:displaySelectedContract()
         local contractorFarm = g_farmManager:getFarmById(contract.contractorFarmId)
 
         if contractorFarm ~= nil then
-          statusTextLabel = string.format(g_i18n.getText("cc_contract_status_label"))
+          statusTextLabel = string.format(g_i18n:getText("cc_contract_status_label"))
           statusText = string.format(
             contractorFarm.name
           )
         else
-          statusTextLabel = string.format(g_i18n.getText("cc_contract_status_label_default"))
+          statusTextLabel = string.format(g_i18n:getText("cc_contract_status_label_default"))
           statusText = contract.status
         end
       else
-        statusTextLabel = string.format(g_i18n.getText("cc_contract_status_label_default"))
+        statusTextLabel = string.format(g_i18n:getText("cc_contract_status_label_default"))
         statusText = g_i18n:getText("cc_status_" .. string.lower(contract.status))
             or contract.status
       end
@@ -93,7 +93,7 @@ function MenuCustomContracts:displaySelectedContract()
       )
 
       self.contractDescriptionValue:setText(
-        string.format("%s on Field %d (%.2f ha)", contract.workType, contract.fieldId, field.areaHa)
+        string.format("%s on Field %d (%.2f ha)", contract:getWorkType(), contract:getFieldId(), field.areaHa)
       )
       self.contractStartDateValue:setText(self:formatPeriodDay(contract.startPeriod, contract.startDay))
       self.contractDueDateValue:setText(self:formatPeriodDay(contract.duePeriod, contract.dueDay))
@@ -400,8 +400,18 @@ function MenuCustomContracts:applyPendingContractsView(renderData)
 end
 
 function MenuCustomContracts:onCreateContract()
-  self:queueContractsView(MenuCustomContracts.CONTRACTS_LIST_TYPE.OWNED, nil)
-  local dialog = g_gui:showDialog("menuCreateContract")
+  -- self:queueContractsView(MenuCustomContracts.CONTRACTS_LIST_TYPE.OWNED, nil)
+  local selector = g_gui:showDialog("menuSelectContractTemplate")
+  print("Open dialog")
+
+  if selector ~= nil then
+    selector.target:setCallback(function(templateId)
+      local dlg = g_gui:showDialog("menuCreateContract")
+      if dlg ~= nil then
+        dlg.target:setTemplate(templateId)
+      end
+    end)
+  end
 end
 
 function MenuCustomContracts:onCompleteContract()
@@ -421,7 +431,7 @@ function MenuCustomContracts:onCompleteContract()
     self,
     string.format(
       "Complete contract for Field %d and receive €%s?",
-      contract.fieldId,
+      contract:getFieldId(),
       g_i18n:formatMoney(contract.reward)
     ),
     "Complete Contract"
@@ -451,8 +461,8 @@ function MenuCustomContracts:onAcceptContract()
     self,
     string.format(
       "Accept contract for Field %d (%s) for €%s?",
-      contract.fieldId,
-      contract.workType,
+      contract:getFieldId(),
+      contract:getWorkType(),
       g_i18n:formatMoney(contract.reward)
     ),
     "Accept Contract"
@@ -477,7 +487,7 @@ function MenuCustomContracts:onCancelContract()
     self,
     string.format(
       "Cancel contract for Field %d?",
-      contract.fieldId
+      contract:getFieldId()
     ),
     "Cancel Contract"
   )
@@ -502,7 +512,7 @@ function MenuCustomContracts:onDeleteContract()
     self,
     string.format(
       "Delete contract for Field %d?",
-      contract.fieldId
+      contract:getFieldId()
     ),
     "Delete Contract"
   )

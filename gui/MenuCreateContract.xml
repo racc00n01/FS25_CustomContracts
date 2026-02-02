@@ -11,47 +11,89 @@
       <Text profile="dialogTitle" text="Create Contract" position="0px -30px"/>
 
       <BoxLayout flowDirection="vertical" position="15px -100px">
-        <BoxLayout flowDirection="vertical" size="435px 400px" elementSpacing="5px" extends="emptyPanel" with="anchorTopLeft">
+        <GuiElement size="435px 620px" elementSpacing="5px" extends="emptyPanel" with="anchorTopLeft">
 
-          <!-- Field -->
-          <Text text="Field ID" profile="CC_ContractInputLabel"/>
-          <MultiTextOption id="fieldSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onFieldSelectChange">
-            <Text profile="fs25_multiTextOptionText" name="text" />
-          </MultiTextOption>
+          <!-- TEMPLATE: FIELD -->
+          <BoxLayout flowDirection="vertical" id="sectionFieldWork">
+            <Text text="Field ID" profile="CC_ContractInputLabel"/>
+            <MultiTextOption id="fieldSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onFieldSelectChange">
+              <Text profile="fs25_multiTextOptionText" name="text" />
+            </MultiTextOption>
 
-          <!-- Work type -->
-          <Text text="Work Type" profile="CC_ContractInputLabel" />
-          <MultiTextOption id="workTypeSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onGroupSelectChange">
-            <Text profile="fs25_multiTextOptionText" name="text" />
-          </MultiTextOption>
+            <Text text="Work Type" profile="CC_ContractInputLabel" />
+            <MultiTextOption id="workTypeSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onWorkTypeSelectChange">
+              <Text profile="fs25_multiTextOptionText" name="text" />
+            </MultiTextOption>
 
-          <!-- Reward -->
-          <Text text="Reward (€)" profile="CC_ContractInputLabel"/>
-          <TextInput profile="CC_Input" id="rewardInput" onEnterPressed="onEnterPressed" onTextChanged="onTextChanged" enterWhenClickOutside="false">
-            <ThreePartBitmap profile="fs25_textInputBg" absoluteSizeOffset="0px 0px"/>
-          </TextInput>
+            <!-- Reward -->
+            <Text text="Reward (€)" profile="CC_ContractInputLabel"/>
+            <TextInput profile="CC_Input" id="rewardInput" onEnterPressed="onEnterPressed" onTextChanged="onTextChanged" enterWhenClickOutside="false">
+              <ThreePartBitmap profile="fs25_textInputBg" absoluteSizeOffset="0px 0px"/>
+            </TextInput>
 
-          <!-- Description -->
-          <Text text="Description (optional)" profile="CC_ContractInputLabel" />
-          <TextInput profile="CC_InputTextArea" id="descriptionInput" onEnterPressed="onEnterPressed" onTextChanged="onTextChanged" enterWhenClickOutside="false">
-            <ThreePartBitmap profile="fs25_textInputBg" absoluteSizeOffset="0px 0px"/>
-          </TextInput>
+            <!-- Description -->
+            <Text text="Description (optional)" profile="CC_ContractInputLabel" />
+            <TextInput profile="CC_InputTextArea" id="descriptionInput" onEnterPressed="onEnterPressed" onTextChanged="onTextChanged" enterWhenClickOutside="false">
+              <ThreePartBitmap profile="fs25_textInputBg" absoluteSizeOffset="0px 0px"/>
+            </TextInput>
 
-          <!-- Start date -->
-          <Text text="Start date" profile="CC_ContractInputLabel" />
-          <MultiTextOption id="startDateSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onStartDateSelectChange">
-            <Text profile="fs25_multiTextOptionText" name="text" />
-          </MultiTextOption>
-
-
-          <!-- Due date -->
-          <Text text="Due date" profile="CC_ContractInputLabel" />
-          <MultiTextOption id="dueDateSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onDueDateSelectChange">
-            <Text profile="fs25_multiTextOptionText" name="text" />
-          </MultiTextOption>
+            <!-- Start date -->
+            <Text text="Start date" profile="CC_ContractInputLabel" />
+            <MultiTextOption id="startDateSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onStartDateSelectChange">
+              <Text profile="fs25_multiTextOptionText" name="text" />
+            </MultiTextOption>
 
 
-        </BoxLayout>
+            <!-- Due date -->
+            <Text text="Due date" profile="CC_ContractInputLabel" />
+            <MultiTextOption id="dueDateSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onDueDateSelectChange">
+              <Text profile="fs25_multiTextOptionText" name="text" />
+            </MultiTextOption>
+          </BoxLayout>
+
+          <!-- TEMPLATE: TRANSPORT (placeholder) -->
+          <BoxLayout flowDirection="vertical" id="sectionTransport">
+            <Text text="Transport Type" profile="CC_ContractInputLabel"/>
+            <MultiTextOption id="transportProductSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onTransportTypeChange">
+              <Text profile="fs25_multiTextOptionText" name="text" />
+            </MultiTextOption>
+
+            <!-- From -->
+            <Text text="From" profile="CC_ContractInputLabel" />
+            <TextInput profile="CC_InputTextArea" id="transportFromInput" onEnterPressed="onEnterPressed" onTextChanged="onTextChanged" enterWhenClickOutside="false">
+              <ThreePartBitmap profile="fs25_textInputBg" absoluteSizeOffset="0px 0px"/>
+            </TextInput>
+
+            <!-- From -->
+            <Text text="To" profile="CC_ContractInputLabel" />
+            <TextInput profile="CC_InputTextArea" id="transportToInput" onEnterPressed="onEnterPressed" onTextChanged="onTextChanged" enterWhenClickOutside="false">
+              <ThreePartBitmap profile="fs25_textInputBg" absoluteSizeOffset="0px 0px"/>
+            </TextInput>
+
+            <!-- Amount -->
+            <Text text="Amount (optional)" profile="CC_ContractInputLabel" />
+            <TextInput profile="CC_InputTextArea" id="transportAmountInput" onEnterPressed="onEnterPressed" onTextChanged="onTextChanged" enterWhenClickOutside="false">
+              <ThreePartBitmap profile="fs25_textInputBg" absoluteSizeOffset="0px 0px"/>
+            </TextInput>
+          </BoxLayout>
+
+          <!-- TEMPLATE: FARM JOB (placeholder) -->
+          <BoxLayout flowDirection="vertical" id="sectionFarmJob">
+            <Text text="Farm Job" profile="CC_ContractInputLabel"/>
+            <MultiTextOption id="farmJobSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onFarmJobChange">
+              <Text profile="fs25_multiTextOptionText" name="text" />
+            </MultiTextOption>
+          </BoxLayout>
+
+          <!-- TEMPLATE: CUSTOM -->
+          <BoxLayout flowDirection="vertical" id="sectionCustom">
+            <Text text="Title" profile="CC_ContractInputLabel" />
+            <TextInput profile="CC_Input" id="titleInput" enterWhenClickOutside="false">
+              <ThreePartBitmap profile="fs25_textInputBg" />
+            </TextInput>
+          </BoxLayout>
+        </GuiElement>
+
       </BoxLayout>
     </GuiElement>
 

@@ -36,11 +36,10 @@ function CustomContractManager:saveToXmlFile(xmlFile)
   for id, contract in pairs(self.contracts) do
     local key = string.format("%s.contract(%d)", key, count)
 
+
     setXMLInt(xmlFile, key .. "#id", contract.id)
     setXMLInt(xmlFile, key .. "#creatorFarmId", contract.creatorFarmId)
     setXMLInt(xmlFile, key .. "#contractorFarmId", contract.contractorFarmId or -1)
-    setXMLInt(xmlFile, key .. "#fieldId", contract.fieldId)
-    setXMLString(xmlFile, key .. "#workType", contract.workType)
     setXMLInt(xmlFile, key .. "#reward", contract.reward)
     setXMLString(xmlFile, key .. "#status", contract.status)
     setXMLString(xmlFile, key .. "#description", contract.description or '-')
@@ -48,6 +47,25 @@ function CustomContractManager:saveToXmlFile(xmlFile)
     setXMLInt(xmlFile, key .. "#startDay", contract.startDay or -1)
     setXMLInt(xmlFile, key .. "#duePeriod", contract.duePeriod or -1)
     setXMLInt(xmlFile, key .. "#dueDay", contract.dueDay or -1)
+
+    setXMLString(xmlFile, key .. "#templateId", contract.templateId)
+
+    -- template payload
+    if contract.templateId == CustomContract.TEMPLATE.FIELD_WORK then
+      setXMLInt(xmlFile, key .. "#fieldId", contract.payload.fieldId or -1)
+      setXMLString(xmlFile, key .. "#workType", contract.payload.workType or "")
+    elseif contract.templateId == CustomContract.TEMPLATE.TRANSPORT then
+      setXMLString(xmlFile, key .. "#transportType", contract.payload.transportType or "")
+      setXMLString(xmlFile, key .. "#fillType", contract.payload.fillType or "")
+      setXMLInt(xmlFile, key .. "#amount", contract.payload.amount or 0)
+    elseif contract.templateId == CustomContract.TEMPLATE.FARM_JOB then
+      setXMLString(xmlFile, key .. "#jobType", contract.payload.jobType or "")
+      setXMLString(xmlFile, key .. "#targetType", contract.payload.targetType or "")
+      setXMLInt(xmlFile, key .. "#targetId", contract.payload.targetId or 0)
+      setXMLInt(xmlFile, key .. "#amount", contract.payload.amount or 0)
+    elseif contract.templateId == CustomContract.TEMPLATE.CUSTOM then
+      setXMLString(xmlFile, key .. "#title", contract.payload.title or "Custom job")
+    end
 
     count = count + 1
   end
@@ -68,24 +86,46 @@ function CustomContractManager:loadFromXmlFile(xmlFile)
       break
     end
 
-    local id                  = getXMLInt(xmlFile, contractKey .. "#id")
-    local creatorFarmId       = getXMLInt(xmlFile, contractKey .. "#creatorFarmId")
-    local contractorFarmId    = getXMLInt(xmlFile, contractKey .. "#contractorFarmId")
-    local fieldId             = getXMLInt(xmlFile, contractKey .. "#fieldId")
-    local workType            = getXMLString(xmlFile, contractKey .. "#workType")
-    local reward              = getXMLInt(xmlFile, contractKey .. "#reward")
-    local status              = getXMLString(xmlFile, contractKey .. "#status")
-    local description         = getXMLString(xmlFile, contractKey .. "#description")
-    local startPeriod         = getXMLInt(xmlFile, contractKey .. "#startPeriod")
-    local startDay            = getXMLInt(xmlFile, contractKey .. "#startDay")
-    local duePeriod           = getXMLInt(xmlFile, contractKey .. "#duePeriod")
-    local dueDay              = getXMLInt(xmlFile, contractKey .. "#dueDay")
+    local id               = getXMLInt(xmlFile, contractKey .. "#id")
+    local creatorFarmId    = getXMLInt(xmlFile, contractKey .. "#creatorFarmId")
+    local contractorFarmId = getXMLInt(xmlFile, contractKey .. "#contractorFarmId")
+    local reward           = getXMLInt(xmlFile, contractKey .. "#reward")
+    local status           = getXMLString(xmlFile, contractKey .. "#status")
+    local description      = getXMLString(xmlFile, contractKey .. "#description")
+    local startPeriod      = getXMLInt(xmlFile, contractKey .. "#startPeriod")
+    local startDay         = getXMLInt(xmlFile, contractKey .. "#startDay")
+    local duePeriod        = getXMLInt(xmlFile, contractKey .. "#duePeriod")
+    local dueDay           = getXMLInt(xmlFile, contractKey .. "#dueDay")
+
+    local templateId       = getXMLString(xmlFile, contractKey .. "#templateId") or CustomContract.TEMPLATE.FIELD_WORK
+    local payloadTable     = {}
+
+    -- Backward compatibility: if old save has no templateId, treat it as FIELD_WORK
+    if not hasXMLProperty(xmlFile, contractKey .. "#templateId") then
+      templateId = CustomContract.TEMPLATE.FIELD_WORK
+    end
+
+    if templateId == CustomContract.TEMPLATE.FIELD_WORK then
+      payloadTable.fieldId  = getXMLInt(xmlFile, contractKey .. "#fieldId")
+      payloadTable.workType = getXMLString(xmlFile, contractKey .. "#workType") or ""
+    elseif templateId == CustomContract.TEMPLATE.TRANSPORT then
+      payloadTable.transportType = getXMLString(xmlFile, contractKey .. "#transportType") or ""
+      payloadTable.fillType      = getXMLString(xmlFile, contractKey .. "#fillType") or ""
+      payloadTable.amount        = getXMLInt(xmlFile, contractKey .. "#amount") or 0
+    elseif templateId == CustomContract.TEMPLATE.FARM_JOB then
+      payloadTable.jobType    = getXMLString(xmlFile, contractKey .. "#jobType") or ""
+      payloadTable.targetType = getXMLString(xmlFile, contractKey .. "#targetType") or ""
+      payloadTable.targetId   = getXMLInt(xmlFile, contractKey .. "#targetId") or 0
+      payloadTable.amount     = getXMLInt(xmlFile, contractKey .. "#amount") or 0
+    elseif templateId == CustomContract.TEMPLATE.CUSTOM then
+      payloadTable.title = getXMLString(xmlFile, contractKey .. "#title") or "Custom job"
+    end
 
     local contract            = CustomContract.new(
       id,
       creatorFarmId,
-      fieldId,
-      workType,
+      templateId,
+      payloadTable,
       reward,
       description,
       startPeriod,
@@ -220,19 +260,43 @@ end
 -- Called by CreateContractEvent, runs on server
 function CustomContractManager:handleCreateRequest(farmId, payload)
   if not g_currentMission:getIsServer() then return end
+  if payload == nil then return end
 
-  if payload.fieldId == nil or payload.workType == nil or payload.reward <= 0 then
+  local templateId = payload.templateId
+  local p = payload.payload or {}
+
+  -- common validation
+  if templateId == nil or templateId == "" then return end
+  if payload.reward == nil or payload.reward <= 0 then return end
+
+  -- template-specific validation
+  if templateId == CustomContract.TEMPLATE.FIELD_WORK then
+    if p.fieldId == nil or p.fieldId <= 0 then return end
+    if p.workType == nil or p.workType == "" then return end
+  elseif templateId == CustomContract.TEMPLATE.TRANSPORT then
+    if p.transportType == nil or p.transportType == "" then return end
+    -- fillType/amount optional for now
+  elseif templateId == CustomContract.TEMPLATE.FARM_JOB then
+    if p.jobType == nil or p.jobType == "" then return end
+    -- target optional for now
+  elseif templateId == CustomContract.TEMPLATE.CUSTOM then
+    -- title optional; we can default later
+    if p.title == nil or p.title == "" then
+      p.title = "Custom job"
+    end
+  else
+    -- unknown template
     return
   end
 
-  local id           = self.nextId
-  self.nextId        = self.nextId + 1
+  local id = self.nextId
+  self.nextId = self.nextId + 1
 
-  local contract     = CustomContract.new(
+  local contract = CustomContract.new(
     id,
     farmId,
-    payload.fieldId,
-    payload.workType,
+    templateId,
+    p,
     payload.reward,
     payload.description,
     payload.startPeriod,
@@ -242,7 +306,6 @@ function CustomContractManager:handleCreateRequest(farmId, payload)
   )
 
   self.contracts[id] = contract
-
   self:syncContracts()
 end
 

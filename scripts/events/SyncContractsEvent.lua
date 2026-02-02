@@ -17,9 +17,8 @@ end
 
 function SyncContractsEvent.new(contracts, nextId)
   local self = SyncContractsEvent.emptyNew()
-  self.contracts = contracts
-  self.nextId = nextId
-
+  self.contracts = contracts or {}
+  self.nextId = nextId or 1
   return self
 end
 
@@ -32,18 +31,8 @@ function SyncContractsEvent:writeStream(streamId, connection)
   streamWriteInt32(streamId, count)
 
   for _, contract in pairs(self.contracts) do
-    streamWriteInt32(streamId, contract.id)
-    streamWriteInt32(streamId, contract.creatorFarmId)
-    streamWriteInt32(streamId, contract.contractorFarmId or -1)
-    streamWriteInt32(streamId, contract.fieldId)
-    streamWriteString(streamId, contract.workType)
-    streamWriteInt32(streamId, contract.reward)
-    streamWriteString(streamId, contract.status)
-    streamWriteString(streamId, contract.description or "")
-    streamWriteInt32(streamId, contract.startPeriod)
-    streamWriteInt32(streamId, contract.startDay)
-    streamWriteInt32(streamId, contract.duePeriod)
-    streamWriteInt32(streamId, contract.dueDay)
+    -- IMPORTANT: delegate to contract serializer (template-aware)
+    contract:writeStream(streamId)
   end
 end
 
@@ -54,37 +43,11 @@ function SyncContractsEvent:readStream(streamId, connection)
   self.contracts = {}
 
   for i = 1, count do
-    local id                  = streamReadInt32(streamId)
-    local creatorFarmId       = streamReadInt32(streamId)
-    local contractorFarmId    = streamReadInt32(streamId)
-    local fieldId             = streamReadInt32(streamId)
-    local workType            = streamReadString(streamId)
-    local reward              = streamReadInt32(streamId)
-    local status              = streamReadString(streamId)
-    local description         = streamReadString(streamId)
-    local startPeriod         = streamReadInt32(streamId)
-    local startDay            = streamReadInt32(streamId)
-    local duePeriod           = streamReadInt32(streamId)
-    local dueDay              = streamReadInt32(streamId)
-
-    local contract            = CustomContract.new(
-      id,
-      creatorFarmId,
-      fieldId,
-      workType,
-      reward,
-      description,
-      startPeriod,
-      startDay,
-      duePeriod,
-      dueDay
-    )
-
-    contract.contractorFarmId =
-        contractorFarmId ~= -1 and contractorFarmId or nil
-    contract.status           = status
-
-    self.contracts[id]        = contract
+    -- IMPORTANT: delegate to contract deserializer (template-aware)
+    local contract = CustomContract.newFromStream(streamId)
+    if contract ~= nil then
+      self.contracts[contract.id] = contract
+    end
   end
 
   self:run(connection)

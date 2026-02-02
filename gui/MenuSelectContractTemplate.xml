@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<GUI name="menuSelectContractTemplate" onOpen="onOpen" onClose="onClose" onCreate="onCreate">
+  <GuiElement profile="newLayer" />
+  <Bitmap profile="dialogFullscreenBg" />
+  <GuiElement profile="dialogBg" size="700px 420px">
+    <ThreePartBitmap profile="fs25_dialogBgMiddle" />
+    <ThreePartBitmap profile="fs25_dialogBgTop" />
+    <ThreePartBitmap profile="fs25_dialogBgBottom" />
+
+    <GuiElement profile="fs25_dialogContentContainer">
+      <Text profile="dialogTitle" text="Select Contract Template" position="0px -30px"/>
+
+      <BoxLayout flowDirection="vertical" position="15px -110px">
+        <Text text="Template" profile="CC_ContractInputLabel"/>
+        <MultiTextOption id="templateSelector" profile="fs25_multiTextOption" height="44px" onClick="onTemplateChange">
+          <Text profile="fs25_multiTextOptionText" name="text" />
+        </MultiTextOption>
+      </BoxLayout>
+    </GuiElement>
+
+    <BoxLayout profile="fs25_dialogButtonBox">
+      <Button profile="buttonBack" text="Cancel" onClick="onCancel" />
+      <Button profile="buttonOK" text="Next" onClick="onConfirm" />
+    </BoxLayout>
+  </GuiElement>
+</GUI>
