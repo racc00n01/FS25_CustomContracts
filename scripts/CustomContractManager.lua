@@ -187,8 +187,8 @@ function CustomContractManager:getActiveContractsForCurrentFarm()
   local contractManager = g_currentMission.CustomContracts.ContractManager
 
   for _, contract in pairs(contractManager.contracts) do
-    -- Contracts accepted by you
-    if contract.status == CustomContract.STATUS.ACCEPTED
+    -- Contracts accepted by you or cancelled by you or the owner
+    if (contract.status == CustomContract.STATUS.ACCEPTED or contract.status == CustomContract.STATUS.CANCELLED)
         and contract.contractorFarmId == farmId then
       table.insert(activeForFarm, contract)
     end
@@ -314,14 +314,19 @@ function CustomContractManager:handleCancelRequest(farmId, contractId)
 
   local contract = self.contracts[contractId]
   if contract == nil then return end
-  if contract.contractorFarmId ~= farmId then return end
-  if contract.status ~= CustomContract.STATUS.OPEN and contract.status ~= CustomContract.STATUS.ACCEPTED then
-    return
+
+  -- Check who cancels the contract
+  if farmId == contract.contractorFarmId then
+    print("contractor")
+    -- TODO: Add logic for a fine, if the start date is past
+    contract.status = CustomContract.STATUS.CANCELLED
+  else
+    print("owner")
+    -- Owner cancels the contract
+    -- TODO: Add fine, 10% of contract money will be transfered to contractor if the start date is past.
+    contract.status = CustomContract.STATUS.CANCELLED
   end
-
-  contract.contractorFarmId = nil
-  contract.status = CustomContract.STATUS.CANCELLED
-
+  print("sync")
   self:syncContracts()
 end
 

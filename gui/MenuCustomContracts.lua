@@ -186,6 +186,7 @@ function MenuCustomContracts:initialize()
   self.contractButtonSets[MenuCustomContracts.CONTRACTS_LIST_TYPE.ACTIVE] = {
     self.btnBack,
     self.btnComplete,
+    self.btnCancel,
     self.btnCreateContract
   }
 
