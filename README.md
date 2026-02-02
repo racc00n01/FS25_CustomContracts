@@ -4,6 +4,9 @@ Instead of relying only on AI-generated jobs, players can create, accept, manage
 
 Whether you’re helping a neighbor harvest a field or running a professional contracting business, Custom Contracts adds a new layer of realism and cooperation to FS25.
 
+## Note
+Editing or publishing this mod is prohibited without written consent from the mod maker (Racc00n01).
+
 ## Important
 This is super early in development and might not work 100%. I hope to implement core features rather quickly, but I can't guarantee it.
 
