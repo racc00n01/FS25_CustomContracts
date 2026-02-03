@@ -343,6 +343,50 @@ function CustomContractManager:handleDeleteRequest(farmId, contractId)
   self:syncContracts()
 end
 
+-- Function to reopen contracts, called by ReopenContractEvent
+function CustomContractManager:handleReopenRequest(farmId, contractId)
+  if not g_currentMission:getIsServer() then return end
+
+  local contract = self.contracts[contractId]
+  if contract == nil then return end
+  if contract.creatorFarmId ~= farmId then return end
+
+  self.contracts[contractId].contractorFarmId = nil
+  self.contracts[contractId].status = CustomContract.STATUS.OPEN
+
+  self:syncContracts()
+end
+
+function CustomContractManager:handleEditRequest(farmId, contractId, data)
+  local contract = self.contracts[contractId]
+  if contract == nil then
+    return
+  end
+
+  -- permission check
+  if contract.creatorFarmId ~= farmId then
+    return
+  end
+
+  -- usually only allow editing OPEN contracts
+  if contract.status ~= CustomContract.STATUS.OPEN then
+    return
+  end
+
+  -- apply edits
+  contract.fieldId     = data.fieldId
+  contract.workType    = data.workType
+  contract.reward      = data.reward
+  contract.description = data.description
+  contract.startPeriod = data.startPeriod
+  contract.startDay    = data.startDay
+  contract.duePeriod   = data.duePeriod
+  contract.dueDay      = data.dueDay
+
+  -- mark dirty / sync
+  self:syncContracts()
+end
+
 local function toOrdinal(period, day, daysPerPeriod)
   return (period - 1) * daysPerPeriod + (day - 1)
 end
@@ -380,14 +424,14 @@ end
 function CustomContractManager:updateExpiredContracts()
   if not g_currentMission:getIsServer() then return end
 
-  local curPeriod, curDay, daysPerPeriod = DateUtil.getCurrentPeriodDay()
+  local curPeriod, curDay, daysPerPeriod = CustomUtils.getCurrentPeriodDay()
   local changed = false
 
   for _, contract in pairs(self.contracts) do
     -- Only check contracts that can expire
     if contract.status == CustomContract.STATUS.OPEN
         or contract.status == CustomContract.STATUS.ACCEPTED then
-      if DateUtil.isPastDue(contract, curPeriod, curDay, daysPerPeriod) then
+      if CustomUtils.isPastDue(contract, curPeriod, curDay, daysPerPeriod) then
         contract.status = CustomContract.STATUS.EXPIRED
         changed = true
       end

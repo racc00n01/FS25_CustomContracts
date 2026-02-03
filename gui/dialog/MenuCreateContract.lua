@@ -164,57 +164,8 @@ function MenuCreateContract:onCancel(sender)
   self:close()
 end
 
-function MenuCreateContract:retrieveFieldInfo(fieldId)
-  local field = g_fieldManager:getFieldById(fieldId)
-
-  if field == nil then
-    return nil
-  end
-end
-
-function MenuCreateContract:buildMonthOptionData()
-  local env = g_currentMission.environment
-  if env == nil then
-    return {}, {}
-  end
-
-  local currentPeriod = env.currentPeriod
-
-  local daysPerPeriod = env.daysPerPeriod or 1
-
-  local texts = {}
-  local values = {}
-
-  for offset = 0, 11 do
-    local period = DateUtil.wrapPeriod(currentPeriod + offset)
-    local month = DateUtil.periodToMonth(period)
-
-    if daysPerPeriod > 1 then
-      for day = 1, daysPerPeriod do
-        table.insert(texts,
-          string.format("%s %d", DateUtil.getMonthName(month), day)
-        )
-        table.insert(values, {
-          period = period,
-          month  = month,
-          day    = day
-        })
-      end
-    else
-      table.insert(texts, DateUtil.getMonthName(month))
-      table.insert(values, {
-        period = period,
-        month  = month,
-        day    = 1
-      })
-    end
-  end
-
-  return texts, values
-end
-
 function MenuCreateContract:fillMonthMultiTextOption(multiTextOption, valuesFieldName)
-  local texts, values = self:buildMonthOptionData()
+  local texts, values = CustomUtils:buildMonthOptionData()
 
   self[valuesFieldName] = values
 

@@ -7,7 +7,7 @@
     <text name="cc_active" text="Active"/>
     <text name="cc_owned" text="Owned"/>
     <text name="cc_contract_status_label" text="Accepted by:"/>
-    <text name="cc_contract_status_label_default" text="Current stauts:"/>
+    <text name="cc_contract_status_label_default" text="Current status:"/>
     <text name="cc_contract_field_label" text="Field ID"/>
     <text name="cc_contract_worktype_label" text="Work type"/>
     <text name="cc_contract_reward_label" text="Reward"/>

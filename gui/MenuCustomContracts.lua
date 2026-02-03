@@ -25,6 +25,15 @@ MenuCustomContracts.HEADER_TITLES = {
   [MenuCustomContracts.SUB_CATEGORY.INVOICES] = "cc_header_invoices",
 }
 
+
+CustomContract.STATUS = {
+  OPEN      = "OPEN",
+  ACCEPTED  = "ACCEPTED",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
+  EXPIRED   = "EXPIRED"
+}
+
 function MenuCustomContracts.new(i18n, messageCenter)
   local self = MenuCustomContracts:superClass().new(nil, MenuCustomContracts._mt)
   self.name = "MenuCustomContracts"
@@ -70,17 +79,17 @@ function MenuCustomContracts:displaySelectedContract()
       if contract.contractorFarmId ~= nil then
         local contractorFarm = g_farmManager:getFarmById(contract.contractorFarmId)
 
-        if contractorFarm ~= nil then
-          statusTextLabel = string.format(g_i18n.getText("cc_contract_status_label"))
+        if contractorFarm ~= nil and contract.status ~= CustomContract.STATUS.CANCELLED then
+          statusTextLabel = string.format(g_i18n:getText("cc_contract_status_label"))
           statusText = string.format(
             contractorFarm.name
           )
         else
-          statusTextLabel = string.format(g_i18n.getText("cc_contract_status_label_default"))
+          statusTextLabel = string.format(g_i18n:getText("cc_contract_status_label_default"))
           statusText = contract.status
         end
       else
-        statusTextLabel = string.format(g_i18n.getText("cc_contract_status_label_default"))
+        statusTextLabel = string.format(g_i18n:getText("cc_contract_status_label_default"))
         statusText = g_i18n:getText("cc_status_" .. string.lower(contract.status))
             or contract.status
       end
@@ -95,8 +104,8 @@ function MenuCustomContracts:displaySelectedContract()
       self.contractDescriptionValue:setText(
         string.format("%s on Field %d (%.2f ha)", contract.workType, contract.fieldId, field.areaHa)
       )
-      self.contractStartDateValue:setText(self:formatPeriodDay(contract.startPeriod, contract.startDay))
-      self.contractDueDateValue:setText(self:formatPeriodDay(contract.duePeriod, contract.dueDay))
+      self.contractStartDateValue:setText(CustomUtils:formatPeriodDay(contract.startPeriod, contract.startDay))
+      self.contractDueDateValue:setText(CustomUtils:formatPeriodDay(contract.duePeriod, contract.dueDay))
     else
       self.contractsInfoContainer:setVisible(false)
       self.noSelectedContractText:setVisible(true)
@@ -112,6 +121,7 @@ function MenuCustomContracts:onGuiSetupFinished()
 
   self.contractsRenderer.indexChangedCallback = function(index)
     self:displaySelectedContract()
+    self:updateMenuButtons()
   end
 end
 
@@ -176,6 +186,22 @@ function MenuCustomContracts:initialize()
     end
   }
 
+  self.btnReopen = {
+    text = "Reopen contract",
+    inputAction = InputAction.MENU_ACCEPT,
+    callback = function()
+      self:onReopenContract()
+    end
+  }
+
+  self.btnEdit = {
+    text = "Edit contract",
+    inputAction = InputAction.MENU_ACCEPT,
+    callback = function()
+      self:onEditContract()
+    end
+  }
+
   self.contractButtonSets = {}
 
   -- NEW contracts
@@ -198,6 +224,8 @@ function MenuCustomContracts:initialize()
     self.btnBack,
     self.btnDelete,
     self.btnCancel,
+    self.btnReopen,
+    self.btnEdit,
     self.btnCreateContract
   }
 
@@ -325,12 +353,110 @@ function MenuCustomContracts:updateMenuButtons()
     return
   end
 
-  -- Contracts page → based on NEW / ACTIVE / OWNED
-  local buttons = self.contractButtonSets[self.currentContractsListType]
-      or { self.btnBack }
+  local listType = self.currentContractsListType or MenuCustomContracts.CONTRACTS_LIST_TYPE.NEW
+  local baseButtons = self.contractButtonSets[listType] or { self.btnBack, self.btnCreateContract }
 
-  self.menuButtonInfo[MenuCustomContracts.SUB_CATEGORY.CONTRACTS] = buttons
+  local contract = self:getSelectedContract()
+
+  local filtered = {}
+  for _, btn in ipairs(baseButtons) do
+    if self:shouldShowButton(btn, listType, contract) then
+      table.insert(filtered, btn)
+    end
+  end
+
+  -- Fallback safety: never allow empty bottom bar
+  if #filtered == 0 then
+    filtered = { self.btnBack, self.btnCreateContract }
+  end
+
+  self.menuButtonInfo[MenuCustomContracts.SUB_CATEGORY.CONTRACTS] = filtered
   self:setMenuButtonInfoDirty()
+end
+
+function MenuCustomContracts:getSelectedContract()
+  local index = self.contractsTable.selectedIndex
+  if index == nil or index < 1 then
+    return nil
+  end
+
+  local selection = self.contractDisplaySwitcher:getState()
+  local list = self.contractsRenderer.data and self.contractsRenderer.data[selection]
+  if list == nil then
+    return nil
+  end
+
+  return list[index]
+end
+
+function MenuCustomContracts:shouldShowButton(button, listType, contract)
+  -- Always show these
+  if button == self.btnBack or button == self.btnCreateContract then
+    return true
+  end
+
+  -- No selected contract => only back + create
+  if contract == nil then
+    return false
+  end
+
+  local myFarmId = g_currentMission:getFarmId() or 0
+  local isOwner = (contract.creatorFarmId == myFarmId)
+  local isContractor = (contract.contractorFarmId == myFarmId)
+
+  local status = contract.status
+
+  -- NEW tab rules
+  if listType == MenuCustomContracts.CONTRACTS_LIST_TYPE.NEW then
+    if button == self.btnAccept then
+      return status == CustomContract.STATUS.OPEN and not isOwner
+    end
+    return false
+  end
+
+  -- ACTIVE tab rules
+  if listType == MenuCustomContracts.CONTRACTS_LIST_TYPE.ACTIVE then
+    if button == self.btnComplete then
+      return status == CustomContract.STATUS.ACCEPTED and isContractor
+    end
+    if button == self.btnCancel then
+      -- if you also show CANCELLED in Active, you probably don't want cancel there anymore
+      return status == CustomContract.STATUS.ACCEPTED and isContractor
+    end
+    return false
+  end
+
+  -- OWNED tab rules (this is the busy one)
+  if listType == MenuCustomContracts.CONTRACTS_LIST_TYPE.OWNED then
+    if not isOwner then
+      return false
+    end
+
+    if button == self.btnEdit then
+      return status == CustomContract.STATUS.OPEN
+    end
+
+    if button == self.btnCancel then
+      -- owner cancelling an accepted contract
+      return status == CustomContract.STATUS.ACCEPTED
+    end
+
+    if button == self.btnReopen then
+      return status == CustomContract.STATUS.CANCELLED or status == CustomContract.STATUS.EXPIRED
+    end
+
+    if button == self.btnDelete then
+      -- typical: delete once not active anymore
+      return status == CustomContract.STATUS.OPEN
+          or status == CustomContract.STATUS.CANCELLED
+          or status == CustomContract.STATUS.EXPIRED
+          or status == CustomContract.STATUS.COMPLETED
+    end
+
+    return false
+  end
+
+  return false
 end
 
 function MenuCustomContracts:onMoneyChange()
@@ -509,25 +635,38 @@ function MenuCustomContracts:onDeleteContract()
   )
 end
 
-function MenuCustomContracts:periodToMonth(period)
-  return ((period + 1) % 12) + 1
+function MenuCustomContracts:onReopenContract()
+  local index = self.contractsTable.selectedIndex
+  local selection = self.contractDisplaySwitcher:getState()
+  local contract = self.contractsRenderer.data[selection][index]
+
+  if contract == nil then return end
+
+  YesNoDialog.show(
+    function(_, yes)
+      if yes then
+        self:queueContractsView(MenuCustomContracts.CONTRACTS_LIST_TYPE.OWNED, nil)
+        g_client:getServerConnection():sendEvent(
+          ReopenContractEvent.new(contract.id, g_currentMission:getFarmId())
+        )
+      end
+    end,
+    self,
+    string.format(
+      "Reopen contract for Field %d?",
+      contract.fieldId
+    ),
+    "Reopen Contract"
+  )
 end
 
-function MenuCustomContracts:formatPeriodDay(period, day)
-  if period == nil or period <= 0 then
-    return "-"
-  end
+function MenuCustomContracts:onEditContract()
+  local index = self.contractsTable.selectedIndex
+  local selection = self.contractDisplaySwitcher:getState()
+  local contract = self.contractsRenderer.data[selection][index]
 
-  local month = self:periodToMonth(period)
+  if contract == nil then return end
 
-  local monthName = DateUtil.getMonthName(month) or tostring(month)
-
-  local env = g_currentMission.environment
-  local daysPerPeriod = (env and env.daysPerPeriod) or 1
-
-  if daysPerPeriod > 1 then
-    return string.format("%s %d", monthName, day or 1)
-  end
-
-  return monthName
+  g_currentMission.CustomContracts.editContract = contract
+  g_gui:showDialog("menuEditContract")
 end
