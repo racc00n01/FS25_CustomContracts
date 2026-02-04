@@ -21,7 +21,7 @@
 
           <!-- Work type -->
           <Text text="Work Type" profile="CC_ContractInputLabel" />
-          <MultiTextOption id="workTypeSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onGroupSelectChange">
+          <MultiTextOption id="workTypeSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onWorkTypeSelectChange">
             <Text profile="fs25_multiTextOptionText" name="text" />
           </MultiTextOption>
 

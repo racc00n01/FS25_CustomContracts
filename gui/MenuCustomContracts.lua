@@ -433,7 +433,8 @@ function MenuCustomContracts:shouldShowButton(button, listType, contract)
     end
 
     if button == self.btnEdit then
-      return status == CustomContract.STATUS.OPEN
+      return status == CustomContract.STATUS.OPEN or status == CustomContract.STATUS.CANCELLED or
+      CustomContract.STATUS.EXPIRED
     end
 
     if button == self.btnCancel then

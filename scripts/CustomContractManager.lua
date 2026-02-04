@@ -317,16 +317,13 @@ function CustomContractManager:handleCancelRequest(farmId, contractId)
 
   -- Check who cancels the contract
   if farmId == contract.contractorFarmId then
-    print("contractor")
     -- TODO: Add logic for a fine, if the start date is past
     contract.status = CustomContract.STATUS.CANCELLED
   else
-    print("owner")
     -- Owner cancels the contract
     -- TODO: Add fine, 10% of contract money will be transfered to contractor if the start date is past.
     contract.status = CustomContract.STATUS.CANCELLED
   end
-  print("sync")
   self:syncContracts()
 end
 

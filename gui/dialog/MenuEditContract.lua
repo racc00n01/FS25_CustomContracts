@@ -88,6 +88,22 @@ function MenuEditContract:prefillFromContract(contract)
   self.descriptionInput:setText(contract.description or "-")
 end
 
+function MenuEditContract:onFieldSelectChange(state)
+  self.selectedFieldIndex = state
+end
+
+function MenuEditContract:onWorkTypeSelectChange(state)
+  self.selectedWorkTypeIndex = state
+end
+
+function MenuEditContract:onStartDateSelectChange(state)
+  self.selectedStartDateIndex = state
+end
+
+function MenuEditContract:onDueDateSelectChange(state)
+  self.selectedDueDateIndex = state
+end
+
 -- XML onClick handlers
 function MenuEditContract:onConfirm(sender)
   if g_client == nil then return end
