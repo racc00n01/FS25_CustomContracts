@@ -44,7 +44,7 @@ function ContractsRenderer:populateCellForItemInSection(list, section, index, ce
   local farm = g_farmManager:getFarmById(contract.creatorFarmId)
 
   cell:getAttribute("farmIcon"):setImageSlice(nil, farm:getIconSliceId())
-  cell:getAttribute("field"):setText(string.format("Field %d", contract:getFieldId()))
+  cell:getAttribute("field"):setText(string.format(g_i18n:getText("cc_contract_list_field_label"), contract.fieldId))
   cell:getAttribute("reward"):setText(g_i18n:formatMoney(contract.reward, 0, true, true))
 end
 

@@ -8,15 +8,15 @@
       <Text profile="fs25_menuHeaderTitle" id="categoryHeaderText"/>
       <RoundCorner profile="fs25_shopMoneyBoxBg" id="shopMoneyBoxBg"/>
       <BoxLayout profile="fs25_shopMoneyBox" id="shopMoneyBox">
-        <Text profile="fs25_shopBalance" text="Current Balance:"/>
+        <Text profile="fs25_shopBalance" text="$l10n_cc_current_balance"/>
         <Text profile="fs25_shopMoney" id="currentBalanceText"/>
       </BoxLayout>
     </GuiElement>
     <BoxLayout profile="fs25_subCategorySelectorTabbedBox" id="subCategoryBox">
-      <Button profile="fs25_subCategorySelectorTabbedTab" id="subCategoryTabs[1]" text="Contracts" onClick="onClickPolicies">
+      <Button profile="fs25_subCategorySelectorTabbedTab" id="subCategoryTabs[1]" text="$l10n_cc_header_contracts" onClick="onClickPolicies">
         <ThreePartBitmap profile="fs25_subCategorySelectorTabbedTabBg" name="background"/>
       </Button>
-      <Button profile="fs25_subCategorySelectorTabbedTab" id="subCategoryTabs[2]" text="Invoices" onClick="onClickSchemes">
+      <Button profile="fs25_subCategorySelectorTabbedTab" id="subCategoryTabs[2]" text="$l10n_cc_header_invoices" onClick="onClickSchemes">
         <ThreePartBitmap profile="fs25_subCategorySelectorTabbedTabBg" name="background"/>
       </Button>
     </BoxLayout>
@@ -58,7 +58,7 @@
           <ThreePartBitmap profile="fs25_contractsContentSeparator"/>
         </GuiElement>
 
-        <Text id="noSelectedContractText" profile="CC_HeaderLeft" text="No contract selected" position="460px -230px" width="500px" />
+        <Text id="noSelectedContractText" profile="CC_HeaderLeft" text="$l10n_cc_contract_empty" position="460px -230px" width="500px" />
         <GuiElement id="contractsInfoContainer" width="1087px" position="460px -40px">
 
           <Text profile="CC_ContractTagline" id="contractId" position="0px -10px"/>
@@ -67,10 +67,10 @@
           <Text profile="CC_ContractTaglineRight" id="contractStatusLabel" position="0px -20px"/>
           <Text profile="CC_ContractStatus" id="contractStatusValue" position="0px -60px"/>
 
-          <Text profile="CC_ContractH6" text="Start:" position="300px -30px"/>
+          <Text profile="CC_ContractH6" text="$l10n_cc_contract_start_date_label" position="300px -30px"/>
           <Text profile="CC_ContractTagline" id="contractStartDateValue" position="300px -50px"/>
 
-          <Text profile="CC_ContractH6" text="Due:" position="500px -30px"/>
+          <Text profile="CC_ContractH6" text="$l10n_cc_contract_due_date_label" position="500px -30px"/>
           <Text profile="CC_ContractTagline" id="contractDueDateValue" position="500px -50px"/>
 
           <ThreePartBitmap profile="fs25_lineSeparatorTop" position="0px -120px"/>
@@ -85,7 +85,7 @@
           <Text profile="CC_ContractBody" width="800px" position="0px -560px" text="$l10n_cc_contract_disclaimer"/>
 
           <ThreePartBitmap profile="fs25_lineSeparatorTop" position="0px -600px"/>
-          <Text profile="CC_ContractFooter" position="0px -620px" text="Total reward"/>
+          <Text profile="CC_ContractFooter" position="0px -620px" text="$l10n_cc_contract_total_reward"/>
           <Text profile="CC_ContractFooterRight" position="0px -620px" id="contractRewardValue"/>
         </GuiElement>
 
@@ -96,7 +96,7 @@
   <GuiElement profile="fs25_subCategorySelectorTabbedContainer" id="subCategoryPages[2]">
 
     <GuiElement position="0px -20px">
-      <Text profile="rtLabelTopLeft" text="Invoices" position="0px 20px"/>
+      <Text profile="rtLabelTopLeft" text="$l10n_cc_header_invoices" position="0px 20px"/>
     </GuiElement>
   </GuiElement>
 </GUI>

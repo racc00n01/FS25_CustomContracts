@@ -11,12 +11,17 @@ CustomContracts.modName = g_currentModName
 CustomContracts.SaveKey = "CustomContracts"
 
 source(CustomContracts.dir .. "gui/MenuCustomContracts.lua")
+<<<<<<< HEAD
 source(CustomContracts.dir .. "gui/MenuCreateContract.lua")
 source(CustomContracts.dir .. "gui/MenuSelectContractTemplate.lua")
+=======
+source(CustomContracts.dir .. "gui/dialog/MenuCreateContract.lua")
+source(CustomContracts.dir .. "gui/dialog/MenuEditContract.lua")
+>>>>>>> origin/release/v0.0.1.2
 source(CustomContracts.dir .. "gui/ContractsRenderer.lua")
 source(CustomContracts.dir .. "scripts/events/SyncContractsEvent.lua")
 source(CustomContracts.dir .. "scripts/events/InitialClientStateEvent.lua")
-source(CustomContracts.dir .. "scripts/util/DateUtil.lua")
+source(CustomContracts.dir .. "scripts/util/CustomUtils.lua")
 
 function CustomContracts:loadMap()
   g_currentMission.CustomContracts = self
@@ -35,7 +40,11 @@ function CustomContracts:loadMap()
 
   -- Register Create contract dialog
   local createContractDialog = MenuCreateContract.new(g_i18n)
-  g_gui:loadGui(CustomContracts.dir .. "gui/MenuCreateContract.xml", "menuCreateContract", createContractDialog)
+  g_gui:loadGui(CustomContracts.dir .. "gui/dialog/MenuCreateContract.xml", "menuCreateContract", createContractDialog)
+
+  -- Register Edit contract dialog
+  local editContractDialog = MenuEditContract.new(g_i18n)
+  g_gui:loadGui(CustomContracts.dir .. "gui/dialog/MenuEditContract.xml", "menuEditContract", editContractDialog)
 
   -- Register Create contract dialog
   local selectContractTemplateDialog = MenuSelectContractTemplate.new(g_i18n)
