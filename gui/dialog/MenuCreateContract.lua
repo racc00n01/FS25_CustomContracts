@@ -73,7 +73,7 @@ function MenuCreateContract:onOpen()
 
   local fieldTexts = {}
   for _, fieldId in ipairs(fieldIds) do
-    table.insert(fieldTexts, string.format("Field %d", fieldId))
+    table.insert(fieldTexts, string.format(g_i18n:getText("cc_contract_list_field_label"), fieldId))
   end
 
   self.fieldSelector:setTexts(fieldTexts)
@@ -122,7 +122,7 @@ function MenuCreateContract:onConfirm(sender)
   local workType = CustomContractWorkTypes[index].text
 
   if fieldId == nil or reward == nil or workType == nil then
-    InfoDialog.show("Please fill all fields")
+    InfoDialog.show(g_i18n:getText("cc_dialog_create_validation_fields"))
     return
   end
 
@@ -133,12 +133,12 @@ function MenuCreateContract:onConfirm(sender)
   local dueV     = self.dueDateValues[self.selectedDueDateIndex or 1]
 
   if startV == nil or dueV == nil then
-    InfoDialog.show("Please select start and due date")
+    InfoDialog.show(g_i18n:getText("cc_dialog_create_validation_fields_due_date"))
     return
   end
 
   if dueIdx < startIdx then
-    InfoDialog.show("Due date cannot be before start date")
+    InfoDialog.show(g_i18n:getText("cc_dialog_create_validation_fields_start_date"))
     return
   end
 

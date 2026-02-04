@@ -61,8 +61,8 @@ function MenuCustomContracts:displaySelectedContract()
       --Contract info
       local farm = g_farmManager:getFarmById(contract.creatorFarmId)
       if farm ~= nil then
-        self.contractId:setText(string.format("Contract #%d", contract.id))
-        self.contractFarmName:setText(string.format("Owned by: %s", farm.name))
+        self.contractId:setText(string.format(g_i88n:getText("cc_contract_id_label"), contract.id))
+        self.contractFarmName:setText(string.format(g_i18n:getText("cc_contract_owner_label"), farm.name))
         self.contractWorkType:setText(contract.workType)
       else
         self.contractFarmName:setText("-")
@@ -79,14 +79,13 @@ function MenuCustomContracts:displaySelectedContract()
       if contract.contractorFarmId ~= nil then
         local contractorFarm = g_farmManager:getFarmById(contract.contractorFarmId)
 
-        if contractorFarm ~= nil and contract.status ~= CustomContract.STATUS.CANCELLED then
-          statusTextLabel = string.format(g_i18n:getText("cc_contract_status_label"))
-          statusText = string.format(
-            contractorFarm.name
-          )
+        if contractorFarm ~= nil and contract.status ~= CustomContract.STATUS.EXPIRED and contract.status ~= CustomContract.STATUS.CANCELLED then
+          statusTextLabel = g_i18n:getText("cc_contract_status_label")
+          statusText = contractorFarm.name
         else
-          statusTextLabel = string.format(g_i18n:getText("cc_contract_status_label_default"))
-          statusText = contract.status
+          statusTextLabel = g_i18n:getText("cc_contract_status_label_default")
+          statusText = g_i18n:getText("cc_status_" .. string.lower(contract.status))
+              or contract.status
         end
       else
         statusTextLabel = string.format(g_i18n:getText("cc_contract_status_label_default"))
@@ -102,7 +101,7 @@ function MenuCustomContracts:displaySelectedContract()
       )
 
       self.contractDescriptionValue:setText(
-        string.format("%s on Field %d (%.2f ha)", contract.workType, contract.fieldId, field.areaHa)
+        string.format(g_i18n:getText("cc_contract_description"), contract.workType, contract.fieldId, field.areaHa)
       )
       self.contractStartDateValue:setText(CustomUtils:formatPeriodDay(contract.startPeriod, contract.startDay))
       self.contractDueDateValue:setText(CustomUtils:formatPeriodDay(contract.duePeriod, contract.dueDay))
@@ -148,14 +147,14 @@ function MenuCustomContracts:initialize()
   self.btnBack = { inputAction = InputAction.MENU_BACK }
   self.btnCreateContract = {
     inputAction = InputAction.MENU_EXTRA_1,
-    text = "Create contract",
+    text = g_i18n:getText("cc_btn_create_contract"),
     callback = function()
       self
           :onCreateContract()
     end
   }
   self.btnAccept = {
-    text = "Accept contract",
+    text = g_i18n:getText("cc_btn_accept_contract"),
     inputAction = InputAction.MENU_ACCEPT,
     callback = function()
       self:onAcceptContract()
@@ -163,7 +162,7 @@ function MenuCustomContracts:initialize()
   }
 
   self.btnComplete = {
-    text = "Complete contract",
+    text = g_i18n:getText("cc_btn_complete_contract"),
     inputAction = InputAction.MENU_ACCEPT,
     callback = function()
       self:onCompleteContract()
@@ -171,7 +170,7 @@ function MenuCustomContracts:initialize()
   }
 
   self.btnCancel = {
-    text = "Cancel contract",
+    text = g_i18n:getText("cc_btn_cancel_contract"),
     inputAction = InputAction.MENU_ACCEPT,
     callback = function()
       self:onCancelContract()
@@ -179,7 +178,7 @@ function MenuCustomContracts:initialize()
   }
 
   self.btnDelete = {
-    text = "Delete contract",
+    text = g_i18n:getText("cc_btn_delete_contract"),
     inputAction = InputAction.MENU_EXTRA_2,
     callback = function()
       self:onDeleteContract()
@@ -187,7 +186,7 @@ function MenuCustomContracts:initialize()
   }
 
   self.btnReopen = {
-    text = "Reopen contract",
+    text = g_i18n:getText("cc_btn_reopen_contract"),
     inputAction = InputAction.MENU_ACCEPT,
     callback = function()
       self:onReopenContract()
@@ -195,7 +194,7 @@ function MenuCustomContracts:initialize()
   }
 
   self.btnEdit = {
-    text = "Edit contract",
+    text = g_i18n:getText("cc_btn_edit_contract"),
     inputAction = InputAction.MENU_ACCEPT,
     callback = function()
       self:onEditContract()
@@ -434,12 +433,12 @@ function MenuCustomContracts:shouldShowButton(button, listType, contract)
 
     if button == self.btnEdit then
       return status == CustomContract.STATUS.OPEN or status == CustomContract.STATUS.CANCELLED or
-      CustomContract.STATUS.EXPIRED
+          CustomContract.STATUS.EXPIRED
     end
 
     if button == self.btnCancel then
       -- owner cancelling an accepted contract
-      return status == CustomContract.STATUS.ACCEPTED
+      return status == CustomContract.STATUS.ACCEPTED or status == CustomContract.STATUS.OPEN
     end
 
     if button == self.btnReopen then
@@ -548,11 +547,11 @@ function MenuCustomContracts:onCompleteContract()
     end,
     self,
     string.format(
-      "Complete contract for Field %d and receive €%s?",
+      g_i18n:getText("cc_dialog_create_yes_no"),
       contract.fieldId,
       g_i18n:formatMoney(contract.reward)
     ),
-    "Complete Contract"
+    g_i18n:getText("cc_dialog_create_yes_no_btn")
   )
 end
 
@@ -578,12 +577,12 @@ function MenuCustomContracts:onAcceptContract()
     end,
     self,
     string.format(
-      "Accept contract for Field %d (%s) for €%s?",
+      g_i18n:getText("cc_dialog_accept_yes_no"),
       contract.fieldId,
       contract.workType,
       g_i18n:formatMoney(contract.reward)
     ),
-    "Accept Contract"
+    g_i18n:getText("cc_dialog_accept_yes_no_btn")
   )
 end
 
@@ -604,10 +603,10 @@ function MenuCustomContracts:onCancelContract()
     end,
     self,
     string.format(
-      "Cancel contract for Field %d?",
+      g_i18n:getText("cc_dialog_cancel_yes_no"),
       contract.fieldId
     ),
-    "Cancel Contract"
+    g_i18n:getText("cc_dialog_cancel_yes_no_btn")
   )
 end
 
@@ -629,10 +628,10 @@ function MenuCustomContracts:onDeleteContract()
     end,
     self,
     string.format(
-      "Delete contract for Field %d?",
+      g_i18n:getText("cc_dialog_delete_yes_no"),
       contract.fieldId
     ),
-    "Delete Contract"
+    g_i18n:getText("cc_dialog_delete_yes_no_btn")
   )
 end
 
@@ -654,10 +653,10 @@ function MenuCustomContracts:onReopenContract()
     end,
     self,
     string.format(
-      "Reopen contract for Field %d?",
+      g_i18n:getText("cc_dialog_reopen_yes_no"),
       contract.fieldId
     ),
-    "Reopen Contract"
+    g_i18n:getText("cc_dialog_reopen_yes_no_btn")
   )
 end
 
