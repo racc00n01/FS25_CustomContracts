@@ -20,7 +20,6 @@ CustomContractWorkTypes = {
   { id = "MULCH",         text = "Mulch" },
   { id = "STONEPICK",     text = "Stone Pick" },
   { id = "REMOVEFOLIAGE", text = "Remove Foliage" },
-  { id = "REMOVEFOLIAGE", text = "Remove Foliage" },
   { id = "MOW",           text = "Mowing" },
   { id = "TEDDING",       text = "Tedding" },
   { id = "WINDROWING",    text = "Windrowing" },

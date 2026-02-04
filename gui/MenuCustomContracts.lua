@@ -65,25 +65,28 @@ function MenuCustomContracts:displaySelectedContract()
       )
 
       local statusText
+      local statusTextLabel
 
       if contract.contractorFarmId ~= nil then
         local contractorFarm = g_farmManager:getFarmById(contract.contractorFarmId)
 
         if contractorFarm ~= nil then
+          statusTextLabel = string.format(g_i18n.getText("cc_contract_status_label"))
           statusText = string.format(
-            "%s: %s",
-            g_i18n:getText("cc_ownedBy"),
             contractorFarm.name
           )
         else
+          statusTextLabel = string.format(g_i18n.getText("cc_contract_status_label_default"))
           statusText = contract.status
         end
       else
+        statusTextLabel = string.format(g_i18n.getText("cc_contract_status_label_default"))
         statusText = g_i18n:getText("cc_status_" .. string.lower(contract.status))
             or contract.status
       end
 
       self.contractStatusValue:setText(statusText)
+      self.contractStatusLabel:setText(statusTextLabel)
 
       self.contractNotesValue:setText(
         contract.description or "-"
@@ -299,9 +302,14 @@ function MenuCustomContracts:updateContent()
     self.contractsRenderer:setData(renderData)
     self.contractsTable:reloadData()
 
-    self.contractsContainer:setVisible(self.contractsTable:getItemCount() > 0)
-    self.contractsInfoContainer:setVisible(self.contractsTable:getItemCount() > 0)
-    self.noContractsContainer:setVisible(self.contractsTable:getItemCount() == 0)
+    self:applyPendingContractsView(renderData)
+
+    -- If nothing queued, do your normal logic
+    if self.pendingContractsListType == nil then
+      self.contractsContainer:setVisible(self.contractsTable:getItemCount() > 0)
+      self.contractsInfoContainer:setVisible(self.contractsTable:getItemCount() > 0)
+      self.noContractsContainer:setVisible(self.contractsTable:getItemCount() == 0)
+    end
   end
 
   self:updateMenuButtons()
@@ -341,8 +349,58 @@ function MenuCustomContracts:onMoneyChange()
   end
 end
 
+function MenuCustomContracts:queueContractsView(listType, focusContractId)
+  self.pendingContractsListType = listType
+  self.pendingFocusContractId = focusContractId -- can be nil
+end
+
+function MenuCustomContracts:applyPendingContractsView(renderData)
+  if self.pendingContractsListType == nil then
+    return
+  end
+
+  local targetListType = self.pendingContractsListType
+  local focusId = self.pendingFocusContractId
+
+  self.pendingContractsListType = nil
+  self.pendingFocusContractId = nil
+
+  -- Switch the switcher (NEW / ACTIVE / OWNED)
+  self.contractDisplaySwitcher:setState(targetListType, true)
+  self.currentContractsListType = targetListType
+
+  self.contractsTable:reloadData()
+
+  local items = renderData[targetListType] or {}
+  local targetIndex = 0
+
+  if focusId ~= nil then
+    for i, c in ipairs(items) do
+      if c.id == focusId then
+        targetIndex = i
+        break
+      end
+    end
+  end
+
+  if targetIndex == 0 and #items > 0 then
+    targetIndex = 1
+  end
+
+  local hasItem = self.contractsTable:getItemCount() > 0
+  self.contractsContainer:setVisible(hasItem)
+  self.contractsInfoContainer:setVisible(hasItem)
+  self.noContractsContainer:setVisible(not hasItem)
+
+  if hasItem then
+    self.contractsTable:setSelectedIndex(targetIndex)
+  end
+
+  self:displaySelectedContract()
+end
+
 function MenuCustomContracts:onCreateContract()
-  self.redirectToYoursAfterCreate = true
+  self:queueContractsView(MenuCustomContracts.CONTRACTS_LIST_TYPE.OWNED, nil)
   local dialog = g_gui:showDialog("menuCreateContract")
 end
 
@@ -354,6 +412,7 @@ function MenuCustomContracts:onCompleteContract()
   YesNoDialog.show(
     function(_, yes)
       if yes then
+        self:queueContractsView(MenuCustomContracts.CONTRACTS_LIST_TYPE.ACTIVE, nil)
         g_client:getServerConnection():sendEvent(
           CompleteContractEvent.new(contract.id, g_currentMission:getFarmId())
         )
@@ -383,6 +442,7 @@ function MenuCustomContracts:onAcceptContract()
   YesNoDialog.show(
     function(_, yes)
       if yes then
+        self:queueContractsView(MenuCustomContracts.CONTRACTS_LIST_TYPE.ACTIVE, contract.id)
         g_client:getServerConnection():sendEvent(
           AcceptContractEvent.new(contract.id, g_currentMission:getFarmId())
         )
@@ -433,6 +493,7 @@ function MenuCustomContracts:onDeleteContract()
   YesNoDialog.show(
     function(_, yes)
       if yes then
+        self:queueContractsView(MenuCustomContracts.CONTRACTS_LIST_TYPE.OWNED, nil)
         g_client:getServerConnection():sendEvent(
           DeleteContractEvent.new(contract.id, g_currentMission:getFarmId())
         )
