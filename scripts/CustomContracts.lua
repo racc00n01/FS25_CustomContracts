@@ -11,13 +11,9 @@ CustomContracts.modName = g_currentModName
 CustomContracts.SaveKey = "CustomContracts"
 
 source(CustomContracts.dir .. "gui/MenuCustomContracts.lua")
-<<<<<<< HEAD
-source(CustomContracts.dir .. "gui/MenuCreateContract.lua")
 source(CustomContracts.dir .. "gui/MenuSelectContractTemplate.lua")
-=======
 source(CustomContracts.dir .. "gui/dialog/MenuCreateContract.lua")
 source(CustomContracts.dir .. "gui/dialog/MenuEditContract.lua")
->>>>>>> origin/release/v0.0.1.2
 source(CustomContracts.dir .. "gui/ContractsRenderer.lua")
 source(CustomContracts.dir .. "scripts/events/SyncContractsEvent.lua")
 source(CustomContracts.dir .. "scripts/events/InitialClientStateEvent.lua")
