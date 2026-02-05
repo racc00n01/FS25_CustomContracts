@@ -366,7 +366,7 @@ function CustomContractManager:handleEditRequest(farmId, contractId, data)
   end
 
   -- usually only allow editing OPEN contracts
-  if contract.status ~= CustomContract.STATUS.OPEN then
+  if contract.status == CustomContract.STATUS.ACCEPTED or contract.status == CustomContract.STATUS.COMPLETED then
     return
   end
 
@@ -425,17 +425,18 @@ function CustomContractManager:updateExpiredContracts()
   local changed = false
 
   for _, contract in pairs(self.contracts) do
-    -- Only check contracts that can expire
     if contract.status == CustomContract.STATUS.OPEN
         or contract.status == CustomContract.STATUS.ACCEPTED then
-      if CustomUtils.isPastDue(contract, curPeriod, curDay, daysPerPeriod) then
-        contract.status = CustomContract.STATUS.EXPIRED
-        changed = true
+      -- ✅ Only expire contracts whose deadline is in the current period (month)
+      if contract.duePeriod == g_currentMission.CustomContracts.lastPeriod then
+        if CustomUtils.isPastDue(contract, curPeriod, curDay, daysPerPeriod) then
+          contract.status = CustomContract.STATUS.EXPIRED
+          changed = true
+        end
       end
     end
   end
 
-  -- Only sync if something actually changed
   if changed then
     self:syncContracts()
     g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
