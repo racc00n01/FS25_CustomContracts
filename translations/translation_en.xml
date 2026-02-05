@@ -36,12 +36,14 @@
     <text name="cc_dialog_create_yes_no_btn" text="Complete Contract"/>
     <text name="cc_dialog_accept_yes_no" text="Accept contract for Field %d (%s) for €%s?"/>
     <text name="cc_dialog_accept_yes_no_btn" text="Accept Contract"/>
-    <text name="cc_dialog_cancel_yes_no" text="Complete contract for Field %d and receive €%s?"/>
-    <text name="cc_dialog_cancel_yes_no_btn" text="Complete Contract"/>
-    <text name="cc_dialog_delete_yes_no" text="Complete contract for Field %d and receive €%s?"/>
-    <text name="cc_dialog_delete_yes_no_btn" text="Complete Contract"/>
-    <text name="cc_dialog_reopen_yes_no" text="Complete contract for Field %d and receive €%s?"/>
-    <text name="cc_dialog_reopen_yes_no_btn" text="Complete Contract"/>
+    <text name="cc_dialog_complete_yes_no" text="Complete contract for Field %d and receive €%s?"/>
+    <text name="cc_dialog_complete_yes_no_btn" text="Complete Contract"/>
+    <text name="cc_dialog_cancel_yes_no" text="Cancel contract for Field %d?"/>
+    <text name="cc_dialog_cancel_yes_no_btn" text="Cancel Contract"/>
+    <text name="cc_dialog_delete_yes_no" text="Delete contract for Field %d?"/>
+    <text name="cc_dialog_delete_yes_no_btn" text="Delete Contract"/>
+    <text name="cc_dialog_reopen_yes_no" text="Reopen contract for Field %d?"/>
+    <text name="cc_dialog_reopen_yes_no_btn" text="Reopen Contract"/>
     <text name="cc_dialog_create_validation_fields" text="Please fill all fields"/>
     <text name="cc_dialog_create_validation_fields_due_date" text="Please select start and due date"/>
     <text name="cc_dialog_create_validation_fields_start_date" text="Due date cannot be before start date"/>

@@ -61,6 +61,9 @@ function MenuEditContract:onOpen()
   self:fillMonthMultiTextOption(self.startDateSelector, "startDateValues")
   self:fillMonthMultiTextOption(self.dueDateSelector, "dueDateValues")
 
+  self.selectedStartDateIndex = 1
+  self.selectedDueDateIndex   = 1
+
   -- Prefill from contract
   self:prefillFromContract(contract)
 end
@@ -73,15 +76,6 @@ function MenuEditContract:prefillFromContract(contract)
   -- Worktype -> index (your contract stores text, not id)
   self.selectedWorkTypeIndex = CustomUtils:findWorkTypeIndexByText(contract.workType) or 1
   self.workTypeSelector:setState(self.selectedWorkTypeIndex, false)
-
-  -- Dates -> index (match period/day)
-  self.selectedStartDateIndex = CustomUtils:findDateIndex(self.startDateValues, contract.startPeriod, contract.startDay) or
-      1
-  self.startDateSelector:setState(self.selectedStartDateIndex, false)
-
-  self.selectedDueDateIndex = CustomUtils:findDateIndex(self.dueDateValues, contract.duePeriod, contract.dueDay) or
-      self.selectedStartDateIndex
-  self.dueDateSelector:setState(self.selectedDueDateIndex, false)
 
   -- Inputs
   self.rewardInput:setText(tostring(contract.reward or ""))
@@ -107,6 +101,7 @@ end
 -- XML onClick handlers
 function MenuEditContract:onConfirm(sender)
   if g_client == nil then return end
+
   local old = self.editContract
   if old == nil then return end
 

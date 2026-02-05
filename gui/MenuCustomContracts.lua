@@ -61,7 +61,7 @@ function MenuCustomContracts:displaySelectedContract()
       --Contract info
       local farm = g_farmManager:getFarmById(contract.creatorFarmId)
       if farm ~= nil then
-        self.contractId:setText(string.format(g_i88n:getText("cc_contract_id_label"), contract.id))
+        self.contractId:setText(string.format(g_i18n:getText("cc_contract_id_label"), contract.id))
         self.contractFarmName:setText(string.format(g_i18n:getText("cc_contract_owner_label"), farm.name))
         self.contractWorkType:setText(contract.workType)
       else
