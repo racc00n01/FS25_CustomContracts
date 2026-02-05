@@ -96,7 +96,7 @@
   <GuiElement profile="fs25_subCategorySelectorTabbedContainer" id="subCategoryPages[2]">
 
     <GuiElement position="0px -20px">
-      <Text profile="rtLabelTopLeft" text="$l10n_cc_header_invoices" position="0px 20px"/>
+      <Text text="$l10n_cc_header_invoices" position="0px 20px"/>
     </GuiElement>
   </GuiElement>
 </GUI>

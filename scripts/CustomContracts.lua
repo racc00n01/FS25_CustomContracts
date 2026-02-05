@@ -51,6 +51,7 @@ function CustomContracts:loadMap()
 
   self.ContractManager = CustomContractManager:new()
   self.CustomContractsMenu = menuCustomContracts
+  self.lastPeriod = g_currentMission.environment.currentPeriod - 1
   self.currentPeriod = g_currentMission.environment.currentPeriod
   self.currentDay = g_currentMission.environment.currentDay
 
@@ -199,6 +200,7 @@ function CustomContracts:hourChanged()
 end
 
 function CustomContracts:onPeriodChanged()
+  g_currentMission.CustomContracts.lastPeriod = g_currentMission.CustomContracts.currentPeriod
   g_currentMission.CustomContracts.currentPeriod = g_currentMission.environment.currentPeriod
   g_currentMission.CustomContracts.currentDay = g_currentMission.environment.currentDay
 
