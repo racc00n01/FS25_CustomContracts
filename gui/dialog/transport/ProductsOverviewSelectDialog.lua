@@ -78,11 +78,12 @@ function ProductsOverviewSelectDialog:onConfirm()
   g_currentMission.CustomContracts.selectedProducts = {
     index = idx,
     fillTypeIndex = product and product.fillTypeIndex,
-    liters = self.selectedAmount or (product and product.amount) or 0
+    liters = self.selectedAmount or (product and product.amount) or 0,
+    title = product and product.title
   }
 
   self:close()
-  g_gui:showDialog("menuCreateContract")
+  g_gui:showDialog("sellPointSelectDialog")
 end
 
 function ProductsOverviewSelectDialog:onCancel()

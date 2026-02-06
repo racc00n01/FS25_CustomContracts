@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<GUI name="sellPointSelectDialog" onOpen="onOpen" onClose="onClose" onCreate="onCreate">
+
+  <GuiElement profile="newLayer"/>
+  <Bitmap profile="dialogFullscreenBg" id="dialogBg"/>
+
+  <GuiElement profile="fs25_dialogBg" id="dialogElement" size="700px 620px">
+    <ThreePartBitmap profile="fs25_dialogBgMiddleSmall"/>
+    <ThreePartBitmap profile="fs25_dialogBgTopSmall"/>
+    <ThreePartBitmap profile="fs25_dialogBgBottom"/>
+
+    <GuiElement profile="fs25_dialogContentContainer">
+      <Text profile="dialogTitle" text="Transport destination" position="0px -30px"/>
+      <Text profile="fs25_dialogText" id="dialogTextElement" position="0px -55px"/>
+
+      <BoxLayout flowDirection="vertical" position="15px -110px">
+        <Text text="Select a sell point for transport" profile="CC_ContractInputLabel"/>
+        <SmoothList id="sellPointSelector" profile="ingameMenuTSStockCheckList" size="670px 200px">
+          <ListItem profile="ingameMenuTSStockCheckListItem">
+            <Text profile="ingameMenuTSStockCheckRowCellLeftBright" position="15px 0px" name="sellPoint"/>
+            <Text profile="ingameMenuTSStockCheckRowCellLeftBright" position="260px 0px" name="distance"/>
+            <Text profile="ingameMenuTSStockCheckRowCellLeftBright" position="360px 0px" name="price"/>
+          </ListItem>
+        </SmoothList>
+      </BoxLayout>
+    </GuiElement>
+    <BoxLayout profile="fs25_dialogButtonBox">
+      <Button profile="buttonBack" text="Cancel" onClick="onCancel" />
+      <Button profile="buttonOK" text="Next" onClick="onConfirm" />
+    </BoxLayout>
+
+  </GuiElement>
+
+  <!-- Profiles -->
+  <GUIProfiles>
+    <Profile name="ingameMenuTSStockCheckList" extends="emptyPanel" with="anchorStretchingYLeft pivotTopLeft">
+      <position value="0px 0px" />
+      <absoluteSizeOffset value="0px 0px" />
+    </Profile>
+    <Profile name="ingameMenuTSStockCheckListItem" extends="baseReference" with="anchorTopStretchingX alternating">
+      <height value="32px"/>
+      <imageColor value="$preset_fs25_colorGrey" />
+      <imageSelectedColor value="$preset_fs25_colorMainHighlight" />
+      <alternateBackgroundColor value="$preset_fs25_colorGreyDark_50" />
+    </Profile>
+    <Profile name="ingameMenuTSStockCheckRowCellImage" extends="baseReference" with="anchorMiddleLeft">
+      <size value="24px 24px" />
+      <position value="8px 0" />
+      <imageSliceId value="noSlice" />
+    </Profile>
+
+    <Profile name="ingameMenuTSStockCheckRowCellLeftBright" extends="baseReference" with="anchorStretchingYLeft">
+      <size value="50px 32px" />
+      <textBold value="true" />
+      <textSize value="15px" />
+      <textAlignment value="left" />
+      <textColor value="$preset_fs25_colorMainLight" />
+      <textSelectedColor value="$preset_fs25_colorMainDark" />
+      <textDisabledColor value="$preset_colorDisabled" />
+    </Profile>
+
+    <!-- Dialog size (tweak if you want) -->
+    <Profile name="cc_sellPointDialogBg" extends="fs25_dialogBg">
+      <size value="760px 520px"/>
+    </Profile>
+
+    <!-- Header row -->
+    <Profile name="cc_sellPointHeaderRow" extends="baseReference" with="anchorTopCenter">
+      <size value="650px 26px"/>
+    </Profile>
+
+    <Profile name="cc_sellPointHeaderText" extends="fs25_text" with="anchorMiddleLeft">
+      <position value="-320px 0px"/>
+      <textSize value="14px"/>
+      <textBold value="true"/>
+      <textColor value="$preset_fs25_colorTextLight"/>
+    </Profile>
+
+    <Profile name="cc_sellPointHeaderTextRight" extends="fs25_text" with="anchorMiddleRight">
+      <position value="320px 0px"/>
+      <textSize value="14px"/>
+      <textBold value="true"/>
+      <textAlignment value="right"/>
+      <textColor value="$preset_fs25_colorTextLight"/>
+    </Profile>
+
+    <!-- List -->
+    <Profile name="cc_sellPointList" extends="baseReference" with="anchorTopCenter">
+      <size value="650px 270px"/>
+      <scrollbarProfile value="fs25_defaultScrollbar"/>
+      <useAlternateBackground value="true"/>
+    </Profile>
+
+    <Profile name="cc_sellPointListItem" extends="baseReference">
+      <size value="650px 52px"/>
+    </Profile>
+
+    <!-- Cell icon -->
+    <Profile name="cc_sellPointIcon" extends="baseReference" with="anchorMiddleLeft">
+      <size value="40px 40px"/>
+      <position value="-305px 0px"/>
+      <imageSliceId value="noSlice"/>
+    </Profile>
+
+    <!-- Name column -->
+    <Profile name="cc_sellPointName" extends="fs25_text" with="anchorMiddleLeft">
+      <position value="-250px 0px"/>
+      <textSize value="18px"/>
+      <textColor value="$preset_fs25_colorTextLight"/>
+      <textAlignment value="left"/>
+    </Profile>
+
+    <!-- Distance column -->
+    <Profile name="cc_sellPointDistance" extends="fs25_text" with="anchorMiddleRight">
+      <position value="230px 0px"/>
+      <textSize value="16px"/>
+      <textColor value="$preset_fs25_colorTextLight"/>
+      <textAlignment value="right"/>
+    </Profile>
+
+    <!-- Price column -->
+    <Profile name="cc_sellPointPrice" extends="fs25_text" with="anchorMiddleRight">
+      <position value="320px 0px"/>
+      <textSize value="16px"/>
+      <textColor value="$preset_fs25_colorTextLight"/>
+      <textAlignment value="right"/>
+    </Profile>
+
+  </GUIProfiles>
+
+</GUI>

@@ -398,13 +398,3 @@ function MenuCreateContract:onTransportProductChange(state)
   self.selectedTransportProductIndex = state
   -- self:updateTransportAmountHint()
 end
-
--- function MenuCreateContract:updateTransportAmountHint()
---   local p = self.transportProducts and self.transportProducts[self.selectedTransportProductIndex or 1]
---   if p == nil or p.amount == nil or p.amount <= 0 then
---     self.transportAmountHint:setText("Select a product with available stock.")
---     return
---   end
-
---   self.transportAmountHint:setText(string.format("Min 1 L • Max %,d L available", p.amount))
--- end

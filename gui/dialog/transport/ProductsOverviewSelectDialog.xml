@@ -36,8 +36,8 @@
 
   <GUIProfiles>
     <Profile name="ingameMenuTSStockCheckList" extends="emptyPanel" with="anchorStretchingYLeft pivotTopLeft">
-      <position value="0px -40px" />
-      <absoluteSizeOffset value="0px 80px" />
+      <!-- <position value="0px 0px" />
+      <absoluteSizeOffset value="0px 80px" /> -->
     </Profile>
     <Profile name="ingameMenuTSStockCheckListItem" extends="baseReference" with="anchorTopStretchingX alternating">
       <height value="32px"/>
