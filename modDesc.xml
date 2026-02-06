@@ -40,6 +40,7 @@ https://github.com/racc00n01/FS25_CustomContracts
     <sourceFile filename="gui/dialog/MenuEditContract.xml"/>
     <sourceFile filename="gui/dialog/transport/ProductsOverviewSelectDialog.xml"/>
     <sourceFile filename="gui/dialog/transport/SellPointSelectDialog.xml"/>
+    <sourceFile filename="gui/dialog/transport/TransportCreateDialog.xml"/>
     <sourceFile filename="gui/ContractsRenderer.lua"/>
 
     <sourceFile filename="scripts/CustomContract.lua"/>

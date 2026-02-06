@@ -37,10 +37,10 @@ function SellPointSelectDialog:onOpen()
 
   -- If caller didn't pass inputs, try to read what the product dialog stored
   if self.fillTypeIndex == nil then
-    local sel = g_currentMission.CustomContracts and g_currentMission.CustomContracts.selectedProducts
+    local sel = g_currentMission.CustomContracts and g_currentMission.CustomContracts.newTransportContract
     if sel ~= nil then
       self.fillTypeIndex = sel.fillTypeIndex
-      self.liters = sel.liters or 0
+      self.amount = sel.liters or 0
     end
   end
 
@@ -61,11 +61,6 @@ function SellPointSelectDialog:onOpen()
 end
 
 function SellPointSelectDialog:updateHeaderText()
-  if self.dialogTextElement == nil then
-    -- MessageDialog typically uses setText() (mapped to dialogTextElement)
-    -- But not all variants expose dialogTextElement directly.
-  end
-
   local ftTitle = "—"
   if self.fillTypeIndex ~= nil then
     local ft = g_fillTypeManager:getFillTypeByIndex(self.fillTypeIndex)
@@ -132,15 +127,20 @@ function SellPointSelectDialog:onConfirm()
     return
   end
 
-  g_currentMission.CustomContracts = g_currentMission.CustomContracts or {}
-  g_currentMission.CustomContracts.selectedSellPoint = {
-    index = idx,
-    title = sp.title,
-    -- runtime reference (good enough to pass to MenuCreateContract right away)
-    station = sp.station,
-    -- stable-ish ids if available
+  g_currentMission.CustomContracts.newTransportContract = {
+    fillTypeIndex = g_currentMission.CustomContracts.newTransportContract.fillTypeIndex,
+    product = g_currentMission.CustomContracts.newTransportContract.product,
+    amount = g_currentMission.CustomContracts.newTransportContract.amount,
+    sellPointName = sp.title,
     placeableId = sp.placeableId
   }
+
+  --   index = idx,
+  -- title = sp.title,
+  -- -- runtime reference (good enough to pass to MenuCreateContract right away)
+  -- station = sp.station,
+  -- -- stable-ish ids if available
+  -- placeableId = sp.placeableId
 
   self:close()
 
@@ -148,7 +148,7 @@ function SellPointSelectDialog:onConfirm()
     self.onSelectedCallback(sp)
   else
     -- Continue to create dialog
-    g_gui:showDialog("menuCreateContract")
+    g_gui:showDialog("transportCreateDialog")
   end
 end
 

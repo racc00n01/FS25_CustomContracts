@@ -75,12 +75,15 @@ function ProductsOverviewSelectDialog:onConfirm()
   local idx = self.selectedIndex or 1
   local product = self.transportProducts and self.transportProducts[idx]
 
-  g_currentMission.CustomContracts.selectedProducts = {
-    index = idx,
-    fillTypeIndex = product and product.fillTypeIndex,
-    liters = self.selectedAmount or (product and product.amount) or 0,
-    title = product and product.title
+  local newTransportData = {
+    fillTypeIndex = product.fillTypeIndex,
+    product = product,
+    amount = self.selectedAmount or (product and product.amount) or 0,
+    sellPointName = nil,
+    placeableId = 0
   }
+
+  g_currentMission.CustomContracts.newTransportContract = newTransportData
 
   self:close()
   g_gui:showDialog("sellPointSelectDialog")

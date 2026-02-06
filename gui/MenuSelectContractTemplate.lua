@@ -72,7 +72,11 @@ function MenuSelectContractTemplate:onConfirm()
   self:close()
 
   -- Now open the create dialog
-  g_gui:showDialog("productsOverviewSelectDialog")
+  if g_currentMission.CustomContracts.selectedCreateTemplateId == "FIELD_WORK" then
+    g_gui:showDialog("productsOverviewSelectDialog")
+  elseif g_currentMission.CustomContracts.selectedCreateTemplateId == "TRANSPORT" then
+    g_gui:showDialog("productsOverviewSelectDialog")
+  end
 end
 
 function MenuSelectContractTemplate:onCancel()

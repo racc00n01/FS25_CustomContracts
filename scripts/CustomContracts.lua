@@ -16,6 +16,7 @@ source(CustomContracts.dir .. "gui/dialog/MenuCreateContract.lua")
 source(CustomContracts.dir .. "gui/dialog/MenuEditContract.lua")
 source(CustomContracts.dir .. "gui/dialog/transport/ProductsOverviewSelectDialog.lua")
 source(CustomContracts.dir .. "gui/dialog/transport/SellPointSelectDialog.lua")
+source(CustomContracts.dir .. "gui/dialog/transport/TransportCreateDialog.lua")
 source(CustomContracts.dir .. "gui/ContractsRenderer.lua")
 source(CustomContracts.dir .. "scripts/events/SyncContractsEvent.lua")
 source(CustomContracts.dir .. "scripts/events/InitialClientStateEvent.lua")
@@ -59,6 +60,11 @@ function CustomContracts:loadMap()
   g_gui:loadGui(CustomContracts.dir .. "gui/dialog/transport/SellPointSelectDialog.xml",
     "sellPointSelectDialog",
     sellPointSelectDialog)
+
+  local transportCreateDialog = TransportCreateDialog.new(g_i18n)
+  g_gui:loadGui(CustomContracts.dir .. "gui/dialog/transport/TransportCreateDialog.xml",
+    "transportCreateDialog",
+    transportCreateDialog)
 
   menuCustomContracts:initialize()
 
