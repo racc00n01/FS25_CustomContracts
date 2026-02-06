@@ -72,7 +72,7 @@ function MenuSelectContractTemplate:onConfirm()
   self:close()
 
   -- Now open the create dialog
-  g_gui:showDialog("menuCreateContract")
+  g_gui:showDialog("productsOverviewSelectDialog")
 end
 
 function MenuSelectContractTemplate:onCancel()

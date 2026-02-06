@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<GUI name="productsOverviewSelectDialog" onOpen="onOpen" onClose="onClose" onCreate="onCreate">
+  <GuiElement profile="newLayer" />
+  <Bitmap profile="dialogFullscreenBg" />
+  <GuiElement profile="fs25_dialogBg" size="900px 820px">
+    <ThreePartBitmap profile="fs25_dialogBgMiddle" />
+    <ThreePartBitmap profile="fs25_dialogBgTop" />
+    <ThreePartBitmap profile="fs25_dialogBgBottom" />
+
+    <GuiElement profile="fs25_dialogContentContainer">
+      <Text profile="dialogTitle" text="Select the product" position="0px -30px"/>
+
+      <BoxLayout flowDirection="vertical" position="15px -110px">
+        <Text text="Select a product for transport" profile="CC_ContractInputLabel"/>
+        <SmoothList id="transportProductSelector" profile="ingameMenuTSStockCheckList" size="100% 200px">
+          <ListItem profile="ingameMenuTSStockCheckListItem">
+            <Bitmap profile="ingameMenuTSStockCheckRowCellImage" name="icon" />
+            <Text profile="ingameMenuTSStockCheckRowCellLeftBright" position="40px 0px" name="product"/>
+            <Text profile="ingameMenuTSStockCheckRowCellLeftBright" position="205px 0px" name="amount"/>
+            <Text profile="ingameMenuTSStockCheckRowCellLeftBright" position="360px 0px" name="location"/>
+          </ListItem>
+        </SmoothList>
+        <Text text="Amount" profile="CC_ContractInputLabel"/>
+        <OptionSlider profile="fs25_productionStorageOptionSlider" position="0px 0px" onClick="onClickAmount" id="amountElement">
+          <Text profile="fs25_optionSliderText" id="itemTextAmount" name="text"/>
+        </OptionSlider>
+      </BoxLayout>
+    </GuiElement>
+
+    <BoxLayout profile="fs25_dialogButtonBox">
+      <Button profile="buttonBack" text="Cancel" onClick="onCancel" />
+      <Button profile="buttonOK" text="Next" onClick="onConfirm" />
+    </BoxLayout>
+  </GuiElement>
+
+
+  <GUIProfiles>
+    <Profile name="ingameMenuTSStockCheckList" extends="emptyPanel" with="anchorStretchingYLeft pivotTopLeft">
+      <position value="0px -40px" />
+      <absoluteSizeOffset value="0px 80px" />
+    </Profile>
+    <Profile name="ingameMenuTSStockCheckListItem" extends="baseReference" with="anchorTopStretchingX alternating">
+      <height value="32px"/>
+      <imageColor value="$preset_fs25_colorGrey" />
+      <imageSelectedColor value="$preset_fs25_colorMainHighlight" />
+      <alternateBackgroundColor value="$preset_fs25_colorGreyDark_50" />
+    </Profile>
+    <Profile name="ingameMenuTSStockCheckRowCellImage" extends="baseReference" with="anchorMiddleLeft">
+      <size value="24px 24px" />
+      <position value="8px 0" />
+      <imageSliceId value="noSlice" />
+    </Profile>
+
+    <Profile name="ingameMenuTSStockCheckRowCellLeftBright" extends="baseReference" with="anchorStretchingYLeft">
+      <size value="50px 32px" />
+      <textBold value="true" />
+      <textSize value="15px" />
+      <textAlignment value="left" />
+      <textColor value="$preset_fs25_colorMainLight" />
+      <textSelectedColor value="$preset_fs25_colorMainDark" />
+      <textDisabledColor value="$preset_colorDisabled" />
+    </Profile>
+    <Profile name="fs25_productionStorageOptionSlider" extends="fs25_multiTextOption" with="anchorBottomCenter">
+      <width value="440px"/>
+      <sliderOffset value="5px"/>
+      <useFillingBar value="true"/>
+      <updateTextPosition value="false"/>
+      <hideLeftRightButtons value="true"/>
+      <defaultProfileBgThreePart value="fs25_optionSliderBg"/>
+      <defaultProfileText value="fs25_optionSliderText"/>
+      <defaultProfileSlider value="fs25_optionSliderIcon"/>
+      <defaultProfileFillingBarThreePart value="fs25_optionSliderFillingBar"/>
+    </Profile>
+    <Profile name="ingameMenuTSStockCheckRowCellRight" extends="ingameMenuTSStockCheckRowCellLeft">
+      <textAlignment value="right" />
+    </Profile>
+  </GUIProfiles>
+</GUI>

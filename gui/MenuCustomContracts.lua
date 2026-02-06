@@ -7,6 +7,7 @@
 
 MenuCustomContracts = {}
 MenuCustomContracts._mt = Class(MenuCustomContracts, TabbedMenuFrameElement)
+local g_currentModName = g_currentModName
 
 MenuCustomContracts.SUB_CATEGORY = {
   CONTRACTS = 1,
@@ -32,6 +33,29 @@ CustomContract.STATUS = {
   COMPLETED = "COMPLETED",
   CANCELLED = "CANCELLED",
   EXPIRED   = "EXPIRED"
+}
+
+MenuCustomContracts.TEMPLATE = {
+  {
+    id = "FIELD_WORK",
+    text = "Field work",
+    subtitle = "Cultivate, seed, harvest, mow…"
+  },
+  {
+    id = "TRANSPORT",
+    text = "Transport",
+    subtitle = "Move goods from A to B"
+  },
+  {
+    id = "FARM_JOB",
+    text = "Farm job",
+    subtitle = "Feed cows, remove slurry/manure…"
+  },
+  {
+    id = "CUSTOM",
+    text = "Custom",
+    subtitle = "Free-form job"
+  }
 }
 
 function MenuCustomContracts.new(i18n, messageCenter)
@@ -527,18 +551,38 @@ function MenuCustomContracts:applyPendingContractsView(renderData)
 end
 
 function MenuCustomContracts:onCreateContract()
-  -- self:queueContractsView(MenuCustomContracts.CONTRACTS_LIST_TYPE.OWNED, nil)
-  local selector = g_gui:showDialog("menuSelectContractTemplate")
-  print("Open dialog")
+  local templates = MenuCustomContracts.TEMPLATE
 
-  if selector ~= nil then
-    selector.target:setCallback(function(templateId)
-      local dlg = g_gui:showDialog("menuCreateContract")
-      if dlg ~= nil then
-        dlg.target:setTemplate(templateId)
-      end
-    end)
+  -- Build display lines (strings)
+  local optionTexts = {}
+  local defaultIndex = 1
+
+  for i, t in ipairs(templates) do
+    optionTexts[i] = t.text
+
+    if t.id == "FIELD_WORK" then
+      defaultIndex = i
+    end
   end
+
+  MenuCustomContracts.showOptionDialog({
+    text = "Hello",
+    title = "Select contract template",
+    defaultText = "",
+    options = optionTexts,
+    defaultOption = defaultIndex,
+    target = self,
+    args = {},
+    callback = function(_, index)
+      local template = templates[index]
+      print("template" .. template.id)
+      if template.id == "FIELD_WORK" then
+        local dlg = g_gui:showDialog("productsOverviewSelectDialog")
+      elseif template.id == "TRANSPORT" then
+        local dlg = g_gui:showDialog("productsOverviewSelectDialog")
+      end
+    end
+  })
 end
 
 function MenuCustomContracts:onCompleteContract()
@@ -679,4 +723,45 @@ function MenuCustomContracts:onEditContract()
 
   g_currentMission.CustomContracts.editContract = contract
   g_gui:showDialog("menuEditContract")
+end
+
+function MenuCustomContracts:onContractTemplateChosen(template)
+  if template == nil then
+    return
+  end
+
+  if template.id == "FIELD_WORK" then
+    self:openCreateFieldWorkDialog()
+  elseif template.id == "TRANSPORT" then
+    self:openCreateTransportDialog()
+  elseif template.id == "FARM_JOB" then
+    self:openCreateFarmJobDialog()
+  elseif template.id == "CUSTOM" then
+    self:openCreateCustomDialog()
+  else
+    Logging.warning("[CustomContracts] Unknown template id: %s", tostring(template.id))
+  end
+end
+
+function MenuCustomContracts.showOptionDialog(parameters)
+  OptionDialog.createFromExistingGui({
+    options = parameters.options,
+    optionText = parameters.text,
+    optionTitle = parameters.title,
+    callbackFunc = parameters.callback,
+  }, parameters.name or g_currentModName .. "OptionDialog")
+
+  local optionDialog = OptionDialog.INSTANCE
+
+  if parameters.okButtonText ~= nil or parameters.cancelButtonText ~= nil then
+    optionDialog:setButtonTexts(parameters.okButtonText, parameters.cancelButtonText)
+  end
+
+  local defaultOption = parameters.defaultOption or 1
+
+  optionDialog.optionElement:setState(defaultOption)
+
+  if parameters.callback and (type(parameters.callback)) == "function" then
+    optionDialog:setCallback(parameters.callback, parameters.target, parameters.args)
+  end
 end

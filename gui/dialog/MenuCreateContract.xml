@@ -123,5 +123,18 @@
       <imageSelectedColor value="$preset_fs25_colorMainHighlight" />
       <alternateBackgroundColor value="$preset_fs25_colorGreyDark_50" />
     </Profile>
+
+    <Profile name="ingameMenuTSStockCheckRowCellLeftBright" extends="baseReference" with="anchorStretchingYLeft">
+      <size value="155px 32px" />
+      <textBold value="true" />
+      <textSize value="15px" />
+      <textAlignment value="left" />
+      <textColor value="$preset_fs25_colorMainLight" />
+      <textSelectedColor value="$preset_fs25_colorMainDark" />
+      <textDisabledColor value="$preset_colorDisabled" />
+    </Profile>
+    <Profile name="ingameMenuTSStockCheckRowCellRight" extends="ingameMenuTSStockCheckRowCellLeft">
+      <textAlignment value="right" />
+    </Profile>
   </GUIProfiles>
 </GUI>

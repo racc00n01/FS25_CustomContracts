@@ -14,6 +14,7 @@ source(CustomContracts.dir .. "gui/MenuCustomContracts.lua")
 source(CustomContracts.dir .. "gui/MenuSelectContractTemplate.lua")
 source(CustomContracts.dir .. "gui/dialog/MenuCreateContract.lua")
 source(CustomContracts.dir .. "gui/dialog/MenuEditContract.lua")
+source(CustomContracts.dir .. "gui/dialog/transport/ProductsOverviewSelectDialog.lua")
 source(CustomContracts.dir .. "gui/ContractsRenderer.lua")
 source(CustomContracts.dir .. "scripts/events/SyncContractsEvent.lua")
 source(CustomContracts.dir .. "scripts/events/InitialClientStateEvent.lua")
@@ -46,6 +47,12 @@ function CustomContracts:loadMap()
   local selectContractTemplateDialog = MenuSelectContractTemplate.new(g_i18n)
   g_gui:loadGui(CustomContracts.dir .. "gui/MenuSelectContractTemplate.xml", "menuSelectContractTemplate",
     selectContractTemplateDialog)
+
+  -- Register Create contract dialog
+  local productsOverviewSelectDialog = ProductsOverviewSelectDialog.new(g_i18n)
+  g_gui:loadGui(CustomContracts.dir .. "gui/dialog/transport/ProductsOverviewSelectDialog.xml",
+    "productsOverviewSelectDialog",
+    productsOverviewSelectDialog)
 
   menuCustomContracts:initialize()
 
