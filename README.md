@@ -15,7 +15,7 @@ This is super early in development and might not work 100%. I hope to implement 
 - Core contract system: ✅
 - GUI & filtering: ✅
 - Network sync: ✅
-- Deadlines: Implemented, but known bug where skipping time won't register expired contracts.
+- Deadlines: ✅
 - Penalties: ⏳ Planned
 - Invoices / history: ⏳ Planned
 - Expanded work types: ⏳ Planned
