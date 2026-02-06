@@ -121,13 +121,6 @@ end
 
 function MenuCreateContract:onClose()
   MenuCreateContract:superClass().onClose(self)
-  if g_currentMission and g_currentMission.CustomContracts then
-    g_currentMission.CustomContracts.selectedCreateTemplateId = nil
-  end
-  local fieldTexts = {}
-  for _, fieldId in ipairs(fieldIds) do
-    table.insert(fieldTexts, string.format(g_i18n:getText("cc_contract_list_field_label"), fieldId))
-  end
 end
 
 function MenuCreateContract:setTemplate(templateId)
@@ -298,23 +291,35 @@ function MenuCreateContract:setupTransport()
   self.transportProducts = self:collectFarmSiloFillTypes()
   self.selectedTransportProductIndex = 1
 
-  local texts = {}
-  for _, p in ipairs(self.transportProducts) do
-    table.insert(texts, string.format("%s (%d L)", p.title, p.amount))
-  end
-
-  if #texts == 0 then
-    texts = { "No silo products found" }
-  end
-
-  self.transportProductSelector:setTexts(texts)
-  self.transportProductSelector:setState(1, false)
-
+  -- Reset inputs
   self.transportFromInput:setText("")
   self.transportToInput:setText("")
   self.transportAmountInput:setText("")
 
-  -- self:updateTransportAmountHint()
+  -- SmoothList setup
+  self.transportProductSelector:setDataSource(self)
+  self.transportProductSelector:setDelegate(self)
+
+  self.transportProductSelector:reloadData()
+
+  if #self.transportProducts > 0 then
+    self.transportProductSelector:setSelectedIndex(1)
+  end
+end
+
+function MenuCreateContract:getNumberOfItemsInSection(list, section)
+  if self.transportProducts == nil or #self.transportProducts == 0 then
+    return 0
+  end
+  return #self.transportProducts
+end
+
+function MenuCreateContract:populateCellForItemInSection(list, section, index, cell)
+  local product = self.transportProducts[index]
+  if product == nil then return end
+
+  cell:getAttribute("product"):setText(product.title)
+  cell:getAttribute("amount"):setText(string.format("%d L", product.amount))
 end
 
 function MenuCreateContract:setupFarmJobs()

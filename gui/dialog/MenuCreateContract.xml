@@ -54,9 +54,20 @@
           <!-- TEMPLATE: TRANSPORT (placeholder) -->
           <BoxLayout flowDirection="vertical" id="sectionTransport">
             <Text text="Transport Type" profile="CC_ContractInputLabel"/>
-            <MultiTextOption id="transportProductSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onTransportTypeChange">
+            <SmoothList id="transportProductSelector" profile="ingameMenuTSStockCheckListItem">
+              <ListItem profile="ingameMenuTSStockCheckListItem">
+                <Text profile="CC_ContractListItemTitle" name="product"/>
+                <Text profile="CC_ContractListItemTitle" name="amount"/>
+              </ListItem>
+            </SmoothList>
+
+            <!-- <ThreePartBitmap profile="fs25_subCategoryListSliderBox">
+              <Slider profile="fs25_listSlider" dataElementId="transportProductSelector" />
+            </ThreePartBitmap> -->
+
+            <!-- <MultiTextOption id="transportProductSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onTransportTypeChange">
               <Text profile="fs25_multiTextOptionText" name="text" />
-            </MultiTextOption>
+            </MultiTextOption> -->
 
             <!-- From -->
             <Text text="From" profile="CC_ContractInputLabel" />
@@ -104,6 +115,13 @@
   </GuiElement>
 
   <GUIProfiles>
-
+    <Profile name="ingameMenuTSStockCheckList" extends="emptyPanel" with="anchorStretchingYLeft pivotTopLeft">
+    </Profile>
+    <Profile name="ingameMenuTSStockCheckListItem" extends="baseReference" with="anchorTopStretchingX alternating">
+      <height value="32px"/>
+      <imageColor value="$preset_fs25_colorGrey" />
+      <imageSelectedColor value="$preset_fs25_colorMainHighlight" />
+      <alternateBackgroundColor value="$preset_fs25_colorGreyDark_50" />
+    </Profile>
   </GUIProfiles>
 </GUI>
