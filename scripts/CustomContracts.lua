@@ -207,6 +207,33 @@ function CustomContracts:onDayChanged()
   g_currentMission.CustomContracts.ContractManager:updateExpiredContracts()
 end
 
+function CustomContracts.getIsAccessibleAtWorldPosition(self, superFunc, farmId, x, z, workAreaType)
+  -- base game first
+  local isAccessible, landOwner, landValid = superFunc(self, farmId, x, z, workAreaType)
+  if isAccessible then
+    return true, landOwner, landValid
+  end
+
+  -- landOwner is the farmId owning that farmland at (x,z) (from your pasted function)
+  if landOwner == nil or landOwner == FarmlandManager.NO_OWNER_FARM_ID then
+    return false, landOwner, landValid
+  end
+
+  -- our contract exception
+  local cc = g_currentMission.CustomContracts
+  local mgr = cc and cc.ContractManager
+  if mgr ~= nil and mgr.hasWorkAreaAccessByContract ~= nil then
+    if mgr:hasWorkAreaAccessByContract(farmId, landOwner, x, z, workAreaType, self) then
+      return true, landOwner, true
+    end
+  end
+
+  return false, landOwner, landValid
+end
+
+WorkArea.getIsAccessibleAtWorldPosition =
+    Utils.overwrittenFunction(WorkArea.getIsAccessibleAtWorldPosition, CustomContracts.getIsAccessibleAtWorldPosition)
+
 FSBaseMission.sendInitialClientState = Utils.appendedFunction(FSBaseMission.sendInitialClientState,
   CustomContracts.sendInitialClientState)
 FSBaseMission.saveSavegame = Utils.appendedFunction(FSBaseMission.saveSavegame, CustomContracts.saveToXmlFile)

@@ -14,6 +14,7 @@ function CustomContractManager:new()
   local self = {}
   setmetatable(self, CustomContractManager_mt)
   self.contracts = {}
+  self.ccAccessByFarmland = {}
   self.nextId = 1
 
   if g_currentMission:getIsServer() then
@@ -103,6 +104,7 @@ function CustomContractManager:loadFromXmlFile(xmlFile)
     i                         = i + 1
   end
 
+  self:_rebuildAccessCache()
   self:syncContracts()
 end
 
@@ -130,6 +132,7 @@ function CustomContractManager:readInitialClientState(streamId, connection)
     self.contracts[contract.id] = contract
   end
 
+  self:_rebuildAccessCache()
   -- notify UI
   g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
 end
@@ -242,7 +245,7 @@ function CustomContractManager:handleCreateRequest(farmId, payload)
   )
 
   self.contracts[id] = contract
-
+  self:_rebuildAccessCache()
   self:syncContracts()
 end
 
@@ -262,6 +265,7 @@ function CustomContractManager:handleAcceptRequest(farmId, contractId)
   contract.contractorFarmId = farmId
   contract.status = CustomContract.STATUS.ACCEPTED
 
+  self:_rebuildAccessCache()
   self:syncContracts()
 
   -- TODO: grant field access
@@ -304,6 +308,7 @@ function CustomContractManager:handleCompleteRequest(farmId, contractId)
   -- Change status of contract to be completed
   contract.status = CustomContract.STATUS.COMPLETED
 
+  self:_rebuildAccessCache()
   -- Update all clients
   self:syncContracts()
 end
@@ -324,6 +329,7 @@ function CustomContractManager:handleCancelRequest(farmId, contractId)
     -- TODO: Add fine, 10% of contract money will be transfered to contractor if the start date is past.
     contract.status = CustomContract.STATUS.CANCELLED
   end
+  self:_rebuildAccessCache()
   self:syncContracts()
 end
 
@@ -337,6 +343,7 @@ function CustomContractManager:handleDeleteRequest(farmId, contractId)
 
   self.contracts[contractId] = nil
 
+  self:_rebuildAccessCache()
   self:syncContracts()
 end
 
@@ -351,6 +358,8 @@ function CustomContractManager:handleReopenRequest(farmId, contractId)
   self.contracts[contractId].contractorFarmId = nil
   self.contracts[contractId].status = CustomContract.STATUS.OPEN
 
+
+  self:_rebuildAccessCache()
   self:syncContracts()
 end
 
@@ -382,6 +391,77 @@ function CustomContractManager:handleEditRequest(farmId, contractId, data)
 
   -- mark dirty / sync
   self:syncContracts()
+end
+
+function CustomContractManager:_getFarmlandIdForContract(contract)
+  if contract == nil or contract.fieldId == nil then return nil end
+  local field = g_fieldManager:getFieldById(contract.fieldId)
+  return field and field.farmlandId or nil
+end
+
+function CustomContractManager:_rebuildAccessCache()
+  self.ccAccessByFarmland = {}
+
+  for _, c in pairs(self.contracts) do
+    if c.status == CustomContract.STATUS.ACCEPTED and c.contractorFarmId ~= nil then
+      local farmlandId = self:_getFarmlandIdForContract(c)
+      if farmlandId ~= nil then
+        print("farmlandId" .. farmlandId)
+        self.ccAccessByFarmland[farmlandId] = self.ccAccessByFarmland[farmlandId] or {}
+        self.ccAccessByFarmland[farmlandId][c.contractorFarmId] = true
+      end
+    end
+  end
+end
+
+function CustomContractManager:hasWorkAreaAccessByContract(farmId, landOwnerFarmId, x, z, workAreaType, workArea)
+  local farmlandIdAtPos = g_farmlandManager:getFarmlandIdAtWorldPosition(x, z)
+  if farmlandIdAtPos == nil then
+    return false
+  end
+
+  for _, c in pairs(self.contracts) do
+    if c.status == CustomContract.STATUS.ACCEPTED
+        and c.contractorFarmId == farmId
+        and c.creatorFarmId == landOwnerFarmId
+        and c.fieldId ~= nil then
+      local field = g_fieldManager:getFieldById(c.fieldId)
+      if field ~= nil then
+        local farmland = field:getFarmland() -- you found this exists
+        if farmland ~= nil and farmland.id == farmlandIdAtPos then
+          -- optional: restrict by workAreaType / c.workType here later
+          return true
+        end
+      end
+    end
+  end
+
+  return false
+end
+
+function CustomContractManager:hasLandAccessByContract(farmId, landOwnerFarmId, x, z, workAreaType, workArea)
+  local farmlandIdAtPos = g_farmlandManager:getFarmlandIdAtWorldPosition(x, z)
+  if farmlandIdAtPos == nil then
+    return false
+  end
+
+  for _, c in pairs(self.contracts) do
+    if c.status == CustomContract.STATUS.ACCEPTED
+        and c.contractorFarmId == farmId
+        and c.creatorFarmId == landOwnerFarmId
+        and c.fieldId ~= nil then
+      local field = g_fieldManager:getFieldById(c.fieldId)
+      if field ~= nil then
+        local farmland = field:getFarmland() -- you found this exists
+        if farmland ~= nil and farmland.id == farmlandIdAtPos then
+          -- optional: restrict by workAreaType / c.workType here later
+          return true
+        end
+      end
+    end
+  end
+
+  return false
 end
 
 local function toOrdinal(period, day, daysPerPeriod)
