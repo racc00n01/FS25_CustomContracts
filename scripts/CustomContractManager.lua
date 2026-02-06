@@ -163,7 +163,7 @@ function CustomContractManager:getNewContractsForCurrentFarm()
     return newForFarm
   end
 
-  local contractManager = g_currentMission.customContracts.ContractManager
+  local contractManager = g_currentMission.CustomContracts.ContractManager
 
   for _, contract in pairs(contractManager.contracts) do
     -- Open contracts NOT created by you
@@ -184,11 +184,11 @@ function CustomContractManager:getActiveContractsForCurrentFarm()
     return activeForFarm
   end
 
-  local contractManager = g_currentMission.customContracts.ContractManager
+  local contractManager = g_currentMission.CustomContracts.ContractManager
 
   for _, contract in pairs(contractManager.contracts) do
-    -- Contracts accepted by you
-    if contract.status == CustomContract.STATUS.ACCEPTED
+    -- Contracts accepted by you or cancelled by you or the owner
+    if (contract.status == CustomContract.STATUS.ACCEPTED or contract.status == CustomContract.STATUS.CANCELLED)
         and contract.contractorFarmId == farmId then
       table.insert(activeForFarm, contract)
     end
@@ -205,7 +205,7 @@ function CustomContractManager:getOwnedContractsForCurrentFarm()
     return ownedForFarm
   end
 
-  local contractManager = g_currentMission.customContracts.ContractManager
+  local contractManager = g_currentMission.CustomContracts.ContractManager
 
   for _, contract in pairs(contractManager.contracts) do
     -- Contracts you created (any status)
@@ -314,14 +314,16 @@ function CustomContractManager:handleCancelRequest(farmId, contractId)
 
   local contract = self.contracts[contractId]
   if contract == nil then return end
-  if contract.contractorFarmId ~= farmId then return end
-  if contract.status ~= CustomContract.STATUS.OPEN and contract.status ~= CustomContract.STATUS.ACCEPTED then
-    return
+
+  -- Check who cancels the contract
+  if farmId == contract.contractorFarmId then
+    -- TODO: Add logic for a fine, if the start date is past
+    contract.status = CustomContract.STATUS.CANCELLED
+  else
+    -- Owner cancels the contract
+    -- TODO: Add fine, 10% of contract money will be transfered to contractor if the start date is past.
+    contract.status = CustomContract.STATUS.CANCELLED
   end
-
-  contract.contractorFarmId = nil
-  contract.status = CustomContract.STATUS.CANCELLED
-
   self:syncContracts()
 end
 
@@ -335,6 +337,50 @@ function CustomContractManager:handleDeleteRequest(farmId, contractId)
 
   self.contracts[contractId] = nil
 
+  self:syncContracts()
+end
+
+-- Function to reopen contracts, called by ReopenContractEvent
+function CustomContractManager:handleReopenRequest(farmId, contractId)
+  if not g_currentMission:getIsServer() then return end
+
+  local contract = self.contracts[contractId]
+  if contract == nil then return end
+  if contract.creatorFarmId ~= farmId then return end
+
+  self.contracts[contractId].contractorFarmId = nil
+  self.contracts[contractId].status = CustomContract.STATUS.OPEN
+
+  self:syncContracts()
+end
+
+function CustomContractManager:handleEditRequest(farmId, contractId, data)
+  local contract = self.contracts[contractId]
+  if contract == nil then
+    return
+  end
+
+  -- permission check
+  if contract.creatorFarmId ~= farmId then
+    return
+  end
+
+  -- usually only allow editing OPEN contracts
+  if contract.status == CustomContract.STATUS.ACCEPTED or contract.status == CustomContract.STATUS.COMPLETED then
+    return
+  end
+
+  -- apply edits
+  contract.fieldId     = data.fieldId
+  contract.workType    = data.workType
+  contract.reward      = data.reward
+  contract.description = data.description
+  contract.startPeriod = data.startPeriod
+  contract.startDay    = data.startDay
+  contract.duePeriod   = data.duePeriod
+  contract.dueDay      = data.dueDay
+
+  -- mark dirty / sync
   self:syncContracts()
 end
 
@@ -373,19 +419,27 @@ function CustomContractManager:isPastDue(contract, curPeriod, curDay, dpp)
 end
 
 function CustomContractManager:updateExpiredContracts()
-  if not g_currentMission:getIsServer() then return false end
+  if not g_currentMission:getIsServer() then return end
 
-
-  local curP, curD, dpp = DateUtil.getCurrentPeriodDay()
+  local curPeriod, curDay, daysPerPeriod = CustomUtils.getCurrentPeriodDay()
   local changed = false
 
-  for _, c in pairs(self.contracts) do
-    if c.status == CustomContract.STATUS.OPEN or c.status == CustomContract.STATUS.ACCEPTED then
-      if DateUtil.isPastDue(c, curP, curD, dpp) then
-        c.status = CustomContract.STATUS.EXPIRED
-        changed = true
+  for _, contract in pairs(self.contracts) do
+    if contract.status == CustomContract.STATUS.OPEN
+        or contract.status == CustomContract.STATUS.ACCEPTED then
+      -- ✅ Only expire contracts whose deadline is in the current period (month)
+      if contract.duePeriod == g_currentMission.CustomContracts.lastPeriod then
+        if CustomUtils.isPastDue(contract, curPeriod, curDay, daysPerPeriod) then
+          contract.status = CustomContract.STATUS.EXPIRED
+          changed = true
+        end
       end
     end
+  end
+
+  if changed then
+    self:syncContracts()
+    g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
   end
 
   return changed

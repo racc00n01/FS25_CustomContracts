@@ -19,13 +19,13 @@ function InitialClientStateEvent.new()
 end
 
 function InitialClientStateEvent:writeStream(streamId, connection)
-  local contractManager = g_currentMission.customContracts.ContractManager
+  local contractManager = g_currentMission.CustomContracts.ContractManager
 
   contractManager:writeInitialClientState(streamId, connection)
 end
 
 function InitialClientStateEvent:readStream(streamId, connection)
-  local contractManager = g_currentMission.customContracts.ContractManager
+  local contractManager = g_currentMission.CustomContracts.ContractManager
 
   contractManager:readInitialClientState(streamId, connection)
 

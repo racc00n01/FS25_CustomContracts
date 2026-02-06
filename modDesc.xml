@@ -2,7 +2,7 @@
 <modDesc descVersion="104">
   <author>Racc00n</author>
 
-  <version>0.0.1.1</version>
+  <version>0.0.1.2</version>
 
   <iconFilename>icon_customContracts.dds</iconFilename>
 
@@ -35,7 +35,8 @@ https://github.com/racc00n01/FS25_CustomContracts
   <l10n filenamePrefix="translations/translation" />
 
   <extraSourceFiles>
-    <sourceFile filename="gui/MenuCreateContract.xml"/>
+    <sourceFile filename="gui/dialog/MenuCreateContract.xml"/>
+    <sourceFile filename="gui/dialog/MenuEditContract.xml"/>
     <sourceFile filename="gui/ContractsRenderer.lua"/>
 
     <sourceFile filename="scripts/CustomContract.lua"/>
@@ -47,6 +48,8 @@ https://github.com/racc00n01/FS25_CustomContracts
     <sourceFile filename="scripts/events/CancelContractEvent.lua"/>
     <sourceFile filename="scripts/events/CompleteContractEvent.lua"/>
     <sourceFile filename="scripts/events/DeleteContractEvent.lua"/>
+    <sourceFile filename="scripts/events/EditContractEvent.lua"/>
+    <sourceFile filename="scripts/events/ReopenContractEvent.lua"/>
     <sourceFile filename="scripts/events/SyncContractsEvent.lua"/>
     <sourceFile filename="scripts/events/InitialClientStateEvent.lua"/>
 

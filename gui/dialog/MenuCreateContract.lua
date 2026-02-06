@@ -20,7 +20,6 @@ CustomContractWorkTypes = {
   { id = "MULCH",         text = "Mulch" },
   { id = "STONEPICK",     text = "Stone Pick" },
   { id = "REMOVEFOLIAGE", text = "Remove Foliage" },
-  { id = "REMOVEFOLIAGE", text = "Remove Foliage" },
   { id = "MOW",           text = "Mowing" },
   { id = "TEDDING",       text = "Tedding" },
   { id = "WINDROWING",    text = "Windrowing" },
@@ -74,7 +73,7 @@ function MenuCreateContract:onOpen()
 
   local fieldTexts = {}
   for _, fieldId in ipairs(fieldIds) do
-    table.insert(fieldTexts, string.format("Field %d", fieldId))
+    table.insert(fieldTexts, string.format(g_i18n:getText("cc_contract_list_field_label"), fieldId))
   end
 
   self.fieldSelector:setTexts(fieldTexts)
@@ -123,7 +122,7 @@ function MenuCreateContract:onConfirm(sender)
   local workType = CustomContractWorkTypes[index].text
 
   if fieldId == nil or reward == nil or workType == nil then
-    InfoDialog.show("Please fill all fields")
+    InfoDialog.show(g_i18n:getText("cc_dialog_create_validation_fields"))
     return
   end
 
@@ -134,12 +133,12 @@ function MenuCreateContract:onConfirm(sender)
   local dueV     = self.dueDateValues[self.selectedDueDateIndex or 1]
 
   if startV == nil or dueV == nil then
-    InfoDialog.show("Please select start and due date")
+    InfoDialog.show(g_i18n:getText("cc_dialog_create_validation_fields_due_date"))
     return
   end
 
   if dueIdx < startIdx then
-    InfoDialog.show("Due date cannot be before start date")
+    InfoDialog.show(g_i18n:getText("cc_dialog_create_validation_fields_start_date"))
     return
   end
 
@@ -165,57 +164,8 @@ function MenuCreateContract:onCancel(sender)
   self:close()
 end
 
-function MenuCreateContract:retrieveFieldInfo(fieldId)
-  local field = g_fieldManager:getFieldById(fieldId)
-
-  if field == nil then
-    return nil
-  end
-end
-
-function MenuCreateContract:buildMonthOptionData()
-  local env = g_currentMission.environment
-  if env == nil then
-    return {}, {}
-  end
-
-  local currentPeriod = env.currentPeriod
-
-  local daysPerPeriod = env.daysPerPeriod or 1
-
-  local texts = {}
-  local values = {}
-
-  for offset = 0, 11 do
-    local period = DateUtil.wrapPeriod(currentPeriod + offset)
-    local month = DateUtil.periodToMonth(period)
-
-    if daysPerPeriod > 1 then
-      for day = 1, daysPerPeriod do
-        table.insert(texts,
-          string.format("%s %d", DateUtil.getMonthName(month), day)
-        )
-        table.insert(values, {
-          period = period,
-          month  = month,
-          day    = day
-        })
-      end
-    else
-      table.insert(texts, DateUtil.getMonthName(month))
-      table.insert(values, {
-        period = period,
-        month  = month,
-        day    = 1
-      })
-    end
-  end
-
-  return texts, values
-end
-
 function MenuCreateContract:fillMonthMultiTextOption(multiTextOption, valuesFieldName)
-  local texts, values = self:buildMonthOptionData()
+  local texts, values = CustomUtils:buildMonthOptionData()
 
   self[valuesFieldName] = values
 

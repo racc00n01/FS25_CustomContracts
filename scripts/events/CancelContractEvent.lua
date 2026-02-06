@@ -38,6 +38,6 @@ function CancelContractEvent:run(connection)
     g_server:broadcastEvent(CancelContractEvent.new(self.contractId, self.farmId))
   end
 
-  local contractManager = g_currentMission.customContracts.ContractManager
+  local contractManager = g_currentMission.CustomContracts.ContractManager
   contractManager:handleCancelRequest(self.farmId, self.contractId)
 end

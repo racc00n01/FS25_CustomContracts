@@ -27,7 +27,7 @@ function ContractsRenderer:getNumberOfSections()
 end
 
 function ContractsRenderer:getNumberOfItemsInSection(list, section)
-  local menu = g_currentMission.customContracts.CustomContractsMenu
+  local menu = g_currentMission.CustomContracts.CustomContractsMenu
   local selection = menu.contractDisplaySwitcher:getState()
   return #self.data[selection]
 end
@@ -37,14 +37,14 @@ function ContractsRenderer:getTitleForSectionHeader(list, section)
 end
 
 function ContractsRenderer:populateCellForItemInSection(list, section, index, cell)
-  local menu = g_currentMission.customContracts.CustomContractsMenu
+  local menu = g_currentMission.CustomContracts.CustomContractsMenu
   local selection = menu.contractDisplaySwitcher:getState()
   local contract = self.data[selection][index]
 
   local farm = g_farmManager:getFarmById(contract.creatorFarmId)
 
   cell:getAttribute("farmIcon"):setImageSlice(nil, farm:getIconSliceId())
-  cell:getAttribute("field"):setText(string.format("Field %d", contract.fieldId))
+  cell:getAttribute("field"):setText(string.format(g_i18n:getText("cc_contract_list_field_label"), contract.fieldId))
   cell:getAttribute("reward"):setText(g_i18n:formatMoney(contract.reward, 0, true, true))
 end
 

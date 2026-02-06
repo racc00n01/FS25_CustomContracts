@@ -38,6 +38,6 @@ function CompleteContractEvent:run(connection)
     g_server:broadcastEvent(CompleteContractEvent.new(self.contractId, self.farmId))
   end
 
-  local contractManager = g_currentMission.customContracts.ContractManager
+  local contractManager = g_currentMission.CustomContracts.ContractManager
   contractManager:handleCompleteRequest(self.farmId, self.contractId)
 end
