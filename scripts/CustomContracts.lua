@@ -214,18 +214,14 @@ function CustomContracts.getIsAccessibleAtWorldPosition(self, superFunc, farmId,
     return true, landOwner, landValid
   end
 
-  -- landOwner is the farmId owning that farmland at (x,z) (from your pasted function)
+  -- landOwner is the farmId owning that farmland at (x,z)
   if landOwner == nil or landOwner == FarmlandManager.NO_OWNER_FARM_ID then
     return false, landOwner, landValid
   end
 
-  -- our contract exception
-  local cc = g_currentMission.CustomContracts
-  local mgr = cc and cc.ContractManager
-  if mgr ~= nil and mgr.hasWorkAreaAccessByContract ~= nil then
-    if mgr:hasWorkAreaAccessByContract(farmId, landOwner, x, z, workAreaType, self) then
-      return true, landOwner, true
-    end
+  -- contract exception function
+  if g_currentMission.CustomContracts.ContractManager:hasWorkAreaAccessByContract(farmId, landOwner, x, z, workAreaType, self) then
+    return true, landOwner, true
   end
 
   return false, landOwner, landValid
