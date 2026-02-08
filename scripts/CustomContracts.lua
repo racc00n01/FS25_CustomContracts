@@ -41,6 +41,16 @@ function CustomContracts:loadMap()
   local editContractDialog = MenuEditContract.new(g_i18n)
   g_gui:loadGui(CustomContracts.dir .. "gui/dialog/MenuEditContract.xml", "menuEditContract", editContractDialog)
 
+  -- CustomContracts.show("Custom Contracts loaded!", 5000)
+  -- local sn = g_currentMission.hud.sideNotification or g_currentMission.hud.sideNotifications
+  -- sn:addNotification("Custom Contracts loaded!")
+
+  g_currentMission.hud.sideNotifications:addNotification({
+    title = "Custom Contracts",
+    text = "Hello",
+    duration = 4000
+  })
+
   menuCustomContracts:initialize()
 
   self.ContractManager = CustomContractManager:new()
@@ -291,6 +301,74 @@ function CustomContracts.onClickCreateContract(frame)
   CustomContracts.uiState.prefilledFieldId = fieldId
 
   g_gui:showDialog("menuCreateContract")
+end
+
+local function _getSideNotification()
+  local hud = g_currentMission and g_currentMission.hud
+  if hud == nil then return nil end
+  return hud.sideNotification or hud.sideNotifications
+end
+
+-- Try several known method names / signatures.
+function CustomContracts.show(text, durationMs)
+  durationMs = durationMs or 4500
+
+  local sn = _getSideNotification()
+  if sn == nil then
+    print(string.format("[CC] SideNotification not available. text=%s", tostring(text)))
+    return false
+  end
+
+  -- Most likely candidates (we attempt them in a safe order)
+  local candidates = {
+    -- fn(sn, text, duration)
+    function() if sn.addNotification ~= nil then return sn:addNotification(text, durationMs) end end,
+    function() if sn.showNotification ~= nil then return sn:showNotification(text, durationMs) end end,
+
+    -- Sometimes: fn(sn, text)
+    function() if sn.addNotification ~= nil then return sn:addNotification(text) end end,
+    function() if sn.showNotification ~= nil then return sn:showNotification(text) end end,
+
+    -- Sometimes the HUD exposes it, not the element
+    function()
+      local hud = g_currentMission and g_currentMission.hud
+      if hud ~= nil and hud.addSideNotification ~= nil then
+        return hud:addSideNotification(text, durationMs)
+      end
+    end,
+    function()
+      local hud = g_currentMission and g_currentMission.hud
+      if hud ~= nil and hud.showSideNotification ~= nil then
+        return hud:showSideNotification(text, durationMs)
+      end
+    end
+  }
+
+  for _, fn in ipairs(candidates) do
+    local ok, res = pcall(fn)
+    if ok and res ~= false then
+      return true
+    end
+  end
+
+  print(string.format("[CC] Failed to call SideNotification method. text=%s", tostring(text)))
+  return false
+end
+
+-- Debug: print available functions on the SideNotification instance
+function CustomContracts.debugDump()
+  local sn = _getSideNotification()
+  if sn == nil then
+    print("[CC] SideNotification is nil")
+    return
+  end
+
+  print("[CC] SideNotification methods:")
+  for k, v in pairs(sn) do
+    if type(v) == "function" then
+      print("  - " .. tostring(k))
+    end
+  end
 end
 
 WorkArea.getIsAccessibleAtWorldPosition =
