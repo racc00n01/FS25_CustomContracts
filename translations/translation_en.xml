@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <l10n>
   <texts>
+    <text name="cc_map_btn" text="Create contract"/>
     <text name="cc_header_contracts" text="Contracts"/>
     <text name="cc_header_invoices" text="Invoices"/>
     <text name="cc_current_balance" text="Current Balance:"/>
@@ -58,6 +59,7 @@
     <text name="cc_dialog_edit_btn_edit" text="Edit"/>
     <text name="cc_dialog_create_title" text="Create Contract"/>
     <text name="cc_dialog_create_input_field" text="Field ID"/>
+    <text name="cc_dialog_create_input_field_value" text="Field %d (%.2f ha)"/>
     <text name="cc_dialog_create_input_worktype" text="Work Type"/>
     <text name="cc_dialog_create_input_reward" text="Reward (€)"/>
     <text name="cc_dialog_create_input_description" text="Description (optional)"/>

@@ -35,8 +35,6 @@ https://github.com/racc00n01/FS25_CustomContracts
   <l10n filenamePrefix="translations/translation" />
 
   <extraSourceFiles>
-    <sourceFile filename="gui/dialog/MenuCreateContract.xml"/>
-    <sourceFile filename="gui/dialog/MenuEditContract.xml"/>
     <sourceFile filename="gui/ContractsRenderer.lua"/>
 
     <sourceFile filename="scripts/CustomContract.lua"/>

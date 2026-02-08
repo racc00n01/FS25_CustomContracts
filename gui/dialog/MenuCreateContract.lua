@@ -31,6 +31,10 @@ CustomContractWorkTypes = {
 
 function MenuCreateContract.new(target, custom_mt)
   local self = MessageDialog.new(target, custom_mt or MenuCreateContract_mt)
+
+  self.prefilledFieldId = nil
+  self.selectedRewardAmount = 0
+
   return self
 end
 
@@ -45,12 +49,20 @@ end
 function MenuCreateContract:onOpen()
   MenuCreateContract:superClass().onOpen(self)
 
+  -- Set the prefilledFieldId as a variable inside this dialog, so it can be easier used.
+  if g_currentMission.CustomContracts.uiState ~= nil then
+    self.prefilledFieldId = g_currentMission.CustomContracts.uiState.prefilledFieldId
+  end
+
+  -- Logic the fill the multiselectoption for the work types
   local workTypeTexts = {}
 
+  -- Map through the different types and add each one of them to the texts table.
   for _, workType in ipairs(CustomContractWorkTypes) do
     table.insert(workTypeTexts, workType.text)
   end
 
+  -- Set the worktype multiselectoption with the correct options and index
   self.workTypeSelector:setTexts(workTypeTexts)
   self.workTypeSelector:setState(1, false)
 
@@ -73,11 +85,28 @@ function MenuCreateContract:onOpen()
 
   local fieldTexts = {}
   for _, fieldId in ipairs(fieldIds) do
-    table.insert(fieldTexts, string.format(g_i18n:getText("cc_contract_list_field_label"), fieldId))
+    local field = g_fieldManager:getFieldById(fieldId)
+    if field ~= nil then
+      table.insert(fieldTexts,
+        string.format(g_i18n:getText("cc_dialog_create_input_field_value"), field:getId(), field.areaHa))
+    end
   end
 
   self.fieldSelector:setTexts(fieldTexts)
-  self.fieldSelector:setState(1, false)
+
+  local selectedIndex = 1
+
+  if self.prefilledFieldId ~= nil then
+    for i, id in ipairs(fieldIds) do
+      if id == self.prefilledFieldId then
+        selectedIndex = i
+        break
+      end
+    end
+  end
+
+  self.selectedFieldIndex = selectedIndex
+  self.fieldSelector:setState(selectedIndex, false)
 
   self:fillMonthMultiTextOption(self.startDateSelector, "startDateValues")
   self:fillMonthMultiTextOption(self.dueDateSelector, "dueDateValues")
@@ -85,11 +114,16 @@ function MenuCreateContract:onOpen()
   self.selectedStartDateIndex = 1
   self.selectedDueDateIndex   = 1
 
-  self.selectedFieldIndex     = 1
+  self:updateAmountSlider()
 end
 
 function MenuCreateContract:onClose()
   MenuCreateContract:superClass().onClose(self)
+
+  -- Remove the prefilledFieldId from the session, so it doesnt intervene when opening the createContractDialog from a different route.
+  if g_currentMission.CustomContracts.uiState ~= nil then
+    g_currentMission.CustomContracts.uiState.prefilledFieldId = nil
+  end
 end
 
 function MenuCreateContract:onFieldSelectChange(state)
@@ -106,6 +140,19 @@ end
 
 function MenuCreateContract:onDueDateSelectChange(state)
   self.selectedDueDateIndex = state
+end
+
+function MenuCreateContract:onClickAmount(state)
+  local idx = state or (self.rewardSelector:getState() or 1)
+  self.selectedRewardAmountIndex = idx
+
+  local v = 0
+  if self.amountValues ~= nil then
+    v = self.amountValues[idx] or 0
+  end
+
+  self.selectedRewardAmount = v
+  self.itemTextAmount:setText(tostring(v))
 end
 
 -- XML onClick handlers
@@ -171,4 +218,29 @@ function MenuCreateContract:fillMonthMultiTextOption(multiTextOption, valuesFiel
 
   multiTextOption:setTexts(texts)
   multiTextOption:setState(1, true)
+end
+
+function MenuCreateContract:updateAmountSlider()
+  local FIXED_MAX = 10000
+  local STEP = 50
+
+  self.maxAmount = FIXED_MAX
+
+  -- Build ascending list: 0, 1000, 2000 ... 10000
+  self.amountValues = {}
+  self.amountTexts = {}
+
+  for value = 0, self.maxAmount, STEP do
+    table.insert(self.amountValues, value)
+    table.insert(self.amountTexts, string.format("%d $", value))
+  end
+
+  -- Default selection = 0 (or change to last index if you prefer max default)
+  self.selectedRewardAmountIndex = 1
+  self.selectedRewardAmount = self.amountValues[self.selectedRewardAmountIndex]
+
+  self.rewardSelector:setTexts(self.amountTexts)
+  self.rewardSelector:setState(self.selectedRewardAmountIndex, true)
+
+  self.itemTextAmount:setText(tostring(self.selectedRewardAmount))
 end

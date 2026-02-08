@@ -177,16 +177,24 @@ function CustomContracts:playerFarmChanged()
   g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
 end
 
+-- Listening to game time, and triggers when hour is changed
 function CustomContracts:hourChanged()
-  g_currentMission.CustomContracts.ContractManager:syncContracts();
+  -- Sync the contracts to retrieve the newest statuses
+  g_currentMission.CustomContracts.ContractManager:syncContracts()
 
+  -- Check if the period is changed or not
   local period = g_currentMission.environment.currentPeriod
+
+  -- If the currentPeriod is not the same as the saved period triggered period changed
   if period ~= g_currentMission.CustomContracts.currentPeriod then
     g_currentMission.CustomContracts:onPeriodChanged()
     return
   end
 
+  -- Check if the day is changed or not
   local day = g_currentMission.environment.currentDay
+
+  -- If the currentDay is not the same as the saved day triggered day changed
   if day ~= g_currentMission.CustomContracts.currentDay then
     g_currentMission.CustomContracts:onDayChanged()
     return
@@ -194,10 +202,14 @@ function CustomContracts:hourChanged()
 end
 
 function CustomContracts:onPeriodChanged()
+  -- Save the lastPeriod, so we can later use it to check if contracts need to be expired or not
   g_currentMission.CustomContracts.lastPeriod = g_currentMission.CustomContracts.currentPeriod
+
+  -- Set the saved currentPeriod and currentDay with the new ones.
   g_currentMission.CustomContracts.currentPeriod = g_currentMission.environment.currentPeriod
   g_currentMission.CustomContracts.currentDay = g_currentMission.environment.currentDay
 
+  -- Trigger the function to check if there are contracts that need to be expired, because of the period/day changed
   g_currentMission.CustomContracts.ContractManager:updateExpiredContracts()
 end
 
@@ -207,8 +219,9 @@ function CustomContracts:onDayChanged()
   g_currentMission.CustomContracts.ContractManager:updateExpiredContracts()
 end
 
+-- Override the basegame WorkArea allowance check.
 function CustomContracts.getIsAccessibleAtWorldPosition(self, superFunc, farmId, x, z, workAreaType)
-  -- base game first
+  -- Trigger basegame first
   local isAccessible, landOwner, landValid = superFunc(self, farmId, x, z, workAreaType)
   if isAccessible then
     return true, landOwner, landValid
@@ -225,6 +238,59 @@ function CustomContracts.getIsAccessibleAtWorldPosition(self, superFunc, farmId,
   end
 
   return false, landOwner, landValid
+end
+
+-- From FieldRename mod
+local orginalOnLoadMapFinished = InGameMenuMapFrame.onLoadMapFinished
+InGameMenuMapFrame.onLoadMapFinished = function(self)
+  orginalOnLoadMapFinished(self)
+
+  CustomContracts.mapFrame = self
+
+  table.insert(self.contextActions, {
+    title = g_i18n:getText("cc_map_btn"),
+    callback = function(frame)
+      CustomContracts.onClickCreateContract(frame)
+      return self
+    end,
+    isActive = false
+  })
+  RENAME_ACTION_INDEX = #self.contextActions
+end
+
+-- From FieldRename mod
+local originalSetMapInputContext = InGameMenuMapFrame.setMapInputContext
+InGameMenuMapFrame.setMapInputContext = function(self, canEnter, canReset, canSellVehicle, canVisit, canSetMarker,
+                                                 removeMarker, canBuy, canSell, canManage)
+  -- Call original
+  originalSetMapInputContext(self, canEnter, canReset, canSellVehicle, canVisit, canSetMarker, removeMarker, canBuy,
+    canSell, canManage)
+
+  -- Enable rename when we can sell (i.e., player owns the farmland)
+  -- canSell is true when the player owns the farmland and has farmManager permission
+  if RENAME_ACTION_INDEX and self.contextActions and self.contextActions[RENAME_ACTION_INDEX] then
+    self.contextActions[RENAME_ACTION_INDEX].isActive = canSell
+  end
+end
+
+-- Function to prepare and open the CreateContractDialog
+function CustomContracts.onClickCreateContract(frame)
+  if frame == nil then
+    return
+  end
+
+  local farmland = frame.selectedFarmland
+  if farmland == nil then
+    return
+  end
+
+  local fieldId = farmland.id
+
+  -- Store the selected fieldId in the client session so we can retrieve it when opening the createContractDialog
+  CustomContracts.uiState = CustomContracts.uiState or {}
+  CustomContracts.uiState.prefilledFieldId = fieldId
+
+  g_gui:showDialog("menuCreateContract")
 end
 
 WorkArea.getIsAccessibleAtWorldPosition =

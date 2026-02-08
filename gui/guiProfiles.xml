@@ -5,51 +5,6 @@
     <imageColor value="$preset_fs25_colorMainDark" />
   </Profile>
 
-  <!-- Field information -->
-  <Profile name="CC_FieldIDHeading" extends="baseReference" with="anchorTopLeft">
-    <textBold value="true" />
-    <textSize value="28px" />
-    <textAlignment value="left" />
-    <textColor value="$preset_fs25_colorMainLight" />
-  </Profile>
-  <Profile name="CC_FieldLabel" extends="baseReference" with="anchorTopLeft">
-    <textBold value="true" />
-    <textSize value="16px" />
-    <textAlignment value="left" />
-    <textColor value="$preset_fs25_colorMainLight" />
-  </Profile>
-  <Profile name="CC_FieldValue" extends="baseReference" with="anchorTopRight">
-    <textBold value="false" />
-    <textSize value="16px" />
-    <textAlignment value="right" />
-    <textColor value="$preset_fs25_colorMainLight" />
-  </Profile>
-
-  <!-- Icons -->
-  <Profile name="CC_IconInfo" extends="CC_IconInfoWrapper">
-    <imageSliceId value="gui.storeAttribute_info" />
-    <position value="6px 0px" />
-  </Profile>
-
-  <Profile name="CC_IconInfoWrapper" with="anchorMiddleLeft">
-    <size value="24px 24px" />
-    <position value="8px 4px" />
-  </Profile>
-
-  <Profile name="CC_ContractListBg" extends="fs25_secondaryMenuContainerBg">
-    <position value="-30px 10px"/>
-  </Profile>
-
-  <Profile name="CC_ContractContent" extends="emptyPanel" value="anchorStretchingYStretchingX">
-    <width value="500px"/>
-    <position value="460px -40px"/>
-  </Profile>
-
-  <Profile name="CC_ContractVerticalSeperator" extends="fs25_pricesSeparator" with="anchorTopRight">
-    <position value="0.03 0.0"/>
-    <size value="1px 0.70"/>
-  </Profile>
-
   <!-- Contract specific content -->
   <Profile name="CC_ContractTitle" extends="fs25_contractsContractTitle">
     <textSize value="28px"/>
@@ -86,14 +41,6 @@
     <textColor value="$preset_fs25_colorMainDefault"/>
     <textAlignment value="right"/>
     <textUpperCase value="true"/>
-  </Profile>
-
-  <Profile name="CC_ContractReward" extends="fs25_textDefault" with="anchorTopLeft">
-    <textSize value="20px"/>
-    <textBold value="true"/>
-    <textUpperCase value="true"/>
-    <textColor value="$preset_fs25_colorMainHighlighted"/>
-    <textAlignment value="right"/>
   </Profile>
 
   <Profile name="CC_ContractFooter" extends="fs25_textDefault" with="anchorTopLeft">
@@ -139,11 +86,11 @@
 
   <Profile name="CC_Input" extends="fs25_textInput">
     <size value="100% 44px"/>
-    <maxCharacters value="9"/>
+    <!-- <maxCharacters value="9"/> -->
   </Profile>
   <Profile name="CC_InputTextArea" extends="CC_Input">
     <size value="100% 44px"/>
-    <maxCharacters value="200"/>
+    <!-- <maxCharacters value="200"/> -->
     <textAlignment value="left"/>
   </Profile>
 

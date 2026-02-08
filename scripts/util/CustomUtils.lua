@@ -85,14 +85,6 @@ function CustomUtils:formatPeriodDay(period, day)
   return monthName
 end
 
-function CustomUtils:retrieveFieldInfo(fieldId)
-  local field = g_fieldManager:getFieldById(fieldId)
-
-  if field == nil then
-    return nil
-  end
-end
-
 function CustomUtils:buildMonthOptionData()
   local env = g_currentMission.environment
   if env == nil then
