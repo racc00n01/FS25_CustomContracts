@@ -42,6 +42,8 @@ function MenuCustomContracts.new(i18n, messageCenter)
   self.menuButtonInfo = {}
 
   self.contractsRenderer = ContractsRenderer.new()
+  self.invoicesRenderer = InvoicesRenderer.new()
+  print(self.invoicesRenderer)
 
   return self
 end
@@ -118,6 +120,9 @@ function MenuCustomContracts:onGuiSetupFinished()
   self.contractsTable:setDataSource(self.contractsRenderer)
   self.contractsTable:setDelegate(self.contractsRenderer)
 
+  self.invoicesTable:setDataSource(self.invoicesRenderer)
+  self.invoicesTable:setDelegate(self.invoicesRenderer)
+
   self.contractsRenderer.indexChangedCallback = function(index)
     self:displaySelectedContract()
     self:updateMenuButtons()
@@ -145,6 +150,14 @@ function MenuCustomContracts:initialize()
 
   --- Register custom bottom page buttons
   self.btnBack = { inputAction = InputAction.MENU_BACK }
+  self.btnCreateInvoice = {
+    inputAction = InputAction.MENU_EXTRA_1,
+    text = "Create invoice",
+    callback = function()
+      self
+          :onCreateInvoice()
+    end
+  }
   self.btnCreateContract = {
     inputAction = InputAction.MENU_EXTRA_1,
     text = g_i18n:getText("cc_btn_create_contract"),
@@ -232,6 +245,11 @@ function MenuCustomContracts:initialize()
     self.btnBack
   }
 
+  self.menuButtonInfo[MenuCustomContracts.SUB_CATEGORY.INVOICES] = {
+    self.btnBack,
+    self.btnCreateInvoice
+  }
+
   for _, subCategory in pairs(MenuCustomContracts.SUB_CATEGORY) do
     if subCategory ~= MenuCustomContracts.SUB_CATEGORY.CONTRACTS then
       self.menuButtonInfo[subCategory] = {
@@ -264,6 +282,7 @@ function MenuCustomContracts:onFrameOpen()
   self:onMoneyChange()
   g_messageCenter:subscribe(MessageType.MONEY_CHANGED, self.onMoneyChange, self)
   g_messageCenter:subscribe(MessageType.CUSTOM_CONTRACTS_UPDATED, self.updateContent, self)
+  g_messageCenter:subscribe(MessageType.INVOICES_UPDATED, self.updateContent, self)
   self:updateContent()
   self:setMenuButtonInfoDirty()
 end
@@ -308,6 +327,7 @@ end
 
 function MenuCustomContracts:updateContent()
   local state = self.subCategoryPaging:getState()
+  print("state" .. state)
 
   self.categoryHeaderText:setText(g_i18n:getText(MenuCustomContracts.HEADER_TITLES[state]))
 
@@ -340,11 +360,26 @@ function MenuCustomContracts:updateContent()
     end
   end
 
+  -- INVOICES page (THIS is what you were missing)
+  if state == MenuCustomContracts.SUB_CATEGORY.INVOICES then
+    local invoiceManager = g_currentMission.CustomContracts.InvoiceManager
+    print(invoiceManager.invoices)
+    print(self.invoicesRenderer)
+    self.invoicesRenderer:setData(invoiceManager.invoices)
+    self.invoicesTable:reloadData()
+  end
+
   self:updateMenuButtons()
 end
 
 function MenuCustomContracts:updateMenuButtons()
   local subCategory = self.subCategoryPaging:getState()
+
+  if subCategory == MenuCustomContracts.SUB_CATEGORY.INVOICES then
+    self.menuButtonInfo[subCategory] = { self.btnBack, self.btnCreateInvoice }
+    self:setMenuButtonInfoDirty()
+    return
+  end
 
   if subCategory ~= MenuCustomContracts.SUB_CATEGORY.CONTRACTS then
     self.menuButtonInfo[subCategory] = { self.btnBack }
@@ -524,6 +559,10 @@ function MenuCustomContracts:applyPendingContractsView(renderData)
   end
 
   self:displaySelectedContract()
+end
+
+function MenuCustomContracts:onCreateInvoice()
+  local dialog = g_gui:showDialog("createInvoiceDialog")
 end
 
 function MenuCustomContracts:onCreateContract()

@@ -94,9 +94,96 @@
     </GuiElement>
   </GuiElement>
   <GuiElement profile="fs25_subCategorySelectorTabbedContainer" id="subCategoryPages[2]">
-
-    <GuiElement position="0px -20px">
-      <Text text="$l10n_cc_header_invoices" position="0px 20px"/>
+    <GuiElement position="0px -150px">
+      <GuiElement profile="fs25_statisticsHeaderBox">
+        <Button profile="ingameMenuTSStockCheckHeader" position="20px 0px" text="Id" handleFocus="false" />
+        <Button profile="ingameMenuTSStockCheckHeaderRight" position="205px 0px" size="155px 32px" text="From" handleFocus="false" />
+        <Button profile="ingameMenuTSStockCheckHeaderRight" position="360px 0px" size="100px 32px" text="To" handleFocus="false" />
+        <Button profile="ingameMenuTSStockCheckHeader" position="460px 0px" size="40px 32px" text="Reward" handleFocus="false" />
+        <ThreePartBitmap profile="fs25_lineSeparatorBottom" position="0px -2dp" />
+      </GuiElement>
+      <SmoothList id="invoicesTable" profile="ingameMenuTSStockCheckList" size="100% 550px">
+        <ListItem profile="ingameMenuTSStockCheckListItem">
+          <Text profile="ingameMenuTSStockCheckRowCellLeftBright" position="15px 0px" name="id"/>
+          <Text profile="ingameMenuTSStockCheckRowCellLeftBright" position="40px 0px" name="from"/>
+          <Text profile="ingameMenuTSStockCheckRowCellLeftBright" position="205px 0px" name="to"/>
+          <Text profile="ingameMenuTSStockCheckRowCellLeftBright" position="360px 0px" name="reward"/>
+        </ListItem>
+      </SmoothList>
     </GuiElement>
+
   </GuiElement>
+
+  <GUIProfiles>
+    <Profile name="ingameMenuTSStockCheckHeader" extends="baseReference">
+      <size value="155px 32px" />
+      <imageColor value="0 0 0 0" />
+      <textFocusedColor value="$preset_fs25_colorMainHighlight" />
+      <textHighlightedColor value="$preset_fs25_colorMainHighlight" />
+      <textSize value="16px" />
+      <textBold value="true" />
+      <textUpperCase value="true" />
+      <textColor value="$preset_colorWhite_50" />
+      <textAlignment value="left" />
+      <textDisabledColor value="$preset_colorDisabled" />
+    </Profile>
+    <Profile name="ingameMenuTSStockCheckHeaderRight" extends="baseReference">
+      <size value="155px 32px" />
+      <imageColor value="0 0 0 0" />
+      <textFocusedColor value="$preset_fs25_colorMainHighlight" />
+      <textHighlightedColor value="$preset_fs25_colorMainHighlight" />
+      <textSize value="16px" />
+      <textBold value="true" />
+      <textUpperCase value="true" />
+      <textColor value="$preset_colorWhite_50" />
+      <textAlignment value="right" />
+      <textDisabledColor value="$preset_colorDisabled" />
+    </Profile>
+    <Profile name="ingameMenuTSStockCheckHeaderCell" extends="ingameMenuFrameHeaderText" with="anchorMiddleLeft">
+      <textSize value="20px"/>
+      <textBold value="false"/>
+      <textUpperCase value="false"/>
+      <textColor value="$preset_colorWhite"/>
+      <textAlignment value="left"/>
+      <textVerticalAlignment value="middle"/>
+    </Profile>
+    <Profile name="ingameMenuTSStockCheckList" extends="emptyPanel" with="anchorStretchingYLeft pivotTopLeft">
+      <position value="0px -40px" />
+    </Profile>
+    <Profile name="ingameMenuTSStockCheckListItem" extends="baseReference" with="anchorTopStretchingX alternating">
+      <height value="32px"/>
+      <imageColor value="$preset_fs25_colorGrey" />
+      <imageSelectedColor value="$preset_fs25_colorMainHighlight" />
+      <alternateBackgroundColor value="$preset_fs25_colorGreyDark_50" />
+    </Profile>
+    <Profile name="ingameMenuTSStockCheckRowCellImage" extends="baseReference" with="anchorMiddleLeft">
+      <size value="24px 24px" />
+      <position value="8px 0" />
+      <imageSliceId value="noSlice" />
+    </Profile>
+
+    <Profile name="ingameMenuTSStockCheckRowCellLeftBright" extends="baseReference" with="anchorStretchingYLeft">
+      <size value="50px 32px" />
+      <textBold value="true" />
+      <textSize value="15px" />
+      <textAlignment value="left" />
+      <textColor value="$preset_fs25_colorMainLight" />
+      <textSelectedColor value="$preset_fs25_colorMainDark" />
+      <textDisabledColor value="$preset_colorDisabled" />
+    </Profile>
+    <Profile name="fs25_productionStorageOptionSlider" extends="fs25_multiTextOption" with="anchorBottomCenter">
+      <width value="440px"/>
+      <sliderOffset value="5px"/>
+      <useFillingBar value="true"/>
+      <updateTextPosition value="false"/>
+      <hideLeftRightButtons value="true"/>
+      <defaultProfileBgThreePart value="fs25_optionSliderBg"/>
+      <defaultProfileText value="fs25_optionSliderText"/>
+      <defaultProfileSlider value="fs25_optionSliderIcon"/>
+      <defaultProfileFillingBarThreePart value="fs25_optionSliderFillingBar"/>
+    </Profile>
+    <Profile name="ingameMenuTSStockCheckRowCellRight" extends="ingameMenuTSStockCheckRowCellLeft">
+      <textAlignment value="right" />
+    </Profile>
+  </GUIProfiles>
 </GUI>
