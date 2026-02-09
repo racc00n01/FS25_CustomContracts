@@ -37,7 +37,10 @@ https://github.com/racc00n01/FS25_CustomContracts
   <extraSourceFiles>
     <sourceFile filename="gui/dialog/MenuCreateContract.xml"/>
     <sourceFile filename="gui/dialog/MenuEditContract.xml"/>
-    <sourceFile filename="gui/dialog/invoices/MenuCreateInvoice.xml"/>
+    <sourceFile filename="gui/dialog/invoices/AddInvoiceLineDialog.xml"/>
+    <sourceFile filename="gui/dialog/invoices/InvoiceLinesRenderer.lua"/>
+    <sourceFile filename="gui/dialog/invoices/CreateInvoiceDialog.xml"/>
+    <sourceFile filename="gui/dialog/invoices/DetailInvoiceDialog.xml"/>
     <sourceFile filename="gui/ContractsRenderer.lua"/>
     <sourceFile filename="gui/InvoicesRenderer.lua"/>
 
@@ -57,8 +60,12 @@ https://github.com/racc00n01/FS25_CustomContracts
     <sourceFile filename="scripts/events/SyncContractsEvent.lua"/>
     <sourceFile filename="scripts/events/InitialClientStateEvent.lua"/>
 
-    <sourceFile filename="scripts/events/invoices/SyncInvoicesEvent.lua"/>
     <sourceFile filename="scripts/events/invoices/CreateInvoiceEvent.lua"/>
+    <sourceFile filename="scripts/events/invoices/PayInvoiceEvent.lua"/>
+    <sourceFile filename="scripts/events/invoices/SendInvoiceEvent.lua"/>
+    <sourceFile filename="scripts/events/invoices/SyncInvoicesEvent.lua"/>
+
+    <sourceFile filename="scripts/extensions/I18NExtension.lua"/>
 
   </extraSourceFiles>
 </modDesc>

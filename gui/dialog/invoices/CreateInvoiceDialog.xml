@@ -12,10 +12,15 @@
 
       <BoxLayout flowDirection="vertical" position="15px -100px">
         <BoxLayout flowDirection="vertical" size="435px 400px" elementSpacing="5px" extends="emptyPanel" with="anchorTopLeft">
-
           <!-- Title -->
           <Text text="Title" profile="CC_ContractInputLabel"/>
           <TextInput profile="CC_InputTextArea" id="titleInput" onEnterPressed="onEnterPressed" onTextChanged="onTextChanged" enterWhenClickOutside="false">
+            <ThreePartBitmap profile="fs25_textInputBg" absoluteSizeOffset="0px 0px"/>
+          </TextInput>
+
+          <!-- Description -->
+          <Text text="$l10n_cc_dialog_create_input_description" profile="CC_ContractInputLabel" />
+          <TextInput profile="CC_InputTextArea" id="descriptionInput" onEnterPressed="onEnterPressed" onTextChanged="onTextChanged" enterWhenClickOutside="false">
             <ThreePartBitmap profile="fs25_textInputBg" absoluteSizeOffset="0px 0px"/>
           </TextInput>
 
@@ -31,20 +36,32 @@
             <ThreePartBitmap profile="fs25_textInputBg" absoluteSizeOffset="0px 0px"/>
           </TextInput>
 
-          <!-- Description -->
-          <Text text="$l10n_cc_dialog_create_input_description" profile="CC_ContractInputLabel" />
-          <TextInput profile="CC_InputTextArea" id="descriptionInput" onEnterPressed="onEnterPressed" onTextChanged="onTextChanged" enterWhenClickOutside="false">
-            <ThreePartBitmap profile="fs25_textInputBg" absoluteSizeOffset="0px 0px"/>
-          </TextInput>
+          <!-- Due date -->
+          <Text text="Due date" profile="CC_ContractInputLabel" />
+          <MultiTextOption id="dueDateSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onDueDateSelectChange">
+            <Text profile="fs25_multiTextOptionText" name="text" />
+          </MultiTextOption>
 
-
+          <GuiElement profile="fs25_statisticsHeaderBox">
+            <Button profile="CC_TableHeader" position="20px 0px" size="200px 32px" text="Title" handleFocus="false" />
+            <Button profile="CC_TableHeader" position="220px 0px" size="160px 32px" text="Amount" handleFocus="false" />
+            <ThreePartBitmap profile="fs25_lineSeparatorBottom" position="0px -2dp" />
+          </GuiElement>
+          <SmoothList id="invoiceLineTable" profile="CC_Table" size="100% 200px">
+            <ListItem profile="CC_Row">
+              <Text profile="CC_RowCellLeft" position="20px 0px" name="title"/>
+              <Text profile="CC_RowCellLeft" position="220px 0px" name="amount"/>
+            </ListItem>
+          </SmoothList>
         </BoxLayout>
       </BoxLayout>
     </GuiElement>
 
     <BoxLayout profile="fs25_dialogButtonBox">
       <Button profile="buttonBack" text="$l10n_cc_dialog_create_btn_cancel" onClick="onCancel" />
-      <Button profile="buttonOK" text="$l10n_cc_dialog_create_btn_create" onClick="onConfirm" />
+      <Button profile="buttonOK" text="Add line" onClick="onAddInvoiceLine" />
+      <Button profile="buttonOK" text="Save as draft" onClick="onSaveAsDraft" />
+      <Button profile="buttonOK" text="Create and send" onClick="onConfirm" />
     </BoxLayout>
   </GuiElement>
 

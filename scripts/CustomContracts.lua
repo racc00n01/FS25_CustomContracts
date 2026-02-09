@@ -12,7 +12,8 @@ CustomContracts.SaveKey = "CustomContracts"
 
 source(CustomContracts.dir .. "gui/MenuCustomContracts.lua")
 source(CustomContracts.dir .. "gui/dialog/MenuCreateContract.lua")
-source(CustomContracts.dir .. "gui/dialog/invoices/MenuCreateInvoices.lua")
+source(CustomContracts.dir .. "gui/dialog/invoices/DetailInvoiceDialog.lua")
+source(CustomContracts.dir .. "gui/dialog/invoices/AddInvoiceLineDialog.lua")
 source(CustomContracts.dir .. "gui/dialog/invoices/CreateInvoiceDialog.lua")
 source(CustomContracts.dir .. "gui/dialog/MenuEditContract.lua")
 source(CustomContracts.dir .. "gui/ContractsRenderer.lua")
@@ -49,6 +50,16 @@ function CustomContracts:loadMap()
   local createInvoiceDialog = CreateInvoiceDialog.new(g_i18n)
   g_gui:loadGui(CustomContracts.dir .. "gui/dialog/invoices/CreateInvoiceDialog.xml", "createInvoiceDialog",
     createInvoiceDialog)
+
+  -- Register Detail invoice dialog
+  local detailInvoiceDialog = DetailInvoiceDialog.new(g_i18n)
+  g_gui:loadGui(CustomContracts.dir .. "gui/dialog/invoices/DetailInvoiceDialog.xml", "detailInvoiceDialog",
+    detailInvoiceDialog)
+
+  -- Register Add invoice line invoice dialog
+  local addInvoiceLineDialog = AddInvoiceLineDialog.new(g_i18n)
+  g_gui:loadGui(CustomContracts.dir .. "gui/dialog/invoices/AddInvoiceLineDialog.xml", "addInvoiceLineDialog",
+    addInvoiceLineDialog)
 
   menuCustomContracts:initialize()
 

@@ -220,8 +220,8 @@ function CustomContractManager:getOwnedContractsForCurrentFarm()
   return ownedForFarm
 end
 
--- Called by CreateInvoiceEvent, runs on server
-function CustomContractManager:handleCreateInvoice(farmId, payload)
+-- Called by CreateContractEvent, runs on server
+function CustomContractManager:handleCreateRequest(farmId, payload)
   if not g_currentMission:getIsServer() then return end
 
   local id           = self.nextId
@@ -241,7 +241,7 @@ function CustomContractManager:handleCreateInvoice(farmId, payload)
   )
 
   self.contracts[id] = contract
-  self:syncInvoices()
+  self:syncContracts()
 end
 
 -- Function to acceptContract, called by AcceptContractEvent

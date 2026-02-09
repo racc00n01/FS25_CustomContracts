@@ -40,14 +40,20 @@ function InvoicesRenderer:populateCellForItemInSection(list, section, index, cel
 
   local fromFarm = g_farmManager:getFarmById(invoice.creatorFarmId)
   local toFarm = g_farmManager:getFarmById(invoice.receiverFarmId)
-  print("Receiver: " .. invoice.receiverFarmId)
 
-  cell:getAttribute("id"):setText(invoice.id)
+  cell:getAttribute("id"):setText(invoice.number)
+  cell:getAttribute("status"):setText(invoice.status)
   cell:getAttribute("from"):setText(fromFarm.name)
-  cell:getAttribute("to"):setText(toFarm.name)
-  cell:getAttribute("reward"):setText(g_i18n:formatMoney(invoice.total, 0, true, true))
+  cell:getAttribute("to"):setText(0)
+  cell:getAttribute("amount"):setText(g_i18n:formatMoney(invoice.total, 0, true, true))
+  cell:getAttribute("related"):setText(invoice.relatedContractId)
+  cell:getAttribute("duedate"):setText(CustomUtils:formatPeriodDay(invoice.dueAt))
 end
 
 function InvoicesRenderer:onListSelectionChanged(list, section, index)
   self.selectedRow = index
+
+  if self.indexChangedCallback ~= nil then
+    self.indexChangedCallback(index)
+  end
 end
