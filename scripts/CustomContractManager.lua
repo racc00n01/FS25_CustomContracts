@@ -464,6 +464,20 @@ function CustomContractManager:hasLandAccessByContract(farmId, landOwnerFarmId, 
   return false
 end
 
+function CustomContractManager:hasAcceptedContractWithOwner(contractorFarmId, ownerFarmId)
+  if contractorFarmId == nil or ownerFarmId == nil then return false end
+
+  for _, c in pairs(self.contracts) do
+    if c.status == CustomContract.STATUS.ACCEPTED
+        and c.contractorFarmId == contractorFarmId
+        and c.creatorFarmId == ownerFarmId then
+      return true
+    end
+  end
+
+  return false
+end
+
 local function toOrdinal(period, day, daysPerPeriod)
   return (period - 1) * daysPerPeriod + (day - 1)
 end
