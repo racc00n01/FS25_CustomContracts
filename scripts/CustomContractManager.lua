@@ -384,7 +384,6 @@ function CustomContractManager:handleEditRequest(farmId, contractId, data)
   contract.duePeriod   = data.duePeriod
   contract.dueDay      = data.dueDay
 
-  -- mark dirty / sync
   self:syncContracts()
 end
 
@@ -401,7 +400,6 @@ function CustomContractManager:_rebuildAccessCache()
     if c.status == CustomContract.STATUS.ACCEPTED and c.contractorFarmId ~= nil then
       local farmlandId = self:_getFarmlandIdForContract(c)
       if farmlandId ~= nil then
-        print("farmlandId" .. farmlandId)
         self.ccAccessByFarmland[farmlandId] = self.ccAccessByFarmland[farmlandId] or {}
         self.ccAccessByFarmland[farmlandId][c.contractorFarmId] = true
       end

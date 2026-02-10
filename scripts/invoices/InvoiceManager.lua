@@ -4,7 +4,6 @@ InvoiceManager.dir = g_currentModDirectory
 InvoiceManager.modName = g_currentModName
 
 function InvoiceManager.new()
-  print("loaded")
   local self = setmetatable({}, InvoiceManager_mt)
 
   self.invoices = {}
@@ -156,10 +155,8 @@ function InvoiceManager:syncInvoices(connection)
   local event = SyncInvoicesEvent.new(self.invoices, self.nextId)
 
   if connection ~= nil then
-    print("Send")
     connection:sendEvent(event)
   else
-    print("send 2")
     g_server:broadcastEvent(event, true)
   end
 end
@@ -207,10 +204,10 @@ function InvoiceManager:handleCreateRequest(farmId, payload)
     farmId,
     payload.receiverFarmId,
     payload.status or Invoice.STATUS.DRAFT,
-    g_currentMission.time, -- createdAt
-    0,                   -- sentAt
+    g_currentMission.currentPeriod,
+    0,
     payload.dueAt or 0,
-    0,                   -- paidAt
+    0,
     payload.title,
     payload.description,
     payload.total,

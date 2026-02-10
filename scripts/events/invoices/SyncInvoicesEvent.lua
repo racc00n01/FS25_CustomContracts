@@ -9,7 +9,6 @@ function SyncInvoicesEvent.emptyNew()
 end
 
 function SyncInvoicesEvent.new(invoices, nextId)
-  print("Sync invoices")
   local self = SyncInvoicesEvent.emptyNew()
   self.invoices = invoices
   self.nextId = nextId

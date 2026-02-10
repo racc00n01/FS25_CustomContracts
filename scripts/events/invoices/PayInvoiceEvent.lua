@@ -38,7 +38,6 @@ function PayInvoiceEvent:run(connection)
     g_server:broadcastEvent(PayInvoiceEvent.new(self.invoiceId, self.farmId))
   end
 
-  print("triggered pay")
   local invoiceManager = g_currentMission.CustomContracts.InvoiceManager
   invoiceManager:handlePayRequest(self.farmId, self.invoiceId)
 end

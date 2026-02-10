@@ -21,24 +21,13 @@ end
 
 function CreateInvoiceDialog:onGuiSetupFinished()
   CreateInvoiceDialog:superClass().onGuiSetupFinished(self)
-
-  print("[CC] onGuiSetupFinished called")
-
-  -- -- ✅ set data BEFORE reloadData
-  -- self.invoiceLineTable:setDataSource(self.linesRenderer)
-  -- self.invoiceLineTable:setDelegate(self.linesRenderer)
-
-  -- self.invoiceLineTable:reloadData()
 end
 
 function CreateInvoiceDialog:onOpen()
   CreateInvoiceDialog:superClass().onOpen(self)
 
-  print("[CC] binding list now", self.invoiceLineTable)
   self.invoiceLineTable:setDataSource(self.linesRenderer)
   self.invoiceLineTable:setDelegate(self.linesRenderer)
-
-  self.invoiceLineTable:reloadData()
 
   local myFarmId = g_currentMission:getFarmId()
 

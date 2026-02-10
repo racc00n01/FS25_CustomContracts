@@ -26,7 +26,19 @@
         <ThreePartBitmap profile="fs25_lineSeparatorTop" position="0px -160px"/>
 
         <Text profile="CC_ContractH6" position="0px -190px" text="$l10n_cc_contract_info_title"/>
-        <Text profile="CC_ContractBody" position="0px -190px" id="invoiceDescriptionValue"/>
+        <Text profile="CC_ContractBody" position="0px -210px" id="invoiceDescriptionValue"/>
+
+        <GuiElement profile="fs25_statisticsHeaderBox" position="0px -280px">
+          <Button profile="CC_TableHeader" position="20px 0px" size="200px 32px" text="Title" handleFocus="false" />
+          <Button profile="CC_TableHeaderRight" position="0.325 0px" size="160px 32px" text="Amount" handleFocus="false" />
+          <ThreePartBitmap profile="fs25_lineSeparatorBottom" position="0px -2dp" />
+        </GuiElement>
+        <SmoothList id="invoiceLineTable" profile="CC_Table" size="100% 200px" position="0px -300px">
+          <ListItem profile="CC_Row">
+            <Text profile="CC_RowCellLeft" position="20px 0px" name="title"/>
+            <Text profile="CC_RowCellRight" position="-20px 0px" name="amount"/>
+          </ListItem>
+        </SmoothList>
 
         <ThreePartBitmap profile="fs25_lineSeparatorTop" position="0px -570px"/>
         <Text profile="CC_ContractFooter" position="0px -590px" text="$l10n_cc_contract_total_reward"/>

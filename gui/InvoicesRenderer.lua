@@ -9,7 +9,6 @@ InvoicesRenderer = {}
 InvoicesRenderer_mt = Class(InvoicesRenderer)
 
 function InvoicesRenderer.new()
-  print("created")
   local self = {}
   setmetatable(self, InvoicesRenderer_mt)
   self.data = nil
@@ -44,7 +43,7 @@ function InvoicesRenderer:populateCellForItemInSection(list, section, index, cel
   cell:getAttribute("id"):setText(invoice.number)
   cell:getAttribute("status"):setText(invoice.status)
   cell:getAttribute("from"):setText(fromFarm.name)
-  cell:getAttribute("to"):setText(0)
+  cell:getAttribute("to"):setText(toFarm.name)
   cell:getAttribute("amount"):setText(g_i18n:formatMoney(invoice.total, 0, true, true))
   cell:getAttribute("related"):setText(invoice.relatedContractId)
   cell:getAttribute("duedate"):setText(CustomUtils:formatPeriodDay(invoice.dueAt))

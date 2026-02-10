@@ -341,7 +341,6 @@ end
 
 function MenuCustomContracts:updateContent()
   local state = self.subCategoryPaging:getState()
-  print("state" .. state)
 
   self.categoryHeaderText:setText(g_i18n:getText(MenuCustomContracts.HEADER_TITLES[state]))
 

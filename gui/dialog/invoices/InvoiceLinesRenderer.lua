@@ -16,7 +16,6 @@ end
 
 function InvoiceLinesRenderer:setData(data)
   self.data = data or {}
-  print(string.format("[CC] linesRenderer items=%d", #(self.data or {})))
 end
 
 function InvoiceLinesRenderer:getNumberOfSections()
@@ -24,7 +23,6 @@ function InvoiceLinesRenderer:getNumberOfSections()
 end
 
 function InvoiceLinesRenderer:getNumberOfItemsInSection(list, section)
-  print("number: " .. #self.data)
   return #self.data
 end
 
@@ -33,10 +31,7 @@ function InvoiceLinesRenderer:getTitleForSectionHeader(list, section)
 end
 
 function InvoiceLinesRenderer:populateCellForItemInSection(list, section, index, cell)
-  print("Line: " .. index)
   local line = self.data[index]
-
-  print("Line: " .. line.title)
 
   cell:getAttribute("title"):setText(line.title)
   cell:getAttribute("amount"):setText(g_i18n:formatMoney(line.amount, 0, true, true))

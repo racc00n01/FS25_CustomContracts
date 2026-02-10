@@ -9,6 +9,7 @@ local DetailInvoiceDialog_mt = Class(DetailInvoiceDialog, MessageDialog)
 
 function DetailInvoiceDialog.new(target, custom_mt)
   local self = MessageDialog.new(target, custom_mt or DetailInvoiceDialog_mt)
+  self.linesRenderer = InvoiceLinesRenderer.new()
 
   self.invoice = nil
 
@@ -23,23 +24,20 @@ function DetailInvoiceDialog:onGuiSetupFinished()
   DetailInvoiceDialog:superClass().onGuiSetupFinished(self)
 end
 
--- optional setter if you want to set directly instead of using g_currentMission.CustomContracts.selectedInvoice
-function DetailInvoiceDialog:setInvoice(invoice)
-  self.invoice = invoice
-end
-
 function DetailInvoiceDialog:onOpen()
   DetailInvoiceDialog:superClass().onOpen(self)
 
-  -- 1) Resolve the invoice to show
-  self.invoice = self.invoice or self:getInvoiceFromMission()
-  if self.invoice == nil then
-    -- nothing to show, just close safely
-    self:close()
-    return
+  self.invoice = g_currentMission.CustomContracts.selectedInvoice
+
+  self.invoiceLineTable:setDataSource(self.linesRenderer)
+  self.invoiceLineTable:setDelegate(self.linesRenderer)
+
+  if self.invoice.lines ~= nil then
+    self.linesRenderer:setData(self.lines)
   end
 
-  -- 2) Populate UI
+  self.invoiceLineTable:reloadData()
+
   self:updateInvoiceUI(self.invoice)
 end
 
@@ -50,24 +48,6 @@ end
 
 function DetailInvoiceDialog:onCancel(sender)
   self:close()
-end
-
--- =========================
--- Invoice lookup helpers
--- =========================
-
-function DetailInvoiceDialog:getInvoiceFromMission()
-  local cc = g_currentMission and g_currentMission.CustomContracts
-  if cc == nil then
-    return nil
-  end
-
-  -- A) direct object
-  if cc.selectedInvoice ~= nil then
-    return cc.selectedInvoice
-  end
-
-  return nil
 end
 
 function DetailInvoiceDialog:getFarmName(farmId)
@@ -82,15 +62,10 @@ function DetailInvoiceDialog:getFarmName(farmId)
 end
 
 function DetailInvoiceDialog:getStatusText(status)
-  -- If you already have i18n keys, map them here.
-  -- Otherwise just show the raw status string.
   if status == nil then
     return "-"
   end
 
-  -- Example mapping:
-  -- if status == Invoice.STATUS.DRAFT then return g_i18n:getText("cc_invoice_status_draft") end
-  -- ...
   return tostring(status)
 end
 
@@ -133,49 +108,17 @@ function DetailInvoiceDialog:getInvoiceNumberText(invoice)
   return "#-"
 end
 
--- =========================
--- UI populate + button rules
--- =========================
-
 function DetailInvoiceDialog:updateInvoiceUI(invoice)
   local myFarmId = g_currentMission:getFarmId()
 
-  -- Text fields in XML:
-  -- invoiceNumber, invoiceTitle, invoiceStatusLabel, invoiceStatusValue
-  -- invoiceFromFarm, invoiceReceiverFarm, invoiceDescriptionValue, invoiceTotalValue
-
-  if self.invoiceNumber ~= nil then
-    self.invoiceNumber:setText(self:getInvoiceNumberText(invoice))
-  end
-
-  if self.invoiceTitle ~= nil then
-    self.invoiceTitle:setText(self:getInvoiceTitle(invoice))
-  end
-
-  if self.invoiceStatusLabel ~= nil then
-    -- You can set a static label or leave empty (your XML already has a label area)
-    self.invoiceStatusLabel:setText(g_i18n:getText("cc_invoice_status_label") or "Status")
-  end
-
-  if self.invoiceStatusValue ~= nil then
-    self.invoiceStatusValue:setText(self:getStatusText(invoice.status))
-  end
-
-  if self.invoiceFromFarm ~= nil then
-    self.invoiceFromFarm:setText(self:getFarmName(invoice.creatorFarmId))
-  end
-
-  if self.invoiceReceiverFarm ~= nil then
-    self.invoiceReceiverFarm:setText(self:getFarmName(invoice.receiverFarmId))
-  end
-
-  if self.invoiceDescriptionValue ~= nil then
-    self.invoiceDescriptionValue:setText(self:getInvoiceDescription(invoice))
-  end
-
-  if self.invoiceTotalValue ~= nil then
-    self.invoiceTotalValue:setText(self:formatMoney(invoice.amount or invoice.total or invoice.value or 0))
-  end
+  self.invoiceNumber:setText(self:getInvoiceNumberText(invoice))
+  self.invoiceTitle:setText(self:getInvoiceTitle(invoice))
+  self.invoiceStatusLabel:setText(g_i18n:getText("cc_invoice_status_label"))
+  self.invoiceStatusValue:setText(self:getStatusText(invoice.status))
+  self.invoiceFromFarm:setText(self:getFarmName(invoice.creatorFarmId))
+  self.invoiceReceiverFarm:setText(self:getFarmName(invoice.receiverFarmId))
+  self.invoiceDescriptionValue:setText(self:getInvoiceDescription(invoice))
+  self.invoiceTotalValue:setText(self:formatMoney(invoice.total))
 
   self:updateButtonVisibility(invoice, myFarmId)
 end
@@ -192,29 +135,10 @@ function DetailInvoiceDialog:updateButtonVisibility(invoice, myFarmId)
       elem:setVisible(visible)
     end
   end
-  local function setDisabled(elem, disabled)
-    if elem ~= nil and elem.setDisabled ~= nil then
-      elem:setDisabled(disabled)
-    end
-  end
-
-  -- If you didn’t give ids to buttons in XML, you *should*.
-  -- Without ids, it’s hard to reference them here.
-  -- So: add ids in XML like id="btnCancelInvoice" etc.
-  --
-  -- For now, I’ll assume you will add:
-  -- <Button id="btnCancelInvoice" ... />
-  -- <Button id="btnPay" ... />
-  -- <Button id="btnEdit" ... />
 
   if self.btnCancelInvoice ~= nil then setVisible(self.btnCancelInvoice, false) end
   if self.btnPay ~= nil then setVisible(self.btnPay, false) end
   if self.btnEdit ~= nil then setVisible(self.btnEdit, false) end
-
-  -- Rules (adjust to your design)
-  -- - Creator can Edit/Cancel while DRAFT (and maybe while SENT)
-  -- - Receiver can Pay when SENT
-  -- - Nobody can edit paid invoices
 
   if isCreator then
     if status == Invoice.STATUS.DRAFT then
@@ -233,10 +157,6 @@ function DetailInvoiceDialog:updateButtonVisibility(invoice, myFarmId)
   end
 end
 
--- =========================
--- Button callbacks
--- =========================
-
 function DetailInvoiceDialog:onCancelInvoice()
   if self.invoice == nil then return end
   -- TODO: call your cancel event / manager function
@@ -245,7 +165,6 @@ end
 
 function DetailInvoiceDialog:onPay()
   if self.invoice == nil then return end
-  -- TODO: call your pay event / manager function
   g_currentMission.CustomContracts.InvoiceManager:handlePayRequest(nil, self.invoice.id)
 end
 

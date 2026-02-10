@@ -272,6 +272,9 @@
   <Profile name="CC_RowCell" extends="baseReference" with="anchorStretchingYLeft">
     <textSize value="16px" />
     <textAlignment value="center" />
+    <textColor value="$preset_fs25_colorMainLight" />
+    <textSelectedColor value="$preset_fs25_colorMainDark" />
+    <textDisabledColor value="$preset_colorDisabled" />
   </Profile>
 
   <Profile name="CC_RowCellLeft" extends="CC_RowCell" with="anchorStretchingYLeft">
