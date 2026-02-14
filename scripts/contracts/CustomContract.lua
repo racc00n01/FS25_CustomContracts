@@ -13,16 +13,17 @@ CustomContract_mt = Class(CustomContract)
 
 
 CustomContract.STATUS = {
-  OPEN      = "OPEN",
-  ACCEPTED  = "ACCEPTED",
-  COMPLETED = "COMPLETED",
-  CANCELLED = "CANCELLED",
-  EXPIRED   = "EXPIRED"
+  OPEN                       = "OPEN",
+  ACCEPTED                   = "ACCEPTED",
+  COMPLETED                  = "COMPLETED",
+  CANCELLED                  = "CANCELLED",
+  EXPIRED                    = "EXPIRED",
+  COMPLETED_AWAITING_INVOICE = "COMPLETED_AWAITING_INVOICE"
 }
 
 -- Intizialise function when creating a new CustomContract.
 function CustomContract.new(id, creatorFarmId, fieldId, workType, reward, description, startPeriod, startDay, duePeriod,
-                            dueDay)
+                            dueDay, invoiceId)
   local self            = setmetatable({}, CustomContract_mt)
 
   self.id               = id
@@ -37,6 +38,7 @@ function CustomContract.new(id, creatorFarmId, fieldId, workType, reward, descri
   self.startDay         = startDay or -1
   self.duePeriod        = duePeriod or -1
   self.dueDay           = dueDay or -1
+  self.invoiceId        = invoiceId or -1
 
   return self
 end
@@ -54,6 +56,7 @@ function CustomContract:writeStream(streamId)
   streamWriteInt32(streamId, self.startDay)
   streamWriteInt32(streamId, self.duePeriod)
   streamWriteInt32(streamId, self.dueDay)
+  streamWriteInt32(streamId, self.invoiceId)
 end
 
 function CustomContract.newFromStream(streamId)
@@ -69,6 +72,7 @@ function CustomContract.newFromStream(streamId)
   local startDay = streamReadInt32(streamId)
   local duePeriod = streamReadInt32(streamId)
   local dueDay = streamReadInt32(streamId)
+  local invoiceId = streamReadInt32(streamId)
 
   local contract = CustomContract.new(
     id,
@@ -80,7 +84,8 @@ function CustomContract.newFromStream(streamId)
     startPeriod,
     startDay,
     duePeriod,
-    dueDay
+    dueDay,
+    invoiceId
   )
 
   contract.contractorFarmId = contractorFarmId ~= -1 and contractorFarmId or nil

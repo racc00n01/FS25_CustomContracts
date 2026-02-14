@@ -13,15 +13,17 @@
       </BoxLayout>
     </GuiElement>
     <BoxLayout profile="fs25_subCategorySelectorTabbedBox" id="subCategoryBox">
-      <Button profile="fs25_subCategorySelectorTabbedTab" id="subCategoryTabs[1]" text="$l10n_cc_header_contracts" onClick="onClickPolicies">
+      <Button profile="fs25_subCategorySelectorTabbedTab" id="subCategoryTabs[1]" text="$l10n_cc_header_contracts" onClick="onClickContracts">
         <ThreePartBitmap profile="fs25_subCategorySelectorTabbedTabBg" name="background"/>
       </Button>
-      <Button profile="fs25_subCategorySelectorTabbedTab" id="subCategoryTabs[2]" text="$l10n_cc_header_invoices" onClick="onClickSchemes">
+      <Button profile="fs25_subCategorySelectorTabbedTab" id="subCategoryTabs[2]" text="$l10n_cc_header_invoices" onClick="onClickInvoices">
         <ThreePartBitmap profile="fs25_subCategorySelectorTabbedTabBg" name="background"/>
       </Button>
     </BoxLayout>
+
     <ThreePartBitmap profile="fs25_lineSeparatorTopHighlighted" position="0px -57px"/>
     <MultiTextOption profile="fs25_subCategorySelectorTabbed" id="subCategoryPaging" position="0px -10px" onClick="updateSubCategoryPages"/>
+
     <GuiElement profile="fs25_subCategorySelectorTabbedContainer" id="subCategoryPages[1]">
       <GuiElement position="0px -20px">
 
@@ -92,11 +94,32 @@
       </GuiElement>
 
     </GuiElement>
-  </GuiElement>
-  <GuiElement profile="fs25_subCategorySelectorTabbedContainer" id="subCategoryPages[2]">
+    <GuiElement profile="fs25_subCategorySelectorTabbedContainer" id="subCategoryPages[2]">
+      <GuiElement profile="fs25_statisticsHeaderBox">
+        <Button profile="CC_TableHeader" position="20px 0px" size="200px 32px" text="Id" handleFocus="false" />
+        <Button profile="CC_TableHeader" position="220px 0px" size="160px 32px" text="Status" handleFocus="false" />
+        <Button profile="CC_TableHeader" position="380px 0px" size="250px 32px" text="From" handleFocus="false" />
+        <Button profile="CC_TableHeader" position="630px 0px" size="250px 32px" text="To" handleFocus="false" />
+        <Button profile="CC_TableHeader" position="880px 0px" size="160px 32px" text="Amount" handleFocus="false" />
+        <Button profile="CC_TableHeader" position="1040px 0px" size="150px 32px" text="Related" handleFocus="false" />
+        <Button profile="CC_TableHeader" position="1190px 0px" size="150px 32px" text="Due Date" handleFocus="false" />
+        <ThreePartBitmap profile="fs25_lineSeparatorBottom" position="0px -2dp" />
+      </GuiElement>
+      <SmoothList id="invoicesTable" profile="CC_Table" size="100% 550px">
+        <ListItem profile="CC_Row">
+          <Text profile="CC_RowCellLeft" position="20px 0px" name="id"/>
+          <Text profile="CC_RowCellLeft" position="220px 0px" name="status"/>
+          <Text profile="CC_RowCellLeft" position="380px 0px" name="from"/>
+          <Text profile="CC_RowCellLeft" position="630px 0px" name="to"/>
+          <Text profile="CC_RowCellLeft" position="880px 0px" name="amount"/>
+          <Text profile="CC_RowCellLeft" position="1040px 0px" name="related"/>
+          <Text profile="CC_RowCellLeft" position="1190px 0px" name="duedate"/>
+        </ListItem>
+      </SmoothList>
+      <ThreePartBitmap profile="CC_TableSlider">
+        <Slider profile="fs25_listSlider" dataElementId="invoicesTable"/>
+      </ThreePartBitmap>
 
-    <GuiElement position="0px -20px">
-      <Text text="$l10n_cc_header_invoices" position="0px 20px"/>
     </GuiElement>
   </GuiElement>
 </GUI>

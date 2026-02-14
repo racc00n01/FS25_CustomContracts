@@ -2,7 +2,7 @@
 <GUI name="menuCreateContract" onOpen="onOpen" onClose="onClose" onCreate="onCreate">
   <GuiElement profile="newLayer" />
   <Bitmap profile="dialogFullscreenBg" id="dialogBg" />
-  <GuiElement profile="dialogBg" id="dialogElement" size="900px 800px">
+  <GuiElement profile="fs25_dialogBg" id="dialogElement" size="900px 800px">
     <ThreePartBitmap profile="fs25_dialogBgMiddle" />
     <ThreePartBitmap profile="fs25_dialogBgTop" />
     <ThreePartBitmap profile="fs25_dialogBgBottom" />
@@ -49,7 +49,6 @@
           <MultiTextOption id="dueDateSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onDueDateSelectChange">
             <Text profile="fs25_multiTextOptionText" name="text" />
           </MultiTextOption>
-
 
         </BoxLayout>
       </BoxLayout>

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <l10n>
   <texts>
+    <text name="cc_money_type_invoices" text="Invoices"/>
+    <text name="finance_invoices" text="Invoices"/>
     <text name="cc_header_contracts" text="Contracts"/>
     <text name="cc_header_invoices" text="Invoices"/>
     <text name="cc_current_balance" text="Current Balance:"/>
@@ -65,5 +67,8 @@
     <text name="cc_dialog_create_input_duedate" text="Due date"/>
     <text name="cc_dialog_create_btn_cancel" text="Cancel"/>
     <text name="cc_dialog_create_btn_create" text="Create"/>
+
+    <text name="cc_dialog_invoice_pay_yes_no" text="Pay invoice %s and receive €%s?"/>
+    <text name="cc_dialog_invoice_pay_yes_no_btn" text="Pay Invoice"/>
   </texts>
 </l10n>

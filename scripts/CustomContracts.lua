@@ -11,10 +11,14 @@ CustomContracts.modName = g_currentModName
 CustomContracts.SaveKey = "CustomContracts"
 
 source(CustomContracts.dir .. "gui/MenuCustomContracts.lua")
-source(CustomContracts.dir .. "gui/dialog/MenuCreateContract.lua")
-source(CustomContracts.dir .. "gui/dialog/MenuEditContract.lua")
-source(CustomContracts.dir .. "gui/ContractsRenderer.lua")
+source(CustomContracts.dir .. "gui/dialog/contracts/MenuCreateContract.lua")
+source(CustomContracts.dir .. "gui/dialog/invoices/DetailInvoiceDialog.lua")
+source(CustomContracts.dir .. "gui/dialog/invoices/AddInvoiceLineDialog.lua")
+source(CustomContracts.dir .. "gui/dialog/invoices/CreateInvoiceDialog.lua")
+source(CustomContracts.dir .. "gui/dialog/contracts/MenuEditContract.lua")
+source(CustomContracts.dir .. "gui/renderer/ContractsRenderer.lua")
 source(CustomContracts.dir .. "scripts/events/SyncContractsEvent.lua")
+source(CustomContracts.dir .. "scripts/events/invoices/SyncInvoicesEvent.lua")
 source(CustomContracts.dir .. "scripts/events/InitialClientStateEvent.lua")
 source(CustomContracts.dir .. "scripts/util/CustomUtils.lua")
 
@@ -22,6 +26,7 @@ function CustomContracts:loadMap()
   g_currentMission.CustomContracts = self
 
   MessageType.CUSTOM_CONTRACTS_UPDATED = nextMessageTypeId()
+  MessageType.INVOICES_UPDATED = nextMessageTypeId()
   MessageType.PLAYER_CONNECTED = nextMessageTypeId()
 
   g_gui:loadProfiles(CustomContracts.dir .. "gui/guiProfiles.xml")
@@ -35,21 +40,41 @@ function CustomContracts:loadMap()
 
   -- Register Create contract dialog
   local createContractDialog = MenuCreateContract.new(g_i18n)
-  g_gui:loadGui(CustomContracts.dir .. "gui/dialog/MenuCreateContract.xml", "menuCreateContract", createContractDialog)
+  g_gui:loadGui(CustomContracts.dir .. "gui/dialog/contracts/MenuCreateContract.xml", "menuCreateContract",
+    createContractDialog)
 
   -- Register Edit contract dialog
   local editContractDialog = MenuEditContract.new(g_i18n)
-  g_gui:loadGui(CustomContracts.dir .. "gui/dialog/MenuEditContract.xml", "menuEditContract", editContractDialog)
+  g_gui:loadGui(CustomContracts.dir .. "gui/dialog/contracts/MenuEditContract.xml", "menuEditContract",
+    editContractDialog)
+
+  -- Register Create invoice dialog
+  local createInvoiceDialog = CreateInvoiceDialog.new(g_i18n)
+  g_gui:loadGui(CustomContracts.dir .. "gui/dialog/invoices/CreateInvoiceDialog.xml", "createInvoiceDialog",
+    createInvoiceDialog)
+
+  -- Register Detail invoice dialog
+  local detailInvoiceDialog = DetailInvoiceDialog.new(g_i18n)
+  g_gui:loadGui(CustomContracts.dir .. "gui/dialog/invoices/DetailInvoiceDialog.xml", "detailInvoiceDialog",
+    detailInvoiceDialog)
+
+  -- Register Add invoice line invoice dialog
+  local addInvoiceLineDialog = AddInvoiceLineDialog.new(g_i18n)
+  g_gui:loadGui(CustomContracts.dir .. "gui/dialog/invoices/AddInvoiceLineDialog.xml", "addInvoiceLineDialog",
+    addInvoiceLineDialog)
 
   menuCustomContracts:initialize()
 
   self.ContractManager = CustomContractManager:new()
+  self.InvoiceManager = InvoiceManager:new()
+
   self.CustomContractsMenu = menuCustomContracts
   self.lastPeriod = g_currentMission.environment.currentPeriod - 1
   self.currentPeriod = g_currentMission.environment.currentPeriod
   self.currentDay = g_currentMission.environment.currentDay
 
   g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
+  g_messageCenter:publish(MessageType.INVOICES_UPDATED)
 
   self:loadFromXmlFile()
 end
@@ -70,6 +95,7 @@ function CustomContracts:loadFromXmlFile()
   if fileExists(savegameFolderPath .. CustomContracts.SaveKey .. ".xml") then
     local xmlFile = loadXMLFile(CustomContracts.SaveKey, savegameFolderPath .. CustomContracts.SaveKey .. ".xml");
     g_currentMission.CustomContracts.ContractManager:loadFromXmlFile(xmlFile)
+    g_currentMission.CustomContracts.InvoiceManager:loadFromXmlFile(xmlFile)
 
     delete(xmlFile)
   end
@@ -88,6 +114,7 @@ function CustomContracts:saveToXmlFile()
     CustomContracts.SaveKey)
 
   g_currentMission.CustomContracts.ContractManager:saveToXmlFile(xmlFile)
+  g_currentMission.CustomContracts.InvoiceManager:saveToXmlFile(xmlFile)
 
   saveXMLFile(xmlFile)
   delete(xmlFile)
@@ -175,10 +202,12 @@ end
 
 function CustomContracts:playerFarmChanged()
   g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
+  g_messageCenter:publish(MessageType.INVOICES_UPDATED)
 end
 
 function CustomContracts:hourChanged()
-  g_currentMission.CustomContracts.ContractManager:syncContracts();
+  g_currentMission.CustomContracts.ContractManager:syncContracts()
+  g_currentMission.CustomContract.InvoiceManager:syncInvoices()
 
   local period = g_currentMission.environment.currentPeriod
   if period ~= g_currentMission.CustomContracts.currentPeriod then
@@ -199,12 +228,14 @@ function CustomContracts:onPeriodChanged()
   g_currentMission.CustomContracts.currentDay = g_currentMission.environment.currentDay
 
   g_currentMission.CustomContracts.ContractManager:updateExpiredContracts()
+  -- TODO: Add function for expired invoices
 end
 
 function CustomContracts:onDayChanged()
   g_currentMission.CustomContracts.currentDay = g_currentMission.environment.currentDay
 
   g_currentMission.CustomContracts.ContractManager:updateExpiredContracts()
+  -- TODO: Add function for expired invoices
 end
 
 function CustomContracts.getIsAccessibleAtWorldPosition(self, superFunc, farmId, x, z, workAreaType)
