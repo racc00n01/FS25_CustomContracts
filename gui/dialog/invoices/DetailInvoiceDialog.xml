@@ -51,6 +51,7 @@
       <Button profile="buttonOK" id="btnCancelInvoice" text="Cancel invoice" onClick="onCancelInvoice" />
       <Button profile="buttonOK" id="btnPay" text="Pay" onClick="onPay" />
       <Button profile="buttonOK" id="btnEdit" text="Edit" onClick="onEdit" />
+      <Button profile="buttonOK" id="btnSent" text="Sent" onClick="onSent" />
 
     </BoxLayout>
   </GuiElement>

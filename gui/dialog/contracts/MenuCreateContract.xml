@@ -50,7 +50,6 @@
             <Text profile="fs25_multiTextOptionText" name="text" />
           </MultiTextOption>
 
-
         </BoxLayout>
       </BoxLayout>
     </GuiElement>

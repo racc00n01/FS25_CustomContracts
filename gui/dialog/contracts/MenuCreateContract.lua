@@ -31,6 +31,24 @@ CustomContractWorkTypes = {
 
 function MenuCreateContract.new(target, custom_mt)
   local self = MessageDialog.new(target, custom_mt or MenuCreateContract_mt)
+
+  self.farmId = g_currentMission:getFarmId()
+
+  -- Contract paramaters
+  self.workType = nil
+  self.fieldId = 0
+  self.startDate = 0
+  self.dueDate = 0
+  self.reward = 0
+  self.description = nil
+
+  -- Data helpers
+  self.fieldIds = 0
+
+  -- Indexes
+  self.workTypeIndex = 0
+  self.fieldIndex = 0
+
   return self
 end
 
@@ -45,6 +63,11 @@ end
 function MenuCreateContract:onOpen()
   MenuCreateContract:superClass().onOpen(self)
 
+  -- Initialize variables
+  self.farmId = g_currentMission:getFarmId()
+  self.fieldIds = self:getOwnedFieldsIds()
+
+  -- Populate workTypew MultiTextOption with available worktypes
   local workTypeTexts = {}
 
   for _, workType in ipairs(CustomContractWorkTypes) do
@@ -54,38 +77,24 @@ function MenuCreateContract:onOpen()
   self.workTypeSelector:setTexts(workTypeTexts)
   self.workTypeSelector:setState(1, false)
 
-  local fieldIds = {}
-
-  local farmId = g_currentMission:getFarmId()
-  if farmId == nil then
-    return
-  end
-
-  for _, field in pairs(g_fieldManager:getFields()) do
-    if field:getOwner() == farmId then
-      table.insert(fieldIds, field:getId())
-    end
-  end
-
-  table.sort(fieldIds)
-
-  self.fieldIds = fieldIds
-
+  -- Populate field MultiTextOption with owned fields
   local fieldTexts = {}
-  for _, fieldId in ipairs(fieldIds) do
+  for _, fieldId in ipairs(self.fieldIds) do
+    print("Field" .. fieldId)
     table.insert(fieldTexts, string.format(g_i18n:getText("cc_contract_list_field_label"), fieldId))
   end
 
   self.fieldSelector:setTexts(fieldTexts)
   self.fieldSelector:setState(1, false)
+  self.fieldIndex = 1
 
+  -- Populate startDate MultiTextOption with dates from now
   self:fillMonthMultiTextOption(self.startDateSelector, "startDateValues")
-  self:fillMonthMultiTextOption(self.dueDateSelector, "dueDateValues")
-
   self.selectedStartDateIndex = 1
-  self.selectedDueDateIndex   = 1
 
-  self.selectedFieldIndex     = 1
+  -- Populate dueDate MultiTextOption with dates from now till one year
+  self:fillMonthMultiTextOption(self.dueDateSelector, "dueDateValues")
+  self.selectedDueDateIndex = 1
 end
 
 function MenuCreateContract:onClose()
@@ -93,11 +102,13 @@ function MenuCreateContract:onClose()
 end
 
 function MenuCreateContract:onFieldSelectChange(state)
-  self.selectedFieldIndex = state
+  self.fieldIndex = state
+  self.fieldId = self.fieldIds[self.fieldIndex]
 end
 
 function MenuCreateContract:onGroupSelectChange(state)
-  self.selectedWorkTypeIndex = state
+  self.workTypeIndex = state
+  self.workType = CustomContractWorkTypes[self.workTypeIndex].text
 end
 
 function MenuCreateContract:onStartDateSelectChange(state)
@@ -108,20 +119,19 @@ function MenuCreateContract:onDueDateSelectChange(state)
   self.selectedDueDateIndex = state
 end
 
--- XML onClick handlers
+function MenuCreateContract:onClickVehicleList(list, section, index)
+  self:toggleRentableVehicle(index)
+  list:reloadData()
+end
+
+-- Submit create contract button
 function MenuCreateContract:onConfirm(sender)
-  if g_client == nil then
-    return
-  end
+  if g_client == nil then return end
 
-  local fieldId = self.fieldIds[self.selectedFieldIndex or 0]
-  local reward = tonumber(self.rewardInput:getText())
-  local description = self.descriptionInput:getText()
+  self.reward = tonumber(self.rewardInput:getText())
+  self.description = self.descriptionInput:getText()
 
-  local index = self.selectedWorkTypeIndex or 1
-  local workType = CustomContractWorkTypes[index].text
-
-  if fieldId == nil or reward == nil or workType == nil then
+  if self.fieldId == nil or self.reward == nil or self.workType == nil then
     InfoDialog.show(g_i18n:getText("cc_dialog_create_validation_fields"))
     return
   end
@@ -143,10 +153,10 @@ function MenuCreateContract:onConfirm(sender)
   end
 
   local contract = {
-    fieldId     = fieldId,
-    workType    = workType,
-    reward      = reward,
-    description = description or "-",
+    fieldId     = self.fieldId,
+    workType    = self.workType,
+    reward      = self.reward,
+    description = self.description or "-",
     startPeriod = startV.period,
     startDay    = startV.day,
     duePeriod   = dueV.period,
@@ -154,13 +164,19 @@ function MenuCreateContract:onConfirm(sender)
   }
 
   g_client:getServerConnection():sendEvent(
-    CreateContractEvent.new(contract, g_currentMission:getFarmId())
+    CreateContractEvent.new(contract, self.farmId)
   )
 
   self:close()
 end
 
 function MenuCreateContract:onCancel(sender)
+  -- Cleanup form
+  self.reward = nil
+  self.description = nil
+  self.fieldId = nil
+  self.workType = nil
+
   self:close()
 end
 
@@ -171,4 +187,20 @@ function MenuCreateContract:fillMonthMultiTextOption(multiTextOption, valuesFiel
 
   multiTextOption:setTexts(texts)
   multiTextOption:setState(1, true)
+end
+
+-- Retrieve the field ids of the farm
+function MenuCreateContract:getOwnedFieldsIds()
+  local fieldIds = {}
+
+  for _, field in pairs(g_fieldManager:getFields()) do
+    if field:getOwner() == self.farmId then
+      print("field owner" .. field:getId())
+      table.insert(fieldIds, field:getId())
+    end
+  end
+
+  table.sort(fieldIds)
+
+  return fieldIds
 end

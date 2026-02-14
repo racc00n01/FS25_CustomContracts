@@ -174,3 +174,9 @@ function DetailInvoiceDialog:onEdit()
   -- g_currentMission.CustomContracts.selectedInvoice = self.invoice
   -- g_gui:showDialog("editInvoiceDialog")
 end
+
+function DetailInvoiceDialog:onSent()
+  if self.invoice == nil then return end
+  g_currentMission.CustomContracts.InvoiceManager:handleSendRequest(self.invoice.id)
+  self:onClose()
+end

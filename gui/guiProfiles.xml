@@ -139,11 +139,9 @@
 
   <Profile name="CC_Input" extends="fs25_textInput">
     <size value="100% 44px"/>
-    <maxCharacters value="9"/>
   </Profile>
   <Profile name="CC_InputTextArea" extends="CC_Input">
     <size value="100% 44px"/>
-    <maxCharacters value="200"/>
     <textAlignment value="left"/>
   </Profile>
 

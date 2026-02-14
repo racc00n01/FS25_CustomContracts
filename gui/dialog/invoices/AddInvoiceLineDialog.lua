@@ -8,6 +8,8 @@ local AddInvoiceLineDialog_mt = Class(AddInvoiceLineDialog, MessageDialog)
 function AddInvoiceLineDialog.new(target, custom_mt)
   local self = MessageDialog.new(target, custom_mt or AddInvoiceLineDialog_mt)
 
+  self.invoiceDraft = nil
+
   self.parentDialogName = "createInvoiceDialog"
   self.prefillText = ""
   self.prefillPrice = ""
@@ -17,6 +19,10 @@ end
 
 function AddInvoiceLineDialog:onCreate()
   AddInvoiceLineDialog:superClass().onCreate(self)
+end
+
+function AddInvoiceLineDialog:setDraft(draft)
+  self.invoiceDraft = draft
 end
 
 function AddInvoiceLineDialog:setParentDialogName(name)
@@ -30,6 +36,10 @@ end
 
 function AddInvoiceLineDialog:onOpen()
   AddInvoiceLineDialog:superClass().onOpen(self)
+
+  if g_currentMission.CustomContracts.invoiceDraft ~= nil then
+    self.invoiceDraft = g_currentMission.CustomContracts.invoiceDraft
+  end
 
   if self.lineErrorText ~= nil then
     self.lineErrorText:setText("")
@@ -60,27 +70,30 @@ local function parsePrice(text)
 end
 
 function AddInvoiceLineDialog:onOk()
-  local title = self.lineTextInput ~= nil and self.lineTextInput:getText() or ""
+  local title = self.lineTextInput:getText() or ""
   title = tostring(title):gsub("^%s+", ""):gsub("%s+$", "")
 
-  local amountText = self.linePriceInput ~= nil and self.linePriceInput:getText() or ""
+  local amountText = self.linePriceInput:getText() or ""
   local amount = parsePrice(amountText)
 
   if title == "" then
-    if self.lineErrorText ~= nil then self.lineErrorText:setText("Description is required") end
+    if self.lineErrorText then
+      self.lineErrorText:setText("Description is required")
+    end
     return
   end
 
   if amount == nil then
-    if self.lineErrorText ~= nil then self.lineErrorText:setText("Price must be a number") end
+    if self.lineErrorText then
+      self.lineErrorText:setText("Price must be a number")
+    end
     return
   end
 
-  local cc = g_currentMission.CustomContracts
-  cc.invoiceDraft = cc.invoiceDraft or {}
-  cc.invoiceDraft.lines = cc.invoiceDraft.lines or {}
-
-  table.insert(cc.invoiceDraft.lines, { title = title, amount = amount })
+  table.insert(self.invoiceDraft.lines, {
+    title = title,
+    amount = amount
+  })
 
   self:close()
   g_gui:showDialog(self.parentDialogName)
