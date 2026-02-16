@@ -35,7 +35,7 @@ function InvoiceManager:saveToXmlFile(xmlFile)
     setXMLInt(xmlFile, invKey .. "#id", invoice.id)
     setXMLString(xmlFile, invKey .. "#number", invoice.number or "")
     setXMLInt(xmlFile, invKey .. "#creatorFarmId", invoice.creatorFarmId)
-    setXMLInt(xmlFile, invKey .. "#receiverFarmId", invoice.receiverFarmId)
+    setXMLInt(xmlFile, invKey .. "#receiverFarmId", invoice.receiverFarmId or -1)
     setXMLString(xmlFile, invKey .. "#status", invoice.status or Invoice.STATUS.DRAFT)
     setXMLString(xmlFile, invKey .. "#currency", invoice.currency or "EUR")
     setXMLInt(xmlFile, invKey .. "#createdAt", invoice.createdAt)
@@ -204,7 +204,7 @@ function InvoiceManager:handleCreateRequest(farmId, payload)
     farmId,
     payload.receiverFarmId,
     payload.status or Invoice.STATUS.DRAFT,
-    g_currentMission.currentPeriod,
+    g_currentMission.CustomContracts.currentPeriod,
     0,
     payload.dueAt or 0,
     0,

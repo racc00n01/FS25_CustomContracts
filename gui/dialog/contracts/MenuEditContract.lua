@@ -29,9 +29,10 @@ function MenuEditContract:onOpen()
 
   -- Fill work types
   local workTypeTexts = {}
-  for _, workType in ipairs(CustomContractWorkTypes) do
-    table.insert(workTypeTexts, workType.text)
+  for _, workType in ipairs(CustomContract.WORKAREATYPES) do
+    table.insert(workTypeTexts, workType.name)
   end
+
   self.workTypeSelector:setTexts(workTypeTexts)
 
   -- Fill owned fields
@@ -73,9 +74,8 @@ function MenuEditContract:prefillFromContract(contract)
   self.selectedFieldIndex = CustomUtils:findIndex(self.fieldIds, contract.fieldId) or 1
   self.fieldSelector:setState(self.selectedFieldIndex, false)
 
-  -- Worktype -> index (your contract stores text, not id)
-  self.selectedWorkTypeIndex = CustomUtils:findWorkTypeIndexByText(contract.workType) or 1
-  self.workTypeSelector:setState(self.selectedWorkTypeIndex, false)
+  -- Worktype
+  self.workTypeSelector:setState(contract.workAreaTypeIndex, false)
 
   -- Inputs
   self.rewardInput:setText(tostring(contract.reward or ""))
@@ -110,7 +110,7 @@ function MenuEditContract:onConfirm(sender)
   local description = self.descriptionInput:getText()
 
   local index = self.selectedWorkTypeIndex or 1
-  local workType = CustomContractWorkTypes[index].text
+  local workAreaTypeIndex = CustomContract.WORKAREATYPES[index]
 
   if fieldId == nil or reward == nil or workType == nil then
     InfoDialog.show(g_i18n:getText("cc_dialog_create_validation_fields"))
@@ -134,14 +134,14 @@ function MenuEditContract:onConfirm(sender)
   end
 
   local updated = {
-    fieldId     = fieldId,
-    workType    = workType,
-    reward      = reward,
-    description = description or "-",
-    startPeriod = startV.period,
-    startDay    = startV.day,
-    duePeriod   = dueV.period,
-    dueDay      = dueV.day
+    fieldId           = fieldId,
+    workAreaTypeIndex = workAreaTypeIndex,
+    reward            = reward,
+    description       = description or "-",
+    startPeriod       = startV.period,
+    startDay          = startV.day,
+    duePeriod         = dueV.period,
+    dueDay            = dueV.day
   }
 
   -- IMPORTANT: your event must support passing the updated data

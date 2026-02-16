@@ -35,8 +35,6 @@ end
 
 function CompleteContractEvent:run(connection)
   if g_currentMission:getIsServer() then
-    -- IMPORTANT: farmId should come from the event payload (what you already send),
-    -- OR you can keep your existing validation logic with contractorFarmId == farmId.
     g_currentMission.CustomContracts.ContractManager:handleCompleteRequest(self.farmId, self.contractId, connection)
   end
 end

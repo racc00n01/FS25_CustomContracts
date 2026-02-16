@@ -34,6 +34,16 @@ function CreateInvoiceDialog:onOpen()
   -- If there is an invoiceDraft in the current session, set it
   if g_currentMission.CustomContracts.invoiceDraft ~= nil then
     self.invoiceDraft = g_currentMission.CustomContracts.invoiceDraft
+  else
+    g_currentMission.CustomContracts.invoiceDraft = self.invoiceDraft
+  end
+
+  if self.titleInput ~= nil then
+    self.titleInput:setText("")
+  end
+
+  if self.descriptionInput ~= nil then
+    self.descriptionInput:setText("")
   end
 
   -- Set the invoiceLine smoothlist
@@ -130,6 +140,7 @@ function CreateInvoiceDialog:onSaveAsDraft(sender)
 
   g_client:getServerConnection():sendEvent(CreateInvoiceEvent.new(payload, creatorFarmId))
 
+  g_currentMission.CustomContracts.invoiceDraft = nil
   self:close()
 end
 
@@ -177,6 +188,8 @@ function CreateInvoiceDialog:onConfirm(sender)
 
   g_client:getServerConnection():sendEvent(CreateInvoiceEvent.new(payload, creatorFarmId))
 
+  g_currentMission.CustomContracts.invoiceDraft = nil
+
   self:close()
 end
 
@@ -189,19 +202,13 @@ function CreateInvoiceDialog:onCancel(sender)
   self.selectedReceiverFarmIndex = 1
   self.selectedDueDateIndex = 1
 
-  self.invoiceDraft = nil
-  g_currentMission.CustomContracts.invoiceDraft = nil
-
   self:close()
 end
 
 function CreateInvoiceDialog:onAddInvoiceLine()
   self:close()
 
-  local dlg = g_gui:showDialog("addInvoiceLineDialog")
-  if dlg ~= nil then
-    dlg:setDraft(self.invoiceDraft)
-  end
+  g_gui:showDialog("addInvoiceLineDialog")
 end
 
 function CreateInvoiceDialog:fillMonthMultiTextOption(multiTextOption, valuesFieldName)
@@ -265,8 +272,10 @@ end
 function CreateInvoiceDialog:calculateTotalFromDraftLines()
   local total = 0
 
-  for _, line in ipairs(self.invoiceDraft.lines) do
-    total = total + (tonumber(line.amount) or 0)
+  if self.invoiceDraft.lines ~= nil then
+    for _, line in ipairs(self.invoiceDraft.lines) do
+      total = total + (tonumber(line.amount) or 0)
+    end
   end
 
   -- invoice total is int in your code, so round to int

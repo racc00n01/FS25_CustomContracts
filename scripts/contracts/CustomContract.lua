@@ -11,6 +11,26 @@ CustomContract.modName = g_currentModName
 CustomContract.__index = CustomContract
 CustomContract_mt = Class(CustomContract)
 
+CustomContract.WORKAREATYPES = {
+  { index = 1,  name = "Cultivate" },
+  { index = 2,  name = "Plow", },
+  { index = 3,  name = "Seed" },
+  { index = 4,  name = "Fertilize" },
+  { index = 5,  name = "Harvest" },
+  { index = 6,  name = "Roll" },
+  { index = 7,  name = "Weed" },
+  { index = 8,  name = "Lime" },
+  { index = 9,  name = "Mulch" },
+  { index = 10, name = "Stone Pick" },
+  { index = 11, name = "Remove Foliage" },
+  { index = 12, name = "Mowing" },
+  { index = 13, name = "Tedding" },
+  { index = 14, name = "Windrowing" },
+  { index = 15, name = "Baling" },
+  { index = 16, name = "Bale Wrapping" },
+  { index = 17, name = "Spraying" },
+  { index = 18, name = "Other" }
+}
 
 CustomContract.STATUS = {
   OPEN                       = "OPEN",
@@ -22,23 +42,24 @@ CustomContract.STATUS = {
 }
 
 -- Intizialise function when creating a new CustomContract.
-function CustomContract.new(id, creatorFarmId, fieldId, workType, reward, description, startPeriod, startDay, duePeriod,
+function CustomContract.new(id, creatorFarmId, fieldId, workAreaTypeIndex, reward, description, startPeriod, startDay,
+                            duePeriod,
                             dueDay, invoiceId)
-  local self            = setmetatable({}, CustomContract_mt)
+  local self             = setmetatable({}, CustomContract_mt)
 
-  self.id               = id
-  self.creatorFarmId    = creatorFarmId
-  self.contractorFarmId = nil
-  self.fieldId          = fieldId
-  self.workType         = workType
-  self.reward           = reward
-  self.status           = CustomContract.STATUS.OPEN
-  self.description      = description or ""
-  self.startPeriod      = startPeriod or -1
-  self.startDay         = startDay or -1
-  self.duePeriod        = duePeriod or -1
-  self.dueDay           = dueDay or -1
-  self.invoiceId        = invoiceId or -1
+  self.id                = id
+  self.creatorFarmId     = creatorFarmId
+  self.contractorFarmId  = nil
+  self.fieldId           = fieldId
+  self.workAreaTypeIndex = workAreaTypeIndex
+  self.reward            = reward
+  self.status            = CustomContract.STATUS.OPEN
+  self.description       = description or ""
+  self.startPeriod       = startPeriod or -1
+  self.startDay          = startDay or -1
+  self.duePeriod         = duePeriod or -1
+  self.dueDay            = dueDay or -1
+  self.invoiceId         = invoiceId or -1
 
   return self
 end
@@ -48,7 +69,7 @@ function CustomContract:writeStream(streamId)
   streamWriteInt32(streamId, self.creatorFarmId)
   streamWriteInt32(streamId, self.contractorFarmId or -1)
   streamWriteInt32(streamId, self.fieldId)
-  streamWriteString(streamId, self.workType)
+  streamWriteInt32(streamId, self.workAreaTypeIndex)
   streamWriteInt32(streamId, self.reward)
   streamWriteString(streamId, self.status)
   streamWriteString(streamId, self.description)
@@ -64,7 +85,7 @@ function CustomContract.newFromStream(streamId)
   local creatorFarmId = streamReadInt32(streamId)
   local contractorFarmId = streamReadInt32(streamId)
   local fieldId = streamReadInt32(streamId)
-  local workType = streamReadString(streamId)
+  local workAreaTypeIndex = streamReadInt32(streamId)
   local reward = streamReadInt32(streamId)
   local status = streamReadString(streamId)
   local description = streamReadString(streamId)
@@ -78,7 +99,7 @@ function CustomContract.newFromStream(streamId)
     id,
     creatorFarmId,
     fieldId,
-    workType,
+    workAreaTypeIndex,
     reward,
     description,
     startPeriod,
@@ -92,4 +113,10 @@ function CustomContract.newFromStream(streamId)
   contract.status = status
 
   return contract
+end
+
+-- Function to retrieve WorkAreaType name from index
+function CustomContract:getWorkTypeAreaName(index)
+  print("index" .. tostring(index))
+  return CustomContract.WORKAREATYPES[index].name
 end

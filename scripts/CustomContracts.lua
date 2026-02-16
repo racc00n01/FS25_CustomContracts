@@ -207,7 +207,7 @@ end
 
 function CustomContracts:hourChanged()
   g_currentMission.CustomContracts.ContractManager:syncContracts()
-  g_currentMission.CustomContract.InvoiceManager:syncInvoices()
+  g_currentMission.CustomContracts.InvoiceManager:syncInvoices()
 
   local period = g_currentMission.environment.currentPeriod
   if period ~= g_currentMission.CustomContracts.currentPeriod then
@@ -259,7 +259,6 @@ function CustomContracts.getIsAccessibleAtWorldPosition(self, superFunc, farmId,
 end
 
 function CustomContracts.canFarmAccessOtherId(self, superFunc, farmId, otherFarmId, ...)
-  print("[CC] canFarmAccessOtherId called:", farmId, "->", otherFarmId)
   -- base game first
   if superFunc(self, farmId, otherFarmId, ...) then
     return true
@@ -274,11 +273,8 @@ function CustomContracts.canFarmAccessOtherId(self, superFunc, farmId, otherFarm
   end
 
   -- custom-contract exception
-  local cc = g_currentMission.CustomContracts
-  local mgr = cc and cc.ContractManager
-  if mgr ~= nil and mgr.hasAcceptedContractWithOwner ~= nil then
-    if mgr:hasAcceptedContractWithOwner(farmId, otherFarmId) then
-      print("[CC] allowed via contract")
+  if g_currentMission.CustomContracts.ContractManager.hasAcceptedContractWithOwner ~= nil then
+    if g_currentMission.CustomContracts.ContractManager:hasAcceptedContractWithOwner(farmId, otherFarmId) then
       return true
     end
   end
@@ -327,11 +323,8 @@ function CustomContracts.canPlayerAccess(self, superFunc, object, ...)
 
   local myFarmId = g_currentMission:getFarmId()
 
-  local cc = g_currentMission.CustomContracts
-  local mgr = cc and cc.ContractManager
-  if mgr ~= nil and mgr.hasAcceptedContractWithOwner ~= nil then
-    if mgr:hasAcceptedContractWithOwner(myFarmId, ownerFarmId) then
-      print("[CC] canPlayerAccess allowed via contract")
+  if g_currentMission.CustomContracts.ContractManager.hasAcceptedContractWithOwner ~= nil then
+    if g_currentMission.CustomContracts.ContractManager:hasAcceptedContractWithOwner(myFarmId, ownerFarmId) then
       return true
     end
   end

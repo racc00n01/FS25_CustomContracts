@@ -39,9 +39,10 @@ function InvoicesRenderer:populateCellForItemInSection(list, section, index, cel
 
   local fromFarm = g_farmManager:getFarmById(invoice.creatorFarmId)
   local toFarm = g_farmManager:getFarmById(invoice.receiverFarmId)
+  local farmId = g_currentMission:getFarmId()
 
   cell:getAttribute("id"):setText(invoice.number)
-  cell:getAttribute("status"):setText(invoice.status)
+  cell:getAttribute("status"):setText(invoice:getStatus(farmId))
   cell:getAttribute("from"):setText(fromFarm.name)
   cell:getAttribute("to"):setText(toFarm.name)
   cell:getAttribute("amount"):setText(g_i18n:formatMoney(invoice.total, 0, true, true))
