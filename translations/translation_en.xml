@@ -26,7 +26,7 @@
     <text name="cc_status_expired" text="Expired"/>
     <text name="cc_contract_info_title" text="General information"/>
     <text name="cc_contract_notes_title" text="Notes"/>
-    <text name="cc_contract_disclaimer" text="By accepting this contract, you agree to complete the listed work as described. Payment is made upon completion."/>
+    <text name="cc_contract_disclaimer" text="By accepting this contract, you agree to complete the listed work as described. Payment is made upon completion, through an invoice."/>
     <text name="cc_btn_create_contract" text="Create contract"/>
     <text name="cc_btn_accept_contract" text="Accept contract"/>
     <text name="cc_btn_complete_contract" text="Complete contract"/>
@@ -68,6 +68,7 @@
     <text name="cc_dialog_create_btn_cancel" text="Cancel"/>
     <text name="cc_dialog_create_btn_create" text="Create"/>
 
+    <text name="cc_invoice_status_label" text="Status:"/>
     <text name="cc_dialog_invoice_pay_yes_no" text="Pay invoice %s and receive €%s?"/>
     <text name="cc_dialog_invoice_pay_yes_no_btn" text="Pay Invoice"/>
   </texts>

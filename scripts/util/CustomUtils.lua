@@ -142,16 +142,6 @@ function CustomUtils:findIndex(list, value)
   return nil
 end
 
-function CustomUtils:findWorkTypeIndexByText(text)
-  if text == nil then return nil end
-  for i, wt in ipairs(CustomContractWorkTypes) do
-    if wt.text == text then
-      return i
-    end
-  end
-  return nil
-end
-
 function CustomUtils:findDateIndex(values, period, day)
   if values == nil or period == nil or day == nil then return nil end
   for i, v in ipairs(values) do

@@ -5,6 +5,7 @@ Invoice.__index = Invoice
 Invoice_mt = Class(Invoice)
 
 Invoice.STATUS = {
+  OPEN = "OPEN",
   DRAFT = "DRAFT",
   SENT = "SENT",
   PAID = "PAID",
@@ -48,7 +49,7 @@ function Invoice:writeStream(streamId)
   streamWriteInt32(streamId, self.receiverFarmId)
   streamWriteString(streamId, self.status or Invoice.STATUS.DRAFT)
   streamWriteString(streamId, self.currency)
-  streamWriteInt32(streamId, self.createdAt)
+  streamWriteInt32(streamId, self.createdAt or 0)
   streamWriteInt32(streamId, self.sentAt or 0)
   streamWriteInt32(streamId, self.dueAt)
   streamWriteInt32(streamId, self.paidAt or 0)
@@ -132,4 +133,16 @@ function Invoice.readLinesFromStream(streamId)
   end
 
   return lines
+end
+
+function Invoice:getStatus(farmId)
+  if self.status == Invoice.STATUS.SENT then
+    if farmId == self.creatorFarmId then
+      return self.status
+    else
+      return Invoice.STATUS.OPEN
+    end
+  end
+
+  return self.status
 end

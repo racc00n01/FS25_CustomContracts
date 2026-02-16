@@ -8,34 +8,13 @@
 MenuCreateContract = {}
 local MenuCreateContract_mt = Class(MenuCreateContract, MessageDialog)
 
-CustomContractWorkTypes = {
-  { id = "CULTIVATE",     text = "Cultivate" },
-  { id = "PLOW",          text = "Plow" },
-  { id = "SEED",          text = "Seed" },
-  { id = "FERTILIZE",     text = "Fertilize" },
-  { id = "HARVEST",       text = "Harvest" },
-  { id = "ROLL",          text = "Roll" },
-  { id = "WEED",          text = "Weed" },
-  { id = "LIME",          text = "Lime" },
-  { id = "MULCH",         text = "Mulch" },
-  { id = "STONEPICK",     text = "Stone Pick" },
-  { id = "REMOVEFOLIAGE", text = "Remove Foliage" },
-  { id = "MOW",           text = "Mowing" },
-  { id = "TEDDING",       text = "Tedding" },
-  { id = "WINDROWING",    text = "Windrowing" },
-  { id = "BALING",        text = "Baling" },
-  { id = "BALEWRAPPING",  text = "Bale Wrapping" },
-  { id = "SPRAYING",      text = "Spraying" },
-  { id = "OTHER",         text = "Other" }
-}
-
 function MenuCreateContract.new(target, custom_mt)
   local self = MessageDialog.new(target, custom_mt or MenuCreateContract_mt)
 
   self.farmId = g_currentMission:getFarmId()
 
   -- Contract paramaters
-  self.workType = nil
+  self.workAreaTypeIndex = nil
   self.fieldId = 0
   self.startDate = 0
   self.dueDate = 0
@@ -70,17 +49,17 @@ function MenuCreateContract:onOpen()
   -- Populate workTypew MultiTextOption with available worktypes
   local workTypeTexts = {}
 
-  for _, workType in ipairs(CustomContractWorkTypes) do
-    table.insert(workTypeTexts, workType.text)
+  for _, workType in ipairs(CustomContract.WORKAREATYPES) do
+    table.insert(workTypeTexts, workType.name)
   end
 
   self.workTypeSelector:setTexts(workTypeTexts)
   self.workTypeSelector:setState(1, false)
+  self.workTypeIndex = 1
 
   -- Populate field MultiTextOption with owned fields
   local fieldTexts = {}
   for _, fieldId in ipairs(self.fieldIds) do
-    print("Field" .. fieldId)
     table.insert(fieldTexts, string.format(g_i18n:getText("cc_contract_list_field_label"), fieldId))
   end
 
@@ -108,7 +87,7 @@ end
 
 function MenuCreateContract:onGroupSelectChange(state)
   self.workTypeIndex = state
-  self.workType = CustomContractWorkTypes[self.workTypeIndex].text
+  self.workAreaTypeIndex = CustomContract.WORKAREATYPES[self.workTypeIndex].index
 end
 
 function MenuCreateContract:onStartDateSelectChange(state)
@@ -131,7 +110,7 @@ function MenuCreateContract:onConfirm(sender)
   self.reward = tonumber(self.rewardInput:getText())
   self.description = self.descriptionInput:getText()
 
-  if self.fieldId == nil or self.reward == nil or self.workType == nil then
+  if self.fieldId == nil or self.reward == nil or self.workAreaTypeIndex == nil then
     InfoDialog.show(g_i18n:getText("cc_dialog_create_validation_fields"))
     return
   end
@@ -152,15 +131,17 @@ function MenuCreateContract:onConfirm(sender)
     return
   end
 
+  print("workAreaTypeIndex:", self.workAreaTypeIndex)
+
   local contract = {
-    fieldId     = self.fieldId,
-    workType    = self.workType,
-    reward      = self.reward,
-    description = self.description or "-",
-    startPeriod = startV.period,
-    startDay    = startV.day,
-    duePeriod   = dueV.period,
-    dueDay      = dueV.day
+    fieldId           = self.fieldId,
+    workAreaTypeIndex = self.workAreaTypeIndex,
+    reward            = self.reward,
+    description       = self.description or "-",
+    startPeriod       = startV.period,
+    startDay          = startV.day,
+    duePeriod         = dueV.period,
+    dueDay            = dueV.day
   }
 
   g_client:getServerConnection():sendEvent(
@@ -195,7 +176,6 @@ function MenuCreateContract:getOwnedFieldsIds()
 
   for _, field in pairs(g_fieldManager:getFields()) do
     if field:getOwner() == self.farmId then
-      print("field owner" .. field:getId())
       table.insert(fieldIds, field:getId())
     end
   end

@@ -64,7 +64,7 @@ function MenuCustomContracts:displaySelectedContract()
       if farm ~= nil then
         self.contractId:setText(string.format(g_i18n:getText("cc_contract_id_label"), contract.id))
         self.contractFarmName:setText(string.format(g_i18n:getText("cc_contract_owner_label"), farm.name))
-        self.contractWorkType:setText(contract.workType)
+        self.contractWorkType:setText(contract:getWorkTypeAreaName(contract.workAreaTypeIndex))
       else
         self.contractFarmName:setText("-")
         self.contractWorkType:setText("-")
@@ -80,7 +80,7 @@ function MenuCustomContracts:displaySelectedContract()
       if contract.contractorFarmId ~= nil then
         local contractorFarm = g_farmManager:getFarmById(contract.contractorFarmId)
 
-        if contractorFarm ~= nil and contract.status ~= CustomContract.STATUS.EXPIRED and contract.status ~= CustomContract.STATUS.CANCELLED then
+        if contractorFarm ~= nil and contract.status ~= CustomContract.STATUS.EXPIRED and contract.status ~= CustomContract.STATUS.CANCELLED and contract.status ~= CustomContract.STATUS.COMPLETED and contract.status ~= CustomContract.STATUS.COMPLETED_AWAITING_INVOICE then
           statusTextLabel = g_i18n:getText("cc_contract_status_label")
           statusText = contractorFarm.name
         else
@@ -102,7 +102,8 @@ function MenuCustomContracts:displaySelectedContract()
       )
 
       self.contractDescriptionValue:setText(
-        string.format(g_i18n:getText("cc_contract_description"), contract.workType, contract.fieldId, field.areaHa)
+        string.format(g_i18n:getText("cc_contract_description"), contract:getWorkTypeAreaName(contract.workAreaTypeIndex),
+          contract.fieldId, field.areaHa)
       )
       self.contractStartDateValue:setText(CustomUtils:formatPeriodDay(contract.startPeriod, contract.startDay))
       self.contractDueDateValue:setText(CustomUtils:formatPeriodDay(contract.duePeriod, contract.dueDay))
@@ -683,7 +684,7 @@ function MenuCustomContracts:onAcceptContract()
     string.format(
       g_i18n:getText("cc_dialog_accept_yes_no"),
       contract.fieldId,
-      contract.workType,
+      contract:getWorkTypeAreaName(contract.workAreaTypeIndex),
       g_i18n:formatMoney(contract.reward)
     ),
     g_i18n:getText("cc_dialog_accept_yes_no_btn")

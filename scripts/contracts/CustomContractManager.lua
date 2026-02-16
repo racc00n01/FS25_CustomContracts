@@ -14,7 +14,7 @@ function CustomContractManager:new()
   local self = {}
   setmetatable(self, CustomContractManager_mt)
   self.contracts = {}
-  self.ccAccessByFarmland = {}
+  self.accessByFarmland = {}
   self.nextId = 1
 
   if g_currentMission:getIsServer() then
@@ -41,7 +41,7 @@ function CustomContractManager:saveToXmlFile(xmlFile)
     setXMLInt(xmlFile, key .. "#creatorFarmId", contract.creatorFarmId)
     setXMLInt(xmlFile, key .. "#contractorFarmId", contract.contractorFarmId or -1)
     setXMLInt(xmlFile, key .. "#fieldId", contract.fieldId)
-    setXMLString(xmlFile, key .. "#workType", contract.workType)
+    setXMLInt(xmlFile, key .. "#workAreaTypeIndex", contract.workAreaTypeIndex)
     setXMLInt(xmlFile, key .. "#reward", contract.reward)
     setXMLString(xmlFile, key .. "#status", contract.status)
     setXMLString(xmlFile, key .. "#description", contract.description or '-')
@@ -74,7 +74,7 @@ function CustomContractManager:loadFromXmlFile(xmlFile)
     local creatorFarmId       = getXMLInt(xmlFile, contractKey .. "#creatorFarmId")
     local contractorFarmId    = getXMLInt(xmlFile, contractKey .. "#contractorFarmId")
     local fieldId             = getXMLInt(xmlFile, contractKey .. "#fieldId")
-    local workType            = getXMLString(xmlFile, contractKey .. "#workType")
+    local workAreaTypeIndex   = getXMLInt(xmlFile, contractKey .. "#workAreaTypeIndex")
     local reward              = getXMLInt(xmlFile, contractKey .. "#reward")
     local status              = getXMLString(xmlFile, contractKey .. "#status")
     local description         = getXMLString(xmlFile, contractKey .. "#description")
@@ -88,7 +88,7 @@ function CustomContractManager:loadFromXmlFile(xmlFile)
       id,
       creatorFarmId,
       fieldId,
-      workType,
+      workAreaTypeIndex,
       reward,
       description,
       startPeriod,
@@ -234,7 +234,7 @@ function CustomContractManager:handleCreateRequest(farmId, payload)
     id,
     farmId,
     payload.fieldId,
-    payload.workType,
+    payload.workAreaTypeIndex,
     payload.reward,
     payload.description,
     payload.startPeriod,
@@ -368,14 +368,14 @@ function CustomContractManager:handleEditRequest(farmId, contractId, data)
   end
 
   -- apply edits
-  contract.fieldId     = data.fieldId
-  contract.workType    = data.workType
-  contract.reward      = data.reward
-  contract.description = data.description
-  contract.startPeriod = data.startPeriod
-  contract.startDay    = data.startDay
-  contract.duePeriod   = data.duePeriod
-  contract.dueDay      = data.dueDay
+  contract.fieldId           = data.fieldId
+  contract.workAreaTypeIndex = data.workAreaTypeIndex
+  contract.reward            = data.reward
+  contract.description       = data.description
+  contract.startPeriod       = data.startPeriod
+  contract.startDay          = data.startDay
+  contract.duePeriod         = data.duePeriod
+  contract.dueDay            = data.dueDay
 
   self:syncContracts()
 end
@@ -387,14 +387,14 @@ function CustomContractManager:_getFarmlandIdForContract(contract)
 end
 
 function CustomContractManager:_rebuildAccessCache()
-  self.ccAccessByFarmland = {}
+  self.accessByFarmland = {}
 
   for _, c in pairs(self.contracts) do
     if c.status == CustomContract.STATUS.ACCEPTED and c.contractorFarmId ~= nil then
       local farmlandId = self:_getFarmlandIdForContract(c)
       if farmlandId ~= nil then
-        self.ccAccessByFarmland[farmlandId] = self.ccAccessByFarmland[farmlandId] or {}
-        self.ccAccessByFarmland[farmlandId][c.contractorFarmId] = true
+        self.accessByFarmland[farmlandId] = self.accessByFarmland[farmlandId] or {}
+        self.accessByFarmland[farmlandId][c.contractorFarmId] = true
       end
     end
   end
@@ -444,6 +444,20 @@ function CustomContractManager:hasLandAccessByContract(farmId, landOwnerFarmId, 
           return true
         end
       end
+    end
+  end
+
+  return false
+end
+
+function CustomContractManager:hasAcceptedContractWithOwner(contractorFarmId, ownerFarmId)
+  if contractorFarmId == nil or ownerFarmId == nil then return false end
+
+  for _, c in pairs(self.contracts) do
+    if c.status == CustomContract.STATUS.ACCEPTED
+        and c.contractorFarmId == contractorFarmId
+        and c.creatorFarmId == ownerFarmId then
+      return true
     end
   end
 

@@ -36,7 +36,7 @@ function SyncContractsEvent:writeStream(streamId, connection)
     streamWriteInt32(streamId, contract.creatorFarmId)
     streamWriteInt32(streamId, contract.contractorFarmId or -1)
     streamWriteInt32(streamId, contract.fieldId)
-    streamWriteString(streamId, contract.workType)
+    streamWriteString(streamId, contract.workAreaTypeIndex)
     streamWriteInt32(streamId, contract.reward)
     streamWriteString(streamId, contract.status)
     streamWriteString(streamId, contract.description or "")
@@ -58,7 +58,7 @@ function SyncContractsEvent:readStream(streamId, connection)
     local creatorFarmId       = streamReadInt32(streamId)
     local contractorFarmId    = streamReadInt32(streamId)
     local fieldId             = streamReadInt32(streamId)
-    local workType            = streamReadString(streamId)
+    local workAreaTypeIndex   = streamReadString(streamId)
     local reward              = streamReadInt32(streamId)
     local status              = streamReadString(streamId)
     local description         = streamReadString(streamId)
@@ -71,7 +71,7 @@ function SyncContractsEvent:readStream(streamId, connection)
       id,
       creatorFarmId,
       fieldId,
-      workType,
+      workAreaTypeIndex,
       reward,
       description,
       startPeriod,

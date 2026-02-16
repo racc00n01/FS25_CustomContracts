@@ -21,10 +21,6 @@ function AddInvoiceLineDialog:onCreate()
   AddInvoiceLineDialog:superClass().onCreate(self)
 end
 
-function AddInvoiceLineDialog:setDraft(draft)
-  self.invoiceDraft = draft
-end
-
 function AddInvoiceLineDialog:setParentDialogName(name)
   self.parentDialogName = name or "createInvoiceDialog"
 end

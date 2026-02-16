@@ -128,20 +128,37 @@
   <Profile name="CC_ContractBodyRight" extends="CC_ContractBody" with="anchorTopRight"/>
 
   <!-- Input -->
-  <Profile name="CC_ContractInputLabel" extends="baseReference" with="anchorStretchingYLeft">
-    <textBold value="true" />
-    <textAlignment value="left" />
-    <textColor value="$preset_fs25_colorMainLight" />
-    <size value="350px 20px"/>
-    <textSize value="16px"/>
-    <textWrapWidth value="350px"/>
+  <Profile name="CC_MultiTextOptionContainerLight" extends="fs25_multiTextOptionContainer">
+    <size value="95% 50px"/>
+    <imageColor value="0.02956 0.02956 0.02956 0.6"/>
   </Profile>
 
-  <Profile name="CC_Input" extends="fs25_textInput">
-    <size value="100% 44px"/>
+  <Profile name="CC_MultiTextOptionContainerDark" extends="fs25_multiTextOptionContainer">
+    <size value="95% 50px"/>
+    <imageColor value="0.02956 0.02956 0.02956 0.2"/>
   </Profile>
+
+  <Profile name="CC_ContractInputLabel" extends="fs25_textDefault" with="anchorMiddleLeft">
+    <textBold value="true" />
+    <position value="20px 0px"/>
+    <textAlignment value="left" />
+    <textColor value="$preset_fs25_colorMainLight" />
+    <width value="350px"/>
+  </Profile>
+
+  <Profile name="CC_Input" extends="fs25_textInput" with="anchorMiddleRight">
+    <size value="244px 34px"/>
+    <position value="-20px 0px"/>
+    <maxInputTextWidth value="220px"/>
+  </Profile>
+
+  <Profile name="CC_MultiTextOption" extends="fs25_multiTextOption" with="anchorMiddleRight">
+    <size value="244px 34px"/>
+    <position value="-20px 0px"/>
+  </Profile>
+
   <Profile name="CC_InputTextArea" extends="CC_Input">
-    <size value="100% 44px"/>
+    <size value="100% 40px"/>
     <textAlignment value="left"/>
   </Profile>
 

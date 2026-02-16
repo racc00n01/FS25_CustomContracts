@@ -2,7 +2,7 @@
 <GUI name="addInvoiceLineDialog" onOpen="onOpen" onClose="onClose" onCreate="onCreate">
   <GuiElement profile="newLayer" />
   <Bitmap profile="dialogFullscreenBg" id="dialogBg" />
-  <GuiElement profile="fs25_dialogBg" id="dialogElement" size="700px 360px">
+  <GuiElement profile="fs25_dialogBg" id="dialogElement" size="460px 360px">
     <ThreePartBitmap profile="fs25_dialogBgMiddle" />
     <ThreePartBitmap profile="fs25_dialogBgTop" />
     <ThreePartBitmap profile="fs25_dialogBgBottom" />
@@ -11,15 +11,21 @@
       <Text profile="dialogTitle" text="Add invoice line" position="0px -30px"/>
 
       <BoxLayout flowDirection="vertical" position="15px -100px">
-        <BoxLayout flowDirection="vertical" size="435px 400px" elementSpacing="5px" extends="emptyPanel" with="anchorTopLeft">
+        <BoxLayout flowDirection="vertical" size="350px 400px" elementSpacing="5px" extends="emptyPanel" with="anchorTopLeft">
           <Text profile="CC_ContractInputLabel" text="Description" position="0px 0px" />
-          <TextInput profile="CC_Input" id="lineTextInput" position="0px -30px" size="640px 44px" maxCharacters="60">
+          <TextInput profile="CC_Input" id="lineTextInput" position="0px -30px" size="320px 40px" maxCharacters="60">
             <ThreePartBitmap profile="fs25_textInputBg" absoluteSizeOffset="0px 0px"/>
+            <Bitmap profile="fs25_textInputIconBox" position="0px 0px">
+              <Bitmap profile="fs25_textInputIcon" />
+            </Bitmap>
           </TextInput>
 
           <Text profile="CC_ContractInputLabel" text="Price" position="0px -95px" />
-          <TextInput profile="CC_Input" id="linePriceInput" position="0px -125px" size="240px 44px" maxCharacters="12">
+          <TextInput profile="CC_Input" id="linePriceInput" position="0px -125px" size="320px 40px" maxCharacters="12">
             <ThreePartBitmap profile="fs25_textInputBg" absoluteSizeOffset="0px 0px"/>
+            <Bitmap profile="fs25_textInputIconBox" position="0px 0px">
+              <Bitmap profile="fs25_textInputIcon" />
+            </Bitmap>
           </TextInput>
 
           <Text profile="CC_ContractInputLabel" id="lineErrorText" position="0px -175px" text="" />

@@ -33,7 +33,7 @@ function DetailInvoiceDialog:onOpen()
   self.invoiceLineTable:setDelegate(self.linesRenderer)
 
   if self.invoice.lines ~= nil then
-    self.linesRenderer:setData(self.lines)
+    self.linesRenderer:setData(self.invoice.lines)
   end
 
   self.invoiceLineTable:reloadData()
@@ -129,30 +129,38 @@ function DetailInvoiceDialog:updateButtonVisibility(invoice, myFarmId)
 
   local status     = invoice.status
 
-  -- Default: hide everything except Back
-  local function setVisible(elem, visible)
-    if elem ~= nil then
-      elem:setVisible(visible)
-    end
+  if self.btnCancelInvoice ~= nil then
+    self.btnCancelInvoice:setVisible(false)
   end
-
-  if self.btnCancelInvoice ~= nil then setVisible(self.btnCancelInvoice, false) end
-  if self.btnPay ~= nil then setVisible(self.btnPay, false) end
-  if self.btnEdit ~= nil then setVisible(self.btnEdit, false) end
+  if self.btnPay ~= nil then
+    self.btnPay:setVisible(false)
+  end
+  if self.btnEdit ~= nil then
+    self.btnEdit:setVisible(false)
+  end
 
   if isCreator then
     if status == Invoice.STATUS.DRAFT then
-      if self.btnEdit ~= nil then setVisible(self.btnEdit, true) end
-      if self.btnCancelInvoice ~= nil then setVisible(self.btnCancelInvoice, true) end
+      if self.btnEdit ~= nil then
+        self.btnEdit:setVisible(true)
+      end
+      if self.btnCancelInvoice ~= nil then
+        self.btnCancelInvoice:setVisible(true)
+      end
     elseif status == Invoice.STATUS.SENT then
       -- optional: allow creator to cancel sent invoice
-      if self.btnCancelInvoice ~= nil then setVisible(self.btnCancelInvoice, true) end
+      if self.btnCancelInvoice ~= nil then
+        self.btnCancelInvoice:setVisible(true)
+      end
     end
   end
 
   if isReceiver then
     if status == Invoice.STATUS.SENT then
-      if self.btnPay ~= nil then setVisible(self.btnPay, true) end
+      self.btnSent:setVisible(false)
+      if self.btnPay ~= nil then
+        self.btnPay:setVisible(true)
+      end
     end
   end
 end
@@ -165,6 +173,7 @@ end
 
 function DetailInvoiceDialog:onPay()
   if self.invoice == nil then return end
+  self:onClose()
   g_currentMission.CustomContracts.InvoiceManager:handlePayRequest(nil, self.invoice.id)
 end
 

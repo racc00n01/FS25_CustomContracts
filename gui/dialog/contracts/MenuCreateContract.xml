@@ -2,7 +2,7 @@
 <GUI name="menuCreateContract" onOpen="onOpen" onClose="onClose" onCreate="onCreate">
   <GuiElement profile="newLayer" />
   <Bitmap profile="dialogFullscreenBg" id="dialogBg" />
-  <GuiElement profile="fs25_dialogBg" id="dialogElement" size="900px 800px">
+  <GuiElement profile="fs25_dialogBg" id="dialogElement" size="800px 600px">
     <ThreePartBitmap profile="fs25_dialogBgMiddle" />
     <ThreePartBitmap profile="fs25_dialogBgTop" />
     <ThreePartBitmap profile="fs25_dialogBgBottom" />
@@ -10,48 +10,55 @@
     <GuiElement profile="fs25_dialogContentContainer">
       <Text profile="dialogTitle" text="$l10n_cc_dialog_create_title" position="0px -30px"/>
 
-      <BoxLayout flowDirection="vertical" position="15px -100px">
-        <BoxLayout flowDirection="vertical" size="435px 400px" elementSpacing="5px" extends="emptyPanel" with="anchorTopLeft">
-
-          <!-- Field -->
+      <GuiElement>
+        <Bitmap profile="CC_MultiTextOptionContainerLight" position="15px -75px">
           <Text text="$l10n_cc_dialog_create_input_field" profile="CC_ContractInputLabel"/>
-          <MultiTextOption id="fieldSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onFieldSelectChange">
+          <MultiTextOption id="fieldSelector" profile="CC_MultiTextOption" onClick="onFieldSelectChange">
             <Text profile="fs25_multiTextOptionText" name="text" />
           </MultiTextOption>
+        </Bitmap>
 
-          <!-- Work type -->
+        <Bitmap profile="CC_MultiTextOptionContainerDark" position="15px -125px">
           <Text text="$l10n_cc_dialog_create_input_worktype" profile="CC_ContractInputLabel" />
-          <MultiTextOption id="workTypeSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onGroupSelectChange">
+          <MultiTextOption id="workTypeSelector" profile="CC_MultiTextOption" onClick="onGroupSelectChange">
             <Text profile="fs25_multiTextOptionText" name="text" />
           </MultiTextOption>
+        </Bitmap>
 
-          <!-- Reward -->
+        <Bitmap profile="CC_MultiTextOptionContainerLight" position="15px -175px">
           <Text text="$l10n_cc_dialog_create_input_reward" profile="CC_ContractInputLabel"/>
           <TextInput profile="CC_Input" id="rewardInput" onEnterPressed="onEnterPressed" onTextChanged="onTextChanged" enterWhenClickOutside="false">
             <ThreePartBitmap profile="fs25_textInputBg" absoluteSizeOffset="0px 0px"/>
+            <Bitmap profile="fs25_textInputIconBox" position="0px 0px">
+              <Bitmap profile="fs25_textInputIcon" />
+            </Bitmap>
           </TextInput>
+        </Bitmap>
 
-          <!-- Description -->
+        <Bitmap profile="CC_MultiTextOptionContainerDark" position="15px -225px">
           <Text text="$l10n_cc_dialog_create_input_description" profile="CC_ContractInputLabel" />
-          <TextInput profile="CC_InputTextArea" id="descriptionInput" onEnterPressed="onEnterPressed" onTextChanged="onTextChanged" enterWhenClickOutside="false">
+          <TextInput profile="CC_Input" id="descriptionInput" onEnterPressed="onEnterPressed" onTextChanged="onTextChanged" enterWhenClickOutside="false">
             <ThreePartBitmap profile="fs25_textInputBg" absoluteSizeOffset="0px 0px"/>
+            <Bitmap profile="fs25_textInputIconBox" position="0px 0px">
+              <Bitmap profile="fs25_textInputIcon" />
+            </Bitmap>
           </TextInput>
+        </Bitmap>
 
-          <!-- Start date -->
+        <Bitmap profile="CC_MultiTextOptionContainerDark" position="15px -275px">
           <Text text="$l10n_cc_dialog_create_input_startdate" profile="CC_ContractInputLabel" />
-          <MultiTextOption id="startDateSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onStartDateSelectChange">
+          <MultiTextOption id="startDateSelector" profile="CC_MultiTextOption" onClick="onStartDateSelectChange">
             <Text profile="fs25_multiTextOptionText" name="text" />
           </MultiTextOption>
+        </Bitmap>
 
-
-          <!-- Due date -->
+        <Bitmap profile="CC_MultiTextOptionContainerLight" position="15px -325px">
           <Text text="$l10n_cc_dialog_create_input_duedate" profile="CC_ContractInputLabel" />
-          <MultiTextOption id="dueDateSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onDueDateSelectChange">
+          <MultiTextOption id="dueDateSelector" profile="CC_MultiTextOption" onClick="onDueDateSelectChange">
             <Text profile="fs25_multiTextOptionText" name="text" />
           </MultiTextOption>
-
-        </BoxLayout>
-      </BoxLayout>
+        </Bitmap>
+      </GuiElement>
     </GuiElement>
 
     <BoxLayout profile="fs25_dialogButtonBox">
