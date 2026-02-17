@@ -112,7 +112,7 @@ function MenuEditContract:onConfirm(sender)
   local index = self.selectedWorkTypeIndex or 1
   local workAreaTypeIndex = CustomContract.WORKAREATYPES[index]
 
-  if fieldId == nil or reward == nil or workType == nil then
+  if fieldId == nil or reward == nil or index == nil then
     InfoDialog.show(g_i18n:getText("cc_dialog_create_validation_fields"))
     return
   end
