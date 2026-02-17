@@ -12,6 +12,7 @@ function DetailInvoiceDialog.new(target, custom_mt)
   self.linesRenderer = InvoiceLinesRenderer.new()
 
   self.invoice = nil
+  self.farmId = nil
 
   return self
 end
@@ -28,6 +29,7 @@ function DetailInvoiceDialog:onOpen()
   DetailInvoiceDialog:superClass().onOpen(self)
 
   self.invoice = g_currentMission.CustomContracts.selectedInvoice
+  self.farmId = g_currentMission:getFarmId()
 
   self.invoiceLineTable:setDataSource(self.linesRenderer)
   self.invoiceLineTable:setDelegate(self.linesRenderer)
@@ -38,7 +40,7 @@ function DetailInvoiceDialog:onOpen()
 
   self.invoiceLineTable:reloadData()
 
-  self:updateInvoiceUI(self.invoice)
+  self:updateInvoiceUI()
 end
 
 function DetailInvoiceDialog:onClose()
@@ -61,73 +63,24 @@ function DetailInvoiceDialog:getFarmName(farmId)
   return string.format("Farm %s", tostring(farmId))
 end
 
-function DetailInvoiceDialog:getStatusText(status)
-  if status == nil then
-    return "-"
-  end
-
-  return tostring(status)
-end
-
-function DetailInvoiceDialog:formatMoney(amount)
-  amount = tonumber(amount) or 0
-  -- FS helper exists in basegame: g_i18n:formatMoney(value, 0, true, true)
-  if g_i18n ~= nil and g_i18n.formatMoney ~= nil then
-    return g_i18n:formatMoney(amount, 0, true, true)
-  end
-  return string.format("%.0f", amount)
-end
-
-function DetailInvoiceDialog:getInvoiceTitle(invoice)
-  -- Customize this to your fields. Fallbacks are safe.
-  if invoice.title ~= nil and invoice.title ~= "" then
-    return invoice.title
-  end
-  if invoice.description ~= nil and invoice.description ~= "" then
-    -- short title from description
-    return invoice.description
-  end
-  return "Invoice"
-end
-
-function DetailInvoiceDialog:getInvoiceDescription(invoice)
-  if invoice.description ~= nil and invoice.description ~= "" then
-    return invoice.description
-  end
-  return "-"
-end
-
-function DetailInvoiceDialog:getInvoiceNumberText(invoice)
-  -- Prefer invoice.number if you have it, else id
-  if invoice.number ~= nil then
-    return string.format("#%s", tostring(invoice.number))
-  end
-  if invoice.id ~= nil then
-    return string.format("#%s", tostring(invoice.id))
-  end
-  return "#-"
-end
-
-function DetailInvoiceDialog:updateInvoiceUI(invoice)
-  local myFarmId = g_currentMission:getFarmId()
-
-  self.invoiceNumber:setText(self:getInvoiceNumberText(invoice))
-  self.invoiceTitle:setText(self:getInvoiceTitle(invoice))
+function DetailInvoiceDialog:updateInvoiceUI()
+  self.invoiceNumber:setText(self.invoice)
+  self.invoiceTitle:setText(self.invoice.title or "")
   self.invoiceStatusLabel:setText(g_i18n:getText("cc_invoice_status_label"))
-  self.invoiceStatusValue:setText(self:getStatusText(invoice.status))
-  self.invoiceFromFarm:setText(self:getFarmName(invoice.creatorFarmId))
-  self.invoiceReceiverFarm:setText(self:getFarmName(invoice.receiverFarmId))
-  self.invoiceDescriptionValue:setText(self:getInvoiceDescription(invoice))
-  self.invoiceTotalValue:setText(self:formatMoney(invoice.total))
+  self.invoiceStatusValue:setText(self.status)
+  self.invoiceFromFarm:setText(self:getFarmName(self.creatorFarmId))
+  self.invoiceReceiverFarm:setText(self:getFarmName(self.receiverFarmId))
+  self.invoiceDescriptionValue:setText(self.description or "")
+  self.invoiceTotalValue:setText(g_i18n:formatMoney(self.money, 0, true, false))
 
-  self:updateButtonVisibility(invoice, myFarmId)
+  self:updateButtonVisibility()
 end
 
-function DetailInvoiceDialog:updateButtonVisibility(invoice, myFarmId)
-  local isCreator  = invoice.creatorFarmId == myFarmId
-  local isReceiver = invoice.receiverFarmId == myFarmId
+function DetailInvoiceDialog:updateButtonVisibility()
+  local isCreator  = self.creatorFarmId == self.farmId
+  local isReceiver = self.receiverFarmId == self.farmId
 
-  local status     = invoice.status
+  local status     = self.status
 
   if self.btnCancelInvoice ~= nil then
     self.btnCancelInvoice:setVisible(false)
@@ -138,20 +91,18 @@ function DetailInvoiceDialog:updateButtonVisibility(invoice, myFarmId)
   if self.btnEdit ~= nil then
     self.btnEdit:setVisible(false)
   end
+  if self.btnDeleteInvoice ~= nil then
+    self.btnDeleteInvoice:setVisible(false)
+  end
 
   if isCreator then
+    self.btnDeleteInvoice:setVisible(true)
+
     if status == Invoice.STATUS.DRAFT then
-      if self.btnEdit ~= nil then
-        self.btnEdit:setVisible(true)
-      end
-      if self.btnCancelInvoice ~= nil then
-        self.btnCancelInvoice:setVisible(true)
-      end
+      self.btnEdit:setVisible(true)
+      self.btnCancelInvoice:setVisible(true)
     elseif status == Invoice.STATUS.SENT then
-      -- optional: allow creator to cancel sent invoice
-      if self.btnCancelInvoice ~= nil then
-        self.btnCancelInvoice:setVisible(true)
-      end
+      self.btnCancelInvoice:setVisible(true)
     end
   end
 
@@ -175,6 +126,12 @@ function DetailInvoiceDialog:onPay()
   if self.invoice == nil then return end
   self:onClose()
   g_currentMission.CustomContracts.InvoiceManager:handlePayRequest(nil, self.invoice.id)
+end
+
+function DetailInvoiceDialog:onDelete()
+  if self.invoice == nil then return end
+  self:onClose()
+  g_currentMission.CustomContracts.InvoiceManager:handleDeleteRequest(nil, self.invoice.id)
 end
 
 function DetailInvoiceDialog:onEdit()

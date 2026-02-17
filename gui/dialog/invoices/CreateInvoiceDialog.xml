@@ -40,13 +40,6 @@
         </Bitmap>
 
         <Bitmap profile="CC_MultiTextOptionContainerDark" position="15px -225px">
-          <Text text="Due date" profile="CC_ContractInputLabel" />
-          <MultiTextOption id="dueDateSelector" profile="CC_MultiTextOption" onClick="onDueDateSelectChange">
-            <Text profile="fs25_multiTextOptionText" name="text" />
-          </MultiTextOption>
-        </Bitmap>
-
-        <Bitmap profile="CC_MultiTextOptionContainerLight" position="15px -275px">
           <Text text="Total" profile="CC_ContractInputLabel"/>
           <TextInput profile="CC_Input" id="totalInput" onEnterPressed="onEnterPressed" onTextChanged="onTextChanged" enterWhenClickOutside="false">
             <ThreePartBitmap profile="fs25_textInputBg" absoluteSizeOffset="0px 0px"/>
@@ -56,8 +49,8 @@
           </TextInput>
         </Bitmap>
 
-        <Text text="Invoice lines" profile="fs25_textDefault" position="15px -350px" with="anchorTopleft"/>
-        <Bitmap profile="CC_MultiTextOptionContainerDark" position="15px -375px" height="350px">
+        <Text text="Invoice lines" profile="fs25_textDefault" position="15px -325px" with="anchorTopleft"/>
+        <Bitmap profile="CC_MultiTextOptionContainerLight" position="15px -350px" height="350px">
           <GuiElement profile="fs25_statisticsHeaderBox">
             <Button profile="CC_TableHeader" position="20px 0px" size="200px 32px" text="Title" handleFocus="false" />
             <Button profile="CC_TableHeaderRight" position="0.275 0px" size="160px 32px" text="Amount" handleFocus="false" />

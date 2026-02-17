@@ -2,7 +2,7 @@
 <modDesc descVersion="104">
   <author>Racc00n</author>
 
-  <version>0.0.1.2</version>
+  <version>0.0.1.3</version>
 
   <iconFilename>icon_customContracts.dds</iconFilename>
 
@@ -50,14 +50,14 @@ https://github.com/racc00n01/FS25_CustomContracts
     <sourceFile filename="scripts/contracts/CustomContractManager.lua"/>
     <sourceFile filename="scripts/invoices/InvoiceManager.lua"/>
 
-    <sourceFile filename="scripts/events/CreateContractEvent.lua"/>
-    <sourceFile filename="scripts/events/AcceptContractEvent.lua"/>
-    <sourceFile filename="scripts/events/CancelContractEvent.lua"/>
-    <sourceFile filename="scripts/events/CompleteContractEvent.lua"/>
-    <sourceFile filename="scripts/events/DeleteContractEvent.lua"/>
-    <sourceFile filename="scripts/events/EditContractEvent.lua"/>
-    <sourceFile filename="scripts/events/ReopenContractEvent.lua"/>
-    <sourceFile filename="scripts/events/SyncContractsEvent.lua"/>
+    <sourceFile filename="scripts/events/contracts/CreateContractEvent.lua"/>
+    <sourceFile filename="scripts/events/contracts/AcceptContractEvent.lua"/>
+    <sourceFile filename="scripts/events/contracts/CancelContractEvent.lua"/>
+    <sourceFile filename="scripts/events/contracts/CompleteContractEvent.lua"/>
+    <sourceFile filename="scripts/events/contracts/DeleteContractEvent.lua"/>
+    <sourceFile filename="scripts/events/contracts/EditContractEvent.lua"/>
+    <sourceFile filename="scripts/events/contracts/ReopenContractEvent.lua"/>
+    <sourceFile filename="scripts/events/contracts/SyncContractsEvent.lua"/>
     <sourceFile filename="scripts/events/InitialClientStateEvent.lua"/>
     <sourceFile filename="scripts/events/OpenCreateInvoiceDialogEvent.lua"/>
 

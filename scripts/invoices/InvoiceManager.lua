@@ -38,10 +38,6 @@ function InvoiceManager:saveToXmlFile(xmlFile)
     setXMLInt(xmlFile, invKey .. "#receiverFarmId", invoice.receiverFarmId or -1)
     setXMLString(xmlFile, invKey .. "#status", invoice.status or Invoice.STATUS.DRAFT)
     setXMLString(xmlFile, invKey .. "#currency", invoice.currency or "EUR")
-    setXMLInt(xmlFile, invKey .. "#createdAt", invoice.createdAt)
-    setXMLInt(xmlFile, invKey .. "#sentAt", invoice.sentAt or 0)
-    setXMLInt(xmlFile, invKey .. "#dueAt", invoice.dueAt)
-    setXMLInt(xmlFile, invKey .. "#paidAt", invoice.paidAt or 0)
     setXMLString(xmlFile, invKey .. "#title", invoice.title)
     setXMLString(xmlFile, invKey .. "#description", invoice.description or "")
     setXMLInt(xmlFile, invKey .. "#total", invoice.total)
@@ -77,10 +73,6 @@ function InvoiceManager:loadFromXmlFile(xmlFile)
     local receiverFarmId    = getXMLInt(xmlFile, invoiceKey .. "#receiverFarmId")
     local status            = getXMLString(xmlFile, invoiceKey .. "#status")
     local currency          = getXMLString(xmlFile, invoiceKey .. "#currency")
-    local createdAt         = getXMLInt(xmlFile, invoiceKey .. "#createdAt")
-    local sentAt            = getXMLInt(xmlFile, invoiceKey .. "#sentAt")
-    local dueAt             = getXMLInt(xmlFile, invoiceKey .. "#dueAt")
-    local paidAt            = getXMLInt(xmlFile, invoiceKey .. "#paidAt")
     local title             = getXMLString(xmlFile, invoiceKey .. "#title")
     local description       = getXMLString(xmlFile, invoiceKey .. "#description")
     local total             = getXMLInt(xmlFile, invoiceKey .. "#total")
@@ -95,10 +87,6 @@ function InvoiceManager:loadFromXmlFile(xmlFile)
       creatorFarmId,
       receiverFarmId,
       status or Invoice.STATUS.DRAFT,
-      createdAt,
-      sentAt,
-      dueAt,
-      paidAt,
       title,
       description,
       total,
@@ -204,10 +192,6 @@ function InvoiceManager:handleCreateRequest(farmId, payload)
     farmId,
     payload.receiverFarmId,
     payload.status or Invoice.STATUS.DRAFT,
-    g_currentMission.CustomContracts.currentPeriod,
-    0,
-    payload.dueAt or 0,
-    0,
     payload.title,
     payload.description,
     payload.total,
@@ -270,6 +254,14 @@ function InvoiceManager:handlePayRequest(farmId, invoiceId)
   invoice.status = Invoice.STATUS.PAID
 
   -- Update all clients
+  self:syncInvoices()
+end
+
+function InvoiceManager:handleDeleteRequest(invoiceId)
+  if not g_currentMission:getIsServer() then return end
+
+  self.invoices[invoiceId] = nil
+
   self:syncInvoices()
 end
 

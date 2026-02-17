@@ -2,7 +2,7 @@
 <GUI name="menuCreateContract" onOpen="onOpen" onClose="onClose" onCreate="onCreate">
   <GuiElement profile="newLayer" />
   <Bitmap profile="dialogFullscreenBg" id="dialogBg" />
-  <GuiElement profile="fs25_dialogBg" id="dialogElement" size="800px 600px">
+  <GuiElement profile="fs25_dialogBg" id="dialogElement" size="750px 600px">
     <ThreePartBitmap profile="fs25_dialogBgMiddle" />
     <ThreePartBitmap profile="fs25_dialogBgTop" />
     <ThreePartBitmap profile="fs25_dialogBgBottom" />
@@ -45,14 +45,14 @@
           </TextInput>
         </Bitmap>
 
-        <Bitmap profile="CC_MultiTextOptionContainerDark" position="15px -275px">
+        <Bitmap profile="CC_MultiTextOptionContainerLight" position="15px -275px">
           <Text text="$l10n_cc_dialog_create_input_startdate" profile="CC_ContractInputLabel" />
           <MultiTextOption id="startDateSelector" profile="CC_MultiTextOption" onClick="onStartDateSelectChange">
             <Text profile="fs25_multiTextOptionText" name="text" />
           </MultiTextOption>
         </Bitmap>
 
-        <Bitmap profile="CC_MultiTextOptionContainerLight" position="15px -325px">
+        <Bitmap profile="CC_MultiTextOptionContainerDark" position="15px -325px">
           <Text text="$l10n_cc_dialog_create_input_duedate" profile="CC_ContractInputLabel" />
           <MultiTextOption id="dueDateSelector" profile="CC_MultiTextOption" onClick="onDueDateSelectChange">
             <Text profile="fs25_multiTextOptionText" name="text" />

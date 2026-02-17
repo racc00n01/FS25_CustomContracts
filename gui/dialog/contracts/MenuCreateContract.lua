@@ -25,8 +25,8 @@ function MenuCreateContract.new(target, custom_mt)
   self.fieldIds = 0
 
   -- Indexes
-  self.workTypeIndex = 0
-  self.fieldIndex = 0
+  self.workTypeIndex = 1
+  self.fieldIndex = 1
 
   return self
 end
@@ -130,8 +130,6 @@ function MenuCreateContract:onConfirm(sender)
     InfoDialog.show(g_i18n:getText("cc_dialog_create_validation_fields_start_date"))
     return
   end
-
-  print("workAreaTypeIndex:", self.workAreaTypeIndex)
 
   local contract = {
     fieldId           = self.fieldId,

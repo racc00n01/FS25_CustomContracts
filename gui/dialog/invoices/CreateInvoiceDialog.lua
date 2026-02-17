@@ -166,11 +166,6 @@ function CreateInvoiceDialog:onConfirm(sender)
   -- Validation
   local creatorFarmId  = (g_currentMission ~= nil and g_currentMission:getFarmId()) or FarmManager.SPECTATOR_FARM_ID
 
-  -- Optional: due date. If you don’t have UI yet, set 0.
-  -- Later you can add a due selector and pass it here.
-  local dueIdx         = self.selectedDueDateIndex or 1
-  local dueV           = self.dueDateValues[self.selectedDueDateIndex or 1]
-
   local cc             = g_currentMission.CustomContracts
   local lines          = cc.invoiceDraft and cc.invoiceDraft.lines or {}
 
@@ -218,14 +213,6 @@ function CreateInvoiceDialog:fillMonthMultiTextOption(multiTextOption, valuesFie
 
   multiTextOption:setTexts(texts)
   multiTextOption:setState(1, true)
-end
-
-function CreateInvoiceDialog:setPrefillDraft(draft)
-  -- draft is a plain lua table (payload-like)
-  local cc = g_currentMission and g_currentMission.CustomContracts
-  if cc ~= nil then
-    cc.invoiceDraft = draft
-  end
 end
 
 function CreateInvoiceDialog:applyDraftToUi(draft)
@@ -278,7 +265,6 @@ function CreateInvoiceDialog:calculateTotalFromDraftLines()
     end
   end
 
-  -- invoice total is int in your code, so round to int
   return math.floor(total + 0.5)
 end
 

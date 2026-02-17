@@ -24,6 +24,11 @@
     <text name="cc_status_completed" text="Completed"/>
     <text name="cc_status_cancelled" text="Cancelled"/>
     <text name="cc_status_expired" text="Expired"/>
+    <text name="cc_status_draft" text="Draft"/>
+    <text name="cc_status_sent" text="Sent"/>
+    <text name="cc_status_paid" text="Paid"/>
+    <text name="cc_status_overdue" text="Overdue"/>
+    <text name="cc_status_rejected" text="Rejected"/>
     <text name="cc_contract_info_title" text="General information"/>
     <text name="cc_contract_notes_title" text="Notes"/>
     <text name="cc_contract_disclaimer" text="By accepting this contract, you agree to complete the listed work as described. Payment is made upon completion, through an invoice."/>

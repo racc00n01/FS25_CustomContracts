@@ -48,11 +48,10 @@
 
     <BoxLayout profile="fs25_dialogButtonBox">
       <Button profile="buttonBack" text="$l10n_cc_dialog_create_btn_cancel" onClick="onCancel" />
-      <Button profile="buttonOK" id="btnCancelInvoice" text="Cancel invoice" onClick="onCancelInvoice" />
+      <Button profile="buttonOK" id="btnDeleteInvoice" text="Delete invoice" onClick="onDeleteInvoice" />
       <Button profile="buttonOK" id="btnPay" text="Pay" onClick="onPay" />
       <Button profile="buttonOK" id="btnEdit" text="Edit" onClick="onEdit" />
       <Button profile="buttonOK" id="btnSent" text="Sent" onClick="onSent" />
-
     </BoxLayout>
   </GuiElement>
 </GUI>
