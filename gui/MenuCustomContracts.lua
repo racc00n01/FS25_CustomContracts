@@ -27,11 +27,13 @@ MenuCustomContracts.HEADER_TITLES = {
 
 
 CustomContract.STATUS = {
-  OPEN      = "OPEN",
-  ACCEPTED  = "ACCEPTED",
-  COMPLETED = "COMPLETED",
-  CANCELLED = "CANCELLED",
-  EXPIRED   = "EXPIRED"
+  OPEN                       = "OPEN",
+  ACCEPTED                   = "ACCEPTED",
+  COMPLETED                  = "COMPLETED",
+  CANCELLED                  = "CANCELLED",
+  EXPIRED                    = "EXPIRED",
+  COMPLETED_AWAITING_INVOICE = "COMPLETED_AWAITING_INVOICE",
+  INVOICED                   = "INVOICED"
 }
 
 function MenuCustomContracts.new(i18n, messageCenter)
@@ -55,7 +57,7 @@ function MenuCustomContracts:displaySelectedContract()
     local contract = self.contractsRenderer.data[selection][index]
 
     if contract ~= nil then
-      local field = g_fieldManager:getFieldById(contract.fieldId)
+      local farmland = g_farmlandManager:getFarmlandById(contract.farmlandId)
       self.contractsInfoContainer:setVisible(true)
       self.noSelectedContractText:setVisible(false)
 
@@ -80,7 +82,7 @@ function MenuCustomContracts:displaySelectedContract()
       if contract.contractorFarmId ~= nil then
         local contractorFarm = g_farmManager:getFarmById(contract.contractorFarmId)
 
-        if contractorFarm ~= nil and contract.status ~= CustomContract.STATUS.EXPIRED and contract.status ~= CustomContract.STATUS.CANCELLED and contract.status ~= CustomContract.STATUS.COMPLETED and contract.status ~= CustomContract.STATUS.COMPLETED_AWAITING_INVOICE then
+        if contractorFarm ~= nil and contract.status ~= CustomContract.STATUS.EXPIRED and contract.status ~= CustomContract.STATUS.CANCELLED and contract.status ~= CustomContract.STATUS.COMPLETED and contract.status ~= CustomContract.STATUS.INVOICED and contract.status ~= CustomContract.STATUS.COMPLETED_AWAITING_INVOICE then
           statusTextLabel = g_i18n:getText("cc_contract_status_label")
           statusText = contractorFarm.name
         else
@@ -103,7 +105,7 @@ function MenuCustomContracts:displaySelectedContract()
 
       self.contractDescriptionValue:setText(
         string.format(g_i18n:getText("cc_contract_description"), contract:getWorkTypeAreaName(contract.workAreaTypeIndex),
-          contract.fieldId, field.areaHa)
+          contract.farmlandId, farmland.areaInHa)
       )
       self.contractStartDateValue:setText(CustomUtils:formatPeriodDay(contract.startPeriod, contract.startDay))
       self.contractDueDateValue:setText(CustomUtils:formatPeriodDay(contract.duePeriod, contract.dueDay))
@@ -396,7 +398,7 @@ function MenuCustomContracts:updateMenuButtons()
 
     if invoice ~= nil then
       local isReceiver = invoice.receiverFarmId == myFarmId
-      local isPayable = isReceiver and invoice.status == Invoice.STATUS.SENT
+      local isPayable = isReceiver and invoice.status == Invoice.STATUS.SENT and invoice.status == Invoice.STATUS.OPEN
 
       if isPayable then
         table.insert(buttons, self.btnPayInvoice)
@@ -483,13 +485,12 @@ function MenuCustomContracts:shouldShowButton(button, listType, contract)
       return status == CustomContract.STATUS.ACCEPTED and isContractor
     end
     if button == self.btnCancel then
-      -- if you also show CANCELLED in Active, you probably don't want cancel there anymore
       return status == CustomContract.STATUS.ACCEPTED and isContractor
     end
     return false
   end
 
-  -- OWNED tab rules (this is the busy one)
+  -- OWNED tab rules
   if listType == MenuCustomContracts.CONTRACTS_LIST_TYPE.OWNED then
     if not isOwner then
       return false
@@ -510,7 +511,6 @@ function MenuCustomContracts:shouldShowButton(button, listType, contract)
     end
 
     if button == self.btnDelete then
-      -- typical: delete once not active anymore
       return status == CustomContract.STATUS.OPEN
           or status == CustomContract.STATUS.CANCELLED
           or status == CustomContract.STATUS.EXPIRED
@@ -653,7 +653,7 @@ function MenuCustomContracts:onCompleteContract()
     self,
     string.format(
       g_i18n:getText("cc_dialog_create_yes_no"),
-      contract.fieldId,
+      contract.farmlandId,
       g_i18n:formatMoney(contract.reward)
     ),
     g_i18n:getText("cc_dialog_create_yes_no_btn")
@@ -683,7 +683,7 @@ function MenuCustomContracts:onAcceptContract()
     self,
     string.format(
       g_i18n:getText("cc_dialog_accept_yes_no"),
-      contract.fieldId,
+      contract.farmlandId,
       contract:getWorkTypeAreaName(contract.workAreaTypeIndex),
       g_i18n:formatMoney(contract.reward)
     ),
@@ -709,7 +709,7 @@ function MenuCustomContracts:onCancelContract()
     self,
     string.format(
       g_i18n:getText("cc_dialog_cancel_yes_no"),
-      contract.fieldId
+      contract.farmlandId
     ),
     g_i18n:getText("cc_dialog_cancel_yes_no_btn")
   )
@@ -734,7 +734,7 @@ function MenuCustomContracts:onDeleteContract()
     self,
     string.format(
       g_i18n:getText("cc_dialog_delete_yes_no"),
-      contract.fieldId
+      contract.farmlandId
     ),
     g_i18n:getText("cc_dialog_delete_yes_no_btn")
   )
@@ -759,7 +759,7 @@ function MenuCustomContracts:onReopenContract()
     self,
     string.format(
       g_i18n:getText("cc_dialog_reopen_yes_no"),
-      contract.fieldId
+      contract.farmlandId
     ),
     g_i18n:getText("cc_dialog_reopen_yes_no_btn")
   )

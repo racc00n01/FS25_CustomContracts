@@ -38,11 +38,12 @@ CustomContract.STATUS = {
   COMPLETED                  = "COMPLETED",
   CANCELLED                  = "CANCELLED",
   EXPIRED                    = "EXPIRED",
-  COMPLETED_AWAITING_INVOICE = "COMPLETED_AWAITING_INVOICE"
+  COMPLETED_AWAITING_INVOICE = "COMPLETED_AWAITING_INVOICE",
+  INVOICED                   = "INVOICED"
 }
 
 -- Intizialise function when creating a new CustomContract.
-function CustomContract.new(id, creatorFarmId, fieldId, workAreaTypeIndex, reward, description, startPeriod, startDay,
+function CustomContract.new(id, creatorFarmId, farmlandId, workAreaTypeIndex, reward, description, startPeriod, startDay,
                             duePeriod,
                             dueDay, invoiceId)
   local self             = setmetatable({}, CustomContract_mt)
@@ -50,7 +51,7 @@ function CustomContract.new(id, creatorFarmId, fieldId, workAreaTypeIndex, rewar
   self.id                = id
   self.creatorFarmId     = creatorFarmId
   self.contractorFarmId  = nil
-  self.fieldId           = fieldId
+  self.farmlandId        = farmlandId
   self.workAreaTypeIndex = workAreaTypeIndex
   self.reward            = reward
   self.status            = CustomContract.STATUS.OPEN
@@ -68,7 +69,7 @@ function CustomContract:writeStream(streamId)
   streamWriteInt32(streamId, self.id)
   streamWriteInt32(streamId, self.creatorFarmId)
   streamWriteInt32(streamId, self.contractorFarmId or -1)
-  streamWriteInt32(streamId, self.fieldId)
+  streamWriteInt32(streamId, self.farmlandId)
   streamWriteInt32(streamId, self.workAreaTypeIndex)
   streamWriteInt32(streamId, self.reward)
   streamWriteString(streamId, self.status)
@@ -84,7 +85,7 @@ function CustomContract.newFromStream(streamId)
   local id = streamReadInt32(streamId)
   local creatorFarmId = streamReadInt32(streamId)
   local contractorFarmId = streamReadInt32(streamId)
-  local fieldId = streamReadInt32(streamId)
+  local farmlandId = streamReadInt32(streamId)
   local workAreaTypeIndex = streamReadInt32(streamId)
   local reward = streamReadInt32(streamId)
   local status = streamReadString(streamId)
@@ -98,7 +99,7 @@ function CustomContract.newFromStream(streamId)
   local contract = CustomContract.new(
     id,
     creatorFarmId,
-    fieldId,
+    farmlandId,
     workAreaTypeIndex,
     reward,
     description,
@@ -116,7 +117,6 @@ function CustomContract.newFromStream(streamId)
 end
 
 -- Function to retrieve WorkAreaType name from index
-function CustomContract:getWorkTypeAreaName(index)
-  print("index" .. tostring(index))
-  return CustomContract.WORKAREATYPES[index].name
+function CustomContract:getWorkTypeAreaName()
+  return CustomContract.WORKAREATYPES[self.workAreaTypeIndex].name
 end

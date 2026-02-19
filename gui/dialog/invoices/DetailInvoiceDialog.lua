@@ -31,6 +31,17 @@ function DetailInvoiceDialog:onOpen()
   self.invoice = g_currentMission.CustomContracts.selectedInvoice
   self.farmId = g_currentMission:getFarmId()
 
+  print("sdtats" .. tostring(self.invoice.status))
+
+  self.invoiceNumber:setText(self.invoice.number)
+  self.invoiceTitle:setText(self.invoice.title or "")
+  self.invoiceStatusLabel:setText(g_i18n:getText("cc_invoice_status_label"))
+  self.invoiceStatusValue:setText(self.invoice:getStatus(self.farmId))
+  self.invoiceFromFarm:setText(self:getFarmName(self.invoice.creatorFarmId))
+  self.invoiceReceiverFarm:setText(self:getFarmName(self.invoice.receiverFarmId))
+  self.invoiceDescriptionValue:setText(self.invoice.description or "")
+  self.invoiceTotalValue:setText(g_i18n:formatMoney(self.invoice.total, 0, true, false))
+
   self.invoiceLineTable:setDataSource(self.linesRenderer)
   self.invoiceLineTable:setDelegate(self.linesRenderer)
 
@@ -40,11 +51,10 @@ function DetailInvoiceDialog:onOpen()
 
   self.invoiceLineTable:reloadData()
 
-  self:updateInvoiceUI()
+  self:updateButtonVisibility()
 end
 
 function DetailInvoiceDialog:onClose()
-  self.invoice = nil
   DetailInvoiceDialog:superClass().onClose(self)
 end
 
@@ -63,28 +73,7 @@ function DetailInvoiceDialog:getFarmName(farmId)
   return string.format("Farm %s", tostring(farmId))
 end
 
-function DetailInvoiceDialog:updateInvoiceUI()
-  self.invoiceNumber:setText(self.invoice)
-  self.invoiceTitle:setText(self.invoice.title or "")
-  self.invoiceStatusLabel:setText(g_i18n:getText("cc_invoice_status_label"))
-  self.invoiceStatusValue:setText(self.status)
-  self.invoiceFromFarm:setText(self:getFarmName(self.creatorFarmId))
-  self.invoiceReceiverFarm:setText(self:getFarmName(self.receiverFarmId))
-  self.invoiceDescriptionValue:setText(self.description or "")
-  self.invoiceTotalValue:setText(g_i18n:formatMoney(self.money, 0, true, false))
-
-  self:updateButtonVisibility()
-end
-
 function DetailInvoiceDialog:updateButtonVisibility()
-  local isCreator  = self.creatorFarmId == self.farmId
-  local isReceiver = self.receiverFarmId == self.farmId
-
-  local status     = self.status
-
-  if self.btnCancelInvoice ~= nil then
-    self.btnCancelInvoice:setVisible(false)
-  end
   if self.btnPay ~= nil then
     self.btnPay:setVisible(false)
   end
@@ -94,25 +83,15 @@ function DetailInvoiceDialog:updateButtonVisibility()
   if self.btnDeleteInvoice ~= nil then
     self.btnDeleteInvoice:setVisible(false)
   end
-
-  if isCreator then
-    self.btnDeleteInvoice:setVisible(true)
-
-    if status == Invoice.STATUS.DRAFT then
-      self.btnEdit:setVisible(true)
-      self.btnCancelInvoice:setVisible(true)
-    elseif status == Invoice.STATUS.SENT then
-      self.btnCancelInvoice:setVisible(true)
-    end
+  if self.btnSent ~= nil then
+    self.btnSent:setVisible(false)
   end
 
-  if isReceiver then
-    if status == Invoice.STATUS.SENT then
-      self.btnSent:setVisible(false)
-      if self.btnPay ~= nil then
-        self.btnPay:setVisible(true)
-      end
-    end
+  if self.invoice.status == Invoice.STATUS.DRAFT then
+    self.btnEdit:setVisible(true)
+    self.btnSent:setVisible(true)
+  elseif (self.invoice.status == Invoice.STATUS.OPEN or self.invoice.status == Invoice.STATUS.SENT) and self.invoice.receiverFarmId == g_currentMission:getFarmId() then
+    self.btnPay:setVisible(true)
   end
 end
 
@@ -124,14 +103,14 @@ end
 
 function DetailInvoiceDialog:onPay()
   if self.invoice == nil then return end
-  self:onClose()
-  g_currentMission.CustomContracts.InvoiceManager:handlePayRequest(nil, self.invoice.id)
+  g_client:getServerConnection():sendEvent(PayInvoiceEvent.new(self.invoice.id, self.farmId))
+  self:close()
 end
 
 function DetailInvoiceDialog:onDelete()
   if self.invoice == nil then return end
-  self:onClose()
-  g_currentMission.CustomContracts.InvoiceManager:handleDeleteRequest(nil, self.invoice.id)
+  g_client:getServerConnection():sendEvent(DeleteInvoiceEvent.new(self.invoice.id, self.farmId))
+  self:close()
 end
 
 function DetailInvoiceDialog:onEdit()
@@ -143,6 +122,6 @@ end
 
 function DetailInvoiceDialog:onSent()
   if self.invoice == nil then return end
-  g_currentMission.CustomContracts.InvoiceManager:handleSendRequest(self.invoice.id)
-  self:onClose()
+  g_client:getServerConnection():sendEvent(SendInvoiceEvent.new(self.invoice.id, self.farmId))
+  self:close()
 end

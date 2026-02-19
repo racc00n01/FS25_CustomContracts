@@ -35,28 +35,21 @@ function MenuEditContract:onOpen()
 
   self.workTypeSelector:setTexts(workTypeTexts)
 
-  -- Fill owned fields
-  local fieldIds = {}
+  -- Fill owned farmLandIds
   local farmId = g_currentMission:getFarmId()
+  local farmlandIds = g_farmlandManager:getOwnedFarmlandIdsByFarmId(farmId)
   if farmId == nil then
     self:close()
     return
   end
 
-  for _, field in pairs(g_fieldManager:getFields()) do
-    if field:getOwner() == farmId then
-      table.insert(fieldIds, field:getId())
-    end
-  end
-  table.sort(fieldIds)
+  self.farmlandIds = farmlandIds
 
-  self.fieldIds = fieldIds
-
-  local fieldTexts = {}
-  for _, fieldId in ipairs(fieldIds) do
-    table.insert(fieldTexts, string.format(g_i18n:getText("cc_contract_list_field_label"), fieldId))
+  local farmLandTexts = {}
+  for _, farmLandId in ipairs(farmlandIds) do
+    table.insert(farmLandTexts, string.format(g_i18n:getText("cc_contract_list_field_label"), farmLandId))
   end
-  self.fieldSelector:setTexts(fieldTexts)
+  self.fieldSelector:setTexts(farmLandTexts)
 
   -- Fill date options
   self:fillMonthMultiTextOption(self.startDateSelector, "startDateValues")
@@ -70,9 +63,9 @@ function MenuEditContract:onOpen()
 end
 
 function MenuEditContract:prefillFromContract(contract)
-  -- Field -> index
-  self.selectedFieldIndex = CustomUtils:findIndex(self.fieldIds, contract.fieldId) or 1
-  self.fieldSelector:setState(self.selectedFieldIndex, false)
+  -- Farmland -> index
+  self.selectedFarmlandIndex = CustomUtils:findIndex(self.farmlandIds, contract.farmlandId) or 1
+  self.fieldSelector:setState(self.selectedFarmlandIndex, false)
 
   -- Worktype
   self.workTypeSelector:setState(contract.workAreaTypeIndex, false)
@@ -82,8 +75,8 @@ function MenuEditContract:prefillFromContract(contract)
   self.descriptionInput:setText(contract.description or "-")
 end
 
-function MenuEditContract:onFieldSelectChange(state)
-  self.selectedFieldIndex = state
+function MenuEditContract:onFarmlandSelectChange(state)
+  self.selectedFarmlandIndex = state
 end
 
 function MenuEditContract:onWorkTypeSelectChange(state)
@@ -105,14 +98,14 @@ function MenuEditContract:onConfirm(sender)
   local old = self.editContract
   if old == nil then return end
 
-  local fieldId = self.fieldIds[self.selectedFieldIndex or 0]
+  local farmLandId = self.farmlandIds[self.selectedFarmlandIndex or 0]
   local reward = tonumber(self.rewardInput:getText())
   local description = self.descriptionInput:getText()
 
   local index = self.selectedWorkTypeIndex or 1
   local workAreaTypeIndex = CustomContract.WORKAREATYPES[index]
 
-  if fieldId == nil or reward == nil or index == nil then
+  if farmLandId == nil or reward == nil or index == nil then
     InfoDialog.show(g_i18n:getText("cc_dialog_create_validation_fields"))
     return
   end
@@ -134,7 +127,7 @@ function MenuEditContract:onConfirm(sender)
   end
 
   local updated = {
-    fieldId           = fieldId,
+    farmlandId        = farmLandId,
     workAreaTypeIndex = workAreaTypeIndex,
     reward            = reward,
     description       = description or "-",

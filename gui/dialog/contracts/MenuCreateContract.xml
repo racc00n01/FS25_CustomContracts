@@ -13,7 +13,7 @@
       <GuiElement>
         <Bitmap profile="CC_MultiTextOptionContainerLight" position="15px -75px">
           <Text text="$l10n_cc_dialog_create_input_field" profile="CC_ContractInputLabel"/>
-          <MultiTextOption id="fieldSelector" profile="CC_MultiTextOption" onClick="onFieldSelectChange">
+          <MultiTextOption id="fieldSelector" profile="CC_MultiTextOption" onClick="onFarmlandSelectChange">
             <Text profile="fs25_multiTextOptionText" name="text" />
           </MultiTextOption>
         </Bitmap>

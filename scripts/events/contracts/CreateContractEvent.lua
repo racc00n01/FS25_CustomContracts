@@ -24,7 +24,7 @@ end
 
 function CreateContractEvent:writeStream(streamId, connection)
   streamWriteInt32(streamId, self.farmId)
-  streamWriteInt32(streamId, self.payload.fieldId)
+  streamWriteInt32(streamId, self.payload.farmlandId)
   streamWriteInt32(streamId, self.payload.workAreaTypeIndex)
   streamWriteInt32(streamId, self.payload.reward)
   streamWriteString(streamId, self.payload.description)
@@ -37,7 +37,7 @@ end
 function CreateContractEvent:readStream(streamId, connection)
   self.farmId = streamReadInt32(streamId)
   self.payload = {
-    fieldId           = streamReadInt32(streamId),
+    farmlandId        = streamReadInt32(streamId),
     workAreaTypeIndex = streamReadInt32(streamId),
     reward            = streamReadInt32(streamId),
     description       = streamReadString(streamId),

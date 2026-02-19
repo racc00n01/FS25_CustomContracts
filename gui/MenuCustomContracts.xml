@@ -43,7 +43,7 @@
               <SmoothList id="contractsTable" profile="CC_ContractList" startClipperElementName="startClipper" endClipperElementName="endClipper">
                 <ListItem profile="fs25_subCategoryListItem">
                   <Bitmap profile="fs25_subCategoryListItemIcon" name="farmIcon"/>
-                  <Text profile="CC_ContractListItemTitle" name="field"/>
+                  <Text profile="CC_ContractListItemTitle" name="farmland"/>
                   <Text profile="CC_ContractListItemReward" name="reward"/>
                 </ListItem>
               </SmoothList>

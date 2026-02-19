@@ -17,10 +17,8 @@ function SyncInvoicesEvent.new(invoices, nextId)
 end
 
 function SyncInvoicesEvent:writeStream(streamId, connection)
-  -- nextInvoiceId
   streamWriteInt32(streamId, self.nextId or 1)
 
-  -- invoice count
   local count = table.size(self.invoices)
   streamWriteInt32(streamId, count)
 

@@ -21,8 +21,7 @@ function EditContractEvent.new(contractId, contractData, farmId)
   self.contractId        = contractId
   self.farmId            = farmId
 
-  -- edited values
-  self.fieldId           = contractData.fieldId
+  self.farmlandId        = contractData.farmlandId
   self.workAreaTypeIndex = contractData.workAreaTypeIndex
   self.reward            = contractData.reward
   self.description       = contractData.description
@@ -38,7 +37,7 @@ function EditContractEvent:writeStream(streamId, connection)
   streamWriteInt32(streamId, self.contractId)
   streamWriteInt32(streamId, self.farmId)
 
-  streamWriteInt32(streamId, self.fieldId)
+  streamWriteInt32(streamId, self.farmlandId)
   streamWriteInt32(streamId, self.workAreaTypeIndex)
   streamWriteInt32(streamId, self.reward)
   streamWriteString(streamId, self.description or "")
@@ -53,7 +52,7 @@ function EditContractEvent:readStream(streamId, connection)
   self.contractId        = streamReadInt32(streamId)
   self.farmId            = streamReadInt32(streamId)
 
-  self.fieldId           = streamReadInt32(streamId)
+  self.farmlandId        = streamReadInt32(streamId)
   self.workAreaTypeIndex = streamReadInt32(streamId)
   self.reward            = streamReadInt32(streamId)
   self.description       = streamReadString(streamId)
@@ -72,7 +71,7 @@ function EditContractEvent:run(connection)
       EditContractEvent.new(
         self.contractId,
         {
-          fieldId           = self.fieldId,
+          farmlandId        = self.farmlandId,
           workAreaTypeIndex = self.workAreaTypeIndex,
           reward            = self.reward,
           description       = self.description,
@@ -88,7 +87,7 @@ function EditContractEvent:run(connection)
 
   local contractManager = g_currentMission.CustomContracts.ContractManager
   contractManager:handleEditRequest(self.farmId, self.contractId, {
-    fieldId           = self.fieldId,
+    farmlandId        = self.farmlandId,
     workAreaTypeIndex = self.workAreaTypeIndex,
     reward            = self.reward,
     description       = self.description,

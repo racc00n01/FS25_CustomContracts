@@ -15,18 +15,18 @@ function MenuCreateContract.new(target, custom_mt)
 
   -- Contract paramaters
   self.workAreaTypeIndex = nil
-  self.fieldId = 0
+  self.farmlandId = 0
   self.startDate = 0
   self.dueDate = 0
   self.reward = 0
   self.description = nil
 
   -- Data helpers
-  self.fieldIds = 0
+  self.farmlandIds = 0
 
   -- Indexes
   self.workTypeIndex = 1
-  self.fieldIndex = 1
+  self.farmlandIndex = 1
 
   return self
 end
@@ -44,7 +44,7 @@ function MenuCreateContract:onOpen()
 
   -- Initialize variables
   self.farmId = g_currentMission:getFarmId()
-  self.fieldIds = self:getOwnedFieldsIds()
+  self.farmlandIds = g_farmlandManager:getOwnedFarmlandIdsByFarmId(self.farmId)
 
   -- Populate workTypew MultiTextOption with available worktypes
   local workTypeTexts = {}
@@ -58,12 +58,12 @@ function MenuCreateContract:onOpen()
   self.workTypeIndex = 1
 
   -- Populate field MultiTextOption with owned fields
-  local fieldTexts = {}
-  for _, fieldId in ipairs(self.fieldIds) do
-    table.insert(fieldTexts, string.format(g_i18n:getText("cc_contract_list_field_label"), fieldId))
+  local farmlandTexts = {}
+  for _, farmlandId in ipairs(self.farmlandIds) do
+    table.insert(farmlandTexts, string.format(g_i18n:getText("cc_contract_list_field_label"), farmlandId))
   end
 
-  self.fieldSelector:setTexts(fieldTexts)
+  self.fieldSelector:setTexts(farmlandTexts)
   self.fieldSelector:setState(1, false)
   self.fieldIndex = 1
 
@@ -80,9 +80,9 @@ function MenuCreateContract:onClose()
   MenuCreateContract:superClass().onClose(self)
 end
 
-function MenuCreateContract:onFieldSelectChange(state)
-  self.fieldIndex = state
-  self.fieldId = self.fieldIds[self.fieldIndex]
+function MenuCreateContract:onFarmlandSelectChange(state)
+  self.farmlandIndex = state
+  self.farmlandId = self.farmlandIds[self.farmlandIndex]
 end
 
 function MenuCreateContract:onGroupSelectChange(state)
@@ -110,7 +110,7 @@ function MenuCreateContract:onConfirm(sender)
   self.reward = tonumber(self.rewardInput:getText())
   self.description = self.descriptionInput:getText()
 
-  if self.fieldId == nil or self.reward == nil or self.workAreaTypeIndex == nil then
+  if self.farmlandId == nil or self.reward == nil or self.workAreaTypeIndex == nil then
     InfoDialog.show(g_i18n:getText("cc_dialog_create_validation_fields"))
     return
   end
@@ -131,15 +131,18 @@ function MenuCreateContract:onConfirm(sender)
     return
   end
 
+  print("CC workAreaTypeIndex in onConfirm: " .. tostring(self.workAreaTypeIndex))
+
   local contract = {
-    fieldId           = self.fieldId,
+    farmlandId        = self.farmlandId,
     workAreaTypeIndex = self.workAreaTypeIndex,
     reward            = self.reward,
     description       = self.description or "-",
     startPeriod       = startV.period,
     startDay          = startV.day,
     duePeriod         = dueV.period,
-    dueDay            = dueV.day
+    dueDay            = dueV.day,
+    invoiceId         = -1
   }
 
   g_client:getServerConnection():sendEvent(
@@ -153,8 +156,8 @@ function MenuCreateContract:onCancel(sender)
   -- Cleanup form
   self.reward = nil
   self.description = nil
-  self.fieldId = nil
-  self.workType = nil
+  self.farmlandId = nil
+  self.workAreaTypeIndex = nil
 
   self:close()
 end
@@ -166,19 +169,4 @@ function MenuCreateContract:fillMonthMultiTextOption(multiTextOption, valuesFiel
 
   multiTextOption:setTexts(texts)
   multiTextOption:setState(1, true)
-end
-
--- Retrieve the field ids of the farm
-function MenuCreateContract:getOwnedFieldsIds()
-  local fieldIds = {}
-
-  for _, field in pairs(g_fieldManager:getFields()) do
-    if field:getOwner() == self.farmId then
-      table.insert(fieldIds, field:getId())
-    end
-  end
-
-  table.sort(fieldIds)
-
-  return fieldIds
 end

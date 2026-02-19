@@ -13,8 +13,8 @@
     <text name="cc_contract_owner_label" text="Owned by: %s"/>
     <text name="cc_contract_status_label" text="Accepted by:"/>
     <text name="cc_contract_status_label_default" text="Current status:"/>
-    <text name="cc_contract_list_field_label" text="Field %d"/>
-    <text name="cc_contract_description" text="%s on Field %d (%.2f ha)"/>
+    <text name="cc_contract_list_field_label" text="Farmland %d"/>
+    <text name="cc_contract_description" text="%s on Farmland %d (%.2f ha)"/>
     <text name="cc_contract_empty" text="No contract selected"/>
     <text name="cc_contract_start_date_label" text="Start:"/>
     <text name="cc_contract_due_date_label" text="Due:"/>
@@ -29,6 +29,8 @@
     <text name="cc_status_paid" text="Paid"/>
     <text name="cc_status_overdue" text="Overdue"/>
     <text name="cc_status_rejected" text="Rejected"/>
+    <text name="cc_status_completed_awaiting_invoice" text="Completed (Awaiting Invoice)"/>
+    <text name="cc_status_invoiced" text="Invoiced"/>
     <text name="cc_contract_info_title" text="General information"/>
     <text name="cc_contract_notes_title" text="Notes"/>
     <text name="cc_contract_disclaimer" text="By accepting this contract, you agree to complete the listed work as described. Payment is made upon completion, through an invoice."/>
@@ -39,23 +41,23 @@
     <text name="cc_btn_delete_contract" text="Delete contract"/>
     <text name="cc_btn_reopen_contract" text="Reopen contract"/>
     <text name="cc_btn_edit_contract" text="Edit contract"/>
-    <text name="cc_dialog_create_yes_no" text="Complete contract for Field %d and receive €%s?"/>
+    <text name="cc_dialog_create_yes_no" text="Complete contract for Farmland %d and receive €%s?"/>
     <text name="cc_dialog_create_yes_no_btn" text="Complete Contract"/>
-    <text name="cc_dialog_accept_yes_no" text="Accept contract for Field %d (%s) for €%s?"/>
+    <text name="cc_dialog_accept_yes_no" text="Accept contract for Farmland %d (%s) for €%s?"/>
     <text name="cc_dialog_accept_yes_no_btn" text="Accept Contract"/>
-    <text name="cc_dialog_complete_yes_no" text="Complete contract for Field %d and receive €%s?"/>
+    <text name="cc_dialog_complete_yes_no" text="Complete contract for Farmland %d and receive €%s?"/>
     <text name="cc_dialog_complete_yes_no_btn" text="Complete Contract"/>
-    <text name="cc_dialog_cancel_yes_no" text="Cancel contract for Field %d?"/>
+    <text name="cc_dialog_cancel_yes_no" text="Cancel contract for Farmland %d?"/>
     <text name="cc_dialog_cancel_yes_no_btn" text="Cancel Contract"/>
-    <text name="cc_dialog_delete_yes_no" text="Delete contract for Field %d?"/>
+    <text name="cc_dialog_delete_yes_no" text="Delete contract for Farmland %d?"/>
     <text name="cc_dialog_delete_yes_no_btn" text="Delete Contract"/>
-    <text name="cc_dialog_reopen_yes_no" text="Reopen contract for Field %d?"/>
+    <text name="cc_dialog_reopen_yes_no" text="Reopen contract for Farmland %d?"/>
     <text name="cc_dialog_reopen_yes_no_btn" text="Reopen Contract"/>
     <text name="cc_dialog_create_validation_fields" text="Please fill all fields"/>
     <text name="cc_dialog_create_validation_fields_due_date" text="Please select start and due date"/>
     <text name="cc_dialog_create_validation_fields_start_date" text="Due date cannot be before start date"/>
     <text name="cc_dialog_edit_title" text="Edit Contract"/>
-    <text name="cc_dialog_edit_input_field" text="Field ID"/>
+    <text name="cc_dialog_edit_input_field" text="Farmland ID"/>
     <text name="cc_dialog_edit_input_worktype" text="Work Type"/>
     <text name="cc_dialog_edit_input_reward" text="Reward (€)"/>
     <text name="cc_dialog_edit_input_description" text="Description (optional)"/>
@@ -64,7 +66,7 @@
     <text name="cc_dialog_edit_btn_cancel" text="Cancel"/>
     <text name="cc_dialog_edit_btn_edit" text="Edit"/>
     <text name="cc_dialog_create_title" text="Create Contract"/>
-    <text name="cc_dialog_create_input_field" text="Field ID"/>
+    <text name="cc_dialog_create_input_field" text="Farmland ID"/>
     <text name="cc_dialog_create_input_worktype" text="Work Type"/>
     <text name="cc_dialog_create_input_reward" text="Reward (€)"/>
     <text name="cc_dialog_create_input_description" text="Description (optional)"/>
@@ -76,5 +78,6 @@
     <text name="cc_invoice_status_label" text="Status:"/>
     <text name="cc_dialog_invoice_pay_yes_no" text="Pay invoice %s and receive €%s?"/>
     <text name="cc_dialog_invoice_pay_yes_no_btn" text="Pay Invoice"/>
+    <text name="cc_dialog_invoice_add_invoice_line_confirm_btn" text="Add"/>
   </texts>
 </l10n>

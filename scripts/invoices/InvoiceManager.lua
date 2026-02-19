@@ -108,7 +108,6 @@ function InvoiceManager:loadFromXmlFile(xmlFile)
     i                       = i + 1
   end
 
-  -- TODO: Add call syncInvoices function
   self:syncInvoices()
 end
 
@@ -206,6 +205,11 @@ function InvoiceManager:handleCreateRequest(farmId, payload)
 
   self.invoices[id] = invoice
 
+  if payload.relatedContractId ~= nil and payload.relatedContractId ~= -1 then
+    local contract = g_currentMission.CustomContracts.ContractManager.contracts[payload.relatedContractId]
+    contract.status = CustomContract.STATUS.INVOICED
+  end
+
   self:syncInvoices()
 end
 
@@ -223,11 +227,6 @@ function InvoiceManager:handlePayRequest(farmId, invoiceId)
   if not g_currentMission:getIsServer() then return end
 
   local invoice = self.invoices[invoiceId]
-
-  -- TODO: Add notification to the creator farm that money is low
-  -- if g_farmManager:getFarmById(invoice.creatorFarmId).money < invoice.total then
-  --   return
-  -- end
 
   if g_currentMission:getIsServer() then
     -- Remove money from receiver farm
@@ -252,6 +251,7 @@ function InvoiceManager:handlePayRequest(farmId, invoiceId)
 
   -- Change status of contract to be completed
   invoice.status = Invoice.STATUS.PAID
+  invoice.paid = invoice.total -- TODO: Add more logic when adding partial payments
 
   -- Update all clients
   self:syncInvoices()

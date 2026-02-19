@@ -11,9 +11,9 @@
       <Text profile="dialogTitle" text="Add invoice line" position="0px -30px"/>
 
       <BoxLayout flowDirection="vertical" position="15px -100px">
-        <BoxLayout flowDirection="vertical" size="350px 400px" elementSpacing="5px" extends="emptyPanel" with="anchorTopLeft">
+        <BoxLayout flowDirection="vertical" size="400px 400px" elementSpacing="5px" extends="emptyPanel" with="anchorTopLeft">
           <Text profile="CC_ContractInputLabel" text="Description" position="0px 0px" />
-          <TextInput profile="CC_Input" id="lineTextInput" position="0px -30px" size="320px 40px" maxCharacters="60">
+          <TextInput profile="CC_Input" id="lineTextInput" position="0px -30px" size="410px 40px" maxCharacters="60">
             <ThreePartBitmap profile="fs25_textInputBg" absoluteSizeOffset="0px 0px"/>
             <Bitmap profile="fs25_textInputIconBox" position="0px 0px">
               <Bitmap profile="fs25_textInputIcon" />
@@ -21,7 +21,7 @@
           </TextInput>
 
           <Text profile="CC_ContractInputLabel" text="Price" position="0px -95px" />
-          <TextInput profile="CC_Input" id="linePriceInput" position="0px -125px" size="320px 40px" maxCharacters="12">
+          <TextInput profile="CC_Input" id="linePriceInput" position="0px -125px" size="410px 40px" maxCharacters="12">
             <ThreePartBitmap profile="fs25_textInputBg" absoluteSizeOffset="0px 0px"/>
             <Bitmap profile="fs25_textInputIconBox" position="0px 0px">
               <Bitmap profile="fs25_textInputIcon" />
@@ -35,7 +35,7 @@
 
     <BoxLayout profile="fs25_dialogButtonBox">
       <Button profile="buttonBack" text="$l10n_button_cancel" onClick="onCancel" />
-      <Button profile="buttonOK" text="$l10n_button_ok" onClick="onOk" />
+      <Button profile="buttonOK" text="$l10n_cc_dialog_invoice_add_invoice_line_confirm_btn" onClick="onOk" />
     </BoxLayout>
 
   </GuiElement>

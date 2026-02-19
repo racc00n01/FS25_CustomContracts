@@ -15,7 +15,7 @@
 
           <!-- Field -->
           <Text text="$l10n_cc_dialog_edit_input_field" profile="CC_ContractInputLabel"/>
-          <MultiTextOption id="fieldSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onFieldSelectChange">
+          <MultiTextOption id="fieldSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onFarmlandSelectChange">
             <Text profile="fs25_multiTextOptionText" name="text" />
           </MultiTextOption>
 

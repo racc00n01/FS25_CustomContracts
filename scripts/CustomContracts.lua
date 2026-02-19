@@ -258,91 +258,91 @@ function CustomContracts.getIsAccessibleAtWorldPosition(self, superFunc, farmId,
   return false, landOwner, landValid
 end
 
-function CustomContracts.canFarmAccessOtherId(self, superFunc, farmId, otherFarmId, ...)
-  -- base game first
-  if superFunc(self, farmId, otherFarmId, ...) then
-    return true
-  end
+-- function CustomContracts.canFarmAccessOtherId(self, superFunc, farmId, otherFarmId, ...)
+--   -- base game first
+--   if superFunc(self, farmId, otherFarmId, ...) then
+--     return true
+--   end
 
-  -- ignore nonsense ids
-  if farmId == nil or otherFarmId == nil then
-    return false
-  end
-  if farmId == FarmlandManager.NO_OWNER_FARM_ID or otherFarmId == FarmlandManager.NO_OWNER_FARM_ID then
-    return false
-  end
+--   -- ignore nonsense ids
+--   if farmId == nil or otherFarmId == nil then
+--     return false
+--   end
+--   if farmId == FarmlandManager.NO_OWNER_FARM_ID or otherFarmId == FarmlandManager.NO_OWNER_FARM_ID then
+--     return false
+--   end
 
-  -- custom-contract exception
-  if g_currentMission.CustomContracts.ContractManager.hasAcceptedContractWithOwner ~= nil then
-    if g_currentMission.CustomContracts.ContractManager:hasAcceptedContractWithOwner(farmId, otherFarmId) then
-      return true
-    end
-  end
+--   -- custom-contract exception
+--   if g_currentMission.CustomContracts.ContractManager.hasAcceptedContractWithOwner ~= nil then
+--     if g_currentMission.CustomContracts.ContractManager:hasAcceptedContractWithOwner(farmId, otherFarmId) then
+--       return true
+--     end
+--   end
 
-  return false
-end
+--   return false
+-- end
 
-function CustomContracts.placeableInfoTrigger_onDraw(self, superFunc)
-  local spec = self.spec_infoTrigger
-  if spec.showInfo then
-    if spec.showAllPlayers then
-      -- unchanged
-    else
-      local myFarmId = g_currentMission:getFarmId()
-      local ownerFarmId = self:getOwnerFarmId()
+-- function CustomContracts.placeableInfoTrigger_onDraw(self, superFunc)
+--   local spec = self.spec_infoTrigger
+--   if spec.showInfo then
+--     if spec.showAllPlayers then
+--       -- unchanged
+--     else
+--       local myFarmId = g_currentMission:getFarmId()
+--       local ownerFarmId = self:getOwnerFarmId()
 
-      -- Allow owner OR accepted-contract contractor
-      local allow = (ownerFarmId == myFarmId)
-      if not allow then
-        allow = g_currentMission.accessHandler:canFarmAccessOtherId(myFarmId, ownerFarmId)
-      end
+--       -- Allow owner OR accepted-contract contractor
+--       local allow = (ownerFarmId == myFarmId)
+--       if not allow then
+--         allow = g_currentMission.accessHandler:canFarmAccessOtherId(myFarmId, ownerFarmId)
+--       end
 
-      if not allow then
-        return
-      end
-    end
-  end
+--       if not allow then
+--         return
+--       end
+--     end
+--   end
 
-  return superFunc(self)
-end
+--   return superFunc(self)
+-- end
 
-function CustomContracts.canPlayerAccess(self, superFunc, object, ...)
-  -- Base game first
-  if superFunc(self, object, ...) then
-    return true
-  end
+-- function CustomContracts.canPlayerAccess(self, superFunc, object, ...)
+--   -- Base game first
+--   if superFunc(self, object, ...) then
+--     return true
+--   end
 
-  if object == nil or object.getOwnerFarmId == nil then
-    return false
-  end
+--   if object == nil or object.getOwnerFarmId == nil then
+--     return false
+--   end
 
-  local ownerFarmId = object:getOwnerFarmId()
-  if ownerFarmId == nil then
-    return false
-  end
+--   local ownerFarmId = object:getOwnerFarmId()
+--   if ownerFarmId == nil then
+--     return false
+--   end
 
-  local myFarmId = g_currentMission:getFarmId()
+--   local myFarmId = g_currentMission:getFarmId()
 
-  if g_currentMission.CustomContracts.ContractManager.hasAcceptedContractWithOwner ~= nil then
-    if g_currentMission.CustomContracts.ContractManager:hasAcceptedContractWithOwner(myFarmId, ownerFarmId) then
-      return true
-    end
-  end
+--   if g_currentMission.CustomContracts.ContractManager.hasAcceptedContractWithOwner ~= nil then
+--     if g_currentMission.CustomContracts.ContractManager:hasAcceptedContractWithOwner(myFarmId, ownerFarmId) then
+--       return true
+--     end
+--   end
 
-  return false
-end
+--   return false
+-- end
 
-AccessHandler.canPlayerAccess =
-    Utils.overwrittenFunction(
-      AccessHandler.canPlayerAccess,
-      CustomContracts.canPlayerAccess
-    )
+-- AccessHandler.canPlayerAccess =
+--     Utils.overwrittenFunction(
+--       AccessHandler.canPlayerAccess,
+--       CustomContracts.canPlayerAccess
+--     )
 
-PlaceableInfoTrigger.onDraw =
-    Utils.overwrittenFunction(PlaceableInfoTrigger.onDraw, CustomContracts.placeableInfoTrigger_onDraw)
+-- PlaceableInfoTrigger.onDraw =
+--     Utils.overwrittenFunction(PlaceableInfoTrigger.onDraw, CustomContracts.placeableInfoTrigger_onDraw)
 
-AccessHandler.canFarmAccessOtherId =
-    Utils.overwrittenFunction(AccessHandler.canFarmAccessOtherId, CustomContracts.canFarmAccessOtherId)
+-- AccessHandler.canFarmAccessOtherId =
+--     Utils.overwrittenFunction(AccessHandler.canFarmAccessOtherId, CustomContracts.canFarmAccessOtherId)
 
 WorkArea.getIsAccessibleAtWorldPosition =
     Utils.overwrittenFunction(WorkArea.getIsAccessibleAtWorldPosition, CustomContracts.getIsAccessibleAtWorldPosition)
