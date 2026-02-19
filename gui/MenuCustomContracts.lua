@@ -25,7 +25,6 @@ MenuCustomContracts.HEADER_TITLES = {
   [MenuCustomContracts.SUB_CATEGORY.INVOICES] = "cc_header_invoices",
 }
 
-
 CustomContract.STATUS = {
   OPEN                       = "OPEN",
   ACCEPTED                   = "ACCEPTED",
@@ -43,8 +42,10 @@ function MenuCustomContracts.new(i18n, messageCenter)
   self.messageCenter = messageCenter
   self.menuButtonInfo = {}
 
+  -- Intialize renderers
   self.contractsRenderer = ContractsRenderer.new()
-  self.invoicesRenderer = InvoicesRenderer.new()
+  self.invoicesInboxRenderer = InvoicesInboxRenderer.new()
+  self.invoicesOutboxRenderer = InvoicesOutboxRenderer.new()
 
   return self
 end
@@ -122,15 +123,24 @@ function MenuCustomContracts:onGuiSetupFinished()
   self.contractsTable:setDataSource(self.contractsRenderer)
   self.contractsTable:setDelegate(self.contractsRenderer)
 
-  self.invoicesTable:setDataSource(self.invoicesRenderer)
-  self.invoicesTable:setDelegate(self.invoicesRenderer)
+  self.inboxInvoicesTable:setDataSource(self.invoicesInboxRenderer)
+  self.inboxInvoicesTable:setDelegate(self.invoicesInboxRenderer)
+
+  self.outboxInvoicesTable:setDataSource(self.invoicesOutboxRenderer)
+  self.outboxInvoicesTable:setDelegate(self.invoicesOutboxRenderer)
 
   self.contractsRenderer.indexChangedCallback = function(index)
     self:displaySelectedContract()
     self:updateMenuButtons()
   end
 
-  self.invoicesRenderer.indexChangedCallback = function(index)
+  self.invoicesInboxRenderer.indexChangedCallback = function(index)
+    self:updateMenuButtons()
+    self:setMenuButtonInfoDirty()
+  end
+
+  self.invoicesOutboxRenderer.indexChangedCallback = function(index)
+    print("inex call back outbox")
     self:updateMenuButtons()
     self:setMenuButtonInfoDirty()
   end
@@ -379,9 +389,14 @@ function MenuCustomContracts:updateContent()
   -- INVOICES page
   if state == MenuCustomContracts.SUB_CATEGORY.INVOICES then
     local invoiceManager = g_currentMission.CustomContracts.InvoiceManager
-    local invoices = invoiceManager:getInvoicesByCurrentFarm()
-    self.invoicesRenderer:setData(invoices)
-    self.invoicesTable:reloadData()
+
+    local invoices = invoiceManager:getInboundInvoicesByCurrentFarm()
+    self.invoicesInboxRenderer:setData(invoices)
+    self.inboxInvoicesTable:reloadData()
+
+    local outboxInvoices = invoiceManager:getOutboundInvoicesByCurrentFarm()
+    self.invoicesOutboxRenderer:setData(outboxInvoices)
+    self.outboxInvoicesTable:reloadData()
   end
 
   self:updateMenuButtons()
@@ -447,11 +462,14 @@ function MenuCustomContracts:getSelectedContract()
 end
 
 function MenuCustomContracts:getSelectedInvoice()
-  local index = self.invoicesTable.selectedIndex
-  if index == nil or index < 1 then
-    return nil
+  local inboxIndex = self.inboxInvoicesTable.selectedIndex
+  local outboxIndex = self.outboxInvoicesTable.selectedIndex
+
+  if inboxIndex ~= nil then
+    return self.invoicesInboxRenderer.data and self.invoicesInboxRenderer.data[inboxIndex] or nil
+  elseif outboxIndex ~= nil then
+    return self.outboxRenderer.data and self.outboxRenderer.data[outboxIndex] or nil
   end
-  return self.invoicesRenderer.data and self.invoicesRenderer.data[index] or nil
 end
 
 function MenuCustomContracts:shouldShowButton(button, listType, contract)
@@ -595,23 +613,24 @@ function MenuCustomContracts:onCreateInvoice()
 end
 
 function MenuCustomContracts:onDetailInvoice()
-  local index = self.invoicesTable.selectedIndex
-  if index == nil or index < 1 then
-    return
-  end
+  local inboxIndex = self.inboxInvoicesTable.selectedIndex
+  local outboxIndex = self.outboxInvoicesTable.selectedIndex
 
-  local invoice = self.invoicesRenderer.data and self.invoicesRenderer.data[index]
-  if invoice == nil then
-    return
-  end
 
-  g_currentMission.CustomContracts.selectedInvoice = invoice
-  g_gui:showDialog("detailInvoiceDialog")
+  if inboxIndex ~= nil then
+    local invoice = self.invoicesInboxRenderer.data[inboxIndex]
+    g_currentMission.CustomContracts.selectedInvoice = invoice
+    g_gui:showDialog("detailInvoiceDialog")
+  elseif outboxIndex ~= nil then
+    local invoice = self.outboxRenderer.data[outboxIndex]
+    g_currentMission.CustomContracts.selectedInvoice = invoice
+    g_gui:showDialog("detailInvoiceDialog")
+  end
 end
 
 function MenuCustomContracts:onPayInvoice()
-  local index = self.invoicesTable.selectedIndex
-  local invoice = self.invoicesRenderer.data[index]
+  local index = self.inboxInvoicesTable.selectedIndex
+  local invoice = self.invoicesInboxRenderer.data[index]
 
   YesNoDialog.show(
     function(_, yes)

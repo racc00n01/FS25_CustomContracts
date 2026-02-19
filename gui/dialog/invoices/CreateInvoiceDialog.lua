@@ -260,6 +260,8 @@ function CreateInvoiceDialog:calculateTotalFromDraftLines()
     for _, line in ipairs(self.invoiceDraft.lines) do
       total = total + (tonumber(line.amount) or 0)
     end
+  else
+    return tonumber(self.totalInput:getText())
   end
 
   return math.floor(total + 0.5)

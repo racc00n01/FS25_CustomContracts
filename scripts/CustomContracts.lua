@@ -10,18 +10,6 @@ CustomContracts.dir = g_currentModDirectory
 CustomContracts.modName = g_currentModName
 CustomContracts.SaveKey = "CustomContracts"
 
-source(CustomContracts.dir .. "gui/MenuCustomContracts.lua")
-source(CustomContracts.dir .. "gui/dialog/contracts/MenuCreateContract.lua")
-source(CustomContracts.dir .. "gui/dialog/invoices/DetailInvoiceDialog.lua")
-source(CustomContracts.dir .. "gui/dialog/invoices/AddInvoiceLineDialog.lua")
-source(CustomContracts.dir .. "gui/dialog/invoices/CreateInvoiceDialog.lua")
-source(CustomContracts.dir .. "gui/dialog/contracts/MenuEditContract.lua")
-source(CustomContracts.dir .. "gui/renderer/ContractsRenderer.lua")
-source(CustomContracts.dir .. "scripts/events/contracts/SyncContractsEvent.lua")
-source(CustomContracts.dir .. "scripts/events/invoices/SyncInvoicesEvent.lua")
-source(CustomContracts.dir .. "scripts/events/InitialClientStateEvent.lua")
-source(CustomContracts.dir .. "scripts/util/CustomUtils.lua")
-
 function CustomContracts:loadMap()
   g_currentMission.CustomContracts = self
 
@@ -67,8 +55,8 @@ function CustomContracts:loadMap()
 
   self.ContractManager = CustomContractManager:new()
   self.InvoiceManager = InvoiceManager:new()
-
   self.CustomContractsMenu = menuCustomContracts
+
   self.lastPeriod = g_currentMission.environment.currentPeriod - 1
   self.currentPeriod = g_currentMission.environment.currentPeriod
   self.currentDay = g_currentMission.environment.currentDay

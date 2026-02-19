@@ -119,6 +119,7 @@ function Invoice.readLinesFromStream(streamId)
   return lines
 end
 
+-- Returns the status of the invoice from the perspective of the given farmId
 function Invoice:getStatus(farmId)
   if self.status == Invoice.STATUS.SENT then
     if farmId == self.creatorFarmId then

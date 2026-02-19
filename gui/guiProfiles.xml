@@ -301,4 +301,18 @@
     <position value="28px -40px" />
     <size value="6px 640px"/>
   </Profile>
+
+  <Profile name="CC_TableSlider" extends="fs25_listSliderBox" with="anchorTopRight">
+    <position value="28px -40px" />
+    <size value="6px 640px"/>
+  </Profile>
+
+  <Profile name="CC_InvoiceTableTitle" extends="fs25_textDefault" with="anchorTopLeft">
+    <textSize value="24px"/>
+    <textColor value="$preset_fs25_colorMainLight"/>
+    <position value="0px -10px"/>
+    <textAlignment value="left"/>
+    <textUpperCase value="true"/>
+    <textBold value="true"/>
+  </Profile>
 </GUIProfiles>
