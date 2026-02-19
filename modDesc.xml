@@ -35,16 +35,7 @@ https://github.com/racc00n01/FS25_CustomContracts
   <l10n filenamePrefix="translations/translation" />
 
   <extraSourceFiles>
-    <sourceFile filename="gui/dialog/invoices/InvoiceLinesRenderer.lua"/>
-    <sourceFile filename="gui/renderer/ContractsRenderer.lua"/>
-    <sourceFile filename="gui/renderer/InvoicesInboxRenderer.lua"/>
-    <sourceFile filename="gui/MenuCustomContracts.lua"/>
-    <sourceFile filename="gui/dialog/contracts/MenuCreateContract.lua"/>
-    <sourceFile filename="gui/dialog/invoices/DetailInvoiceDialog.lua"/>
-    <sourceFile filename="gui/dialog/invoices/AddInvoiceLineDialog.lua"/>
-    <sourceFile filename="gui/dialog/invoices/CreateInvoiceDialog.lua"/>
-    <sourceFile filename="gui/dialog/contracts/MenuEditContract.lua"/>
-    <sourceFile filename="gui/renderer/ContractsRenderer.lua"/>
+    <sourceFile filename="scripts/util/CustomUtils.lua"/>
 
     <sourceFile filename="scripts/contracts/CustomContract.lua"/>
     <sourceFile filename="scripts/invoices/Invoice.lua"/>
@@ -68,7 +59,18 @@ https://github.com/racc00n01/FS25_CustomContracts
     <sourceFile filename="scripts/events/invoices/SyncInvoicesEvent.lua"/>
     <sourceFile filename="scripts/events/invoices/OpenCreateInvoiceDialogEvent.lua"/>
 
-    <sourceFile filename="scripts/utils/CustomUtils.lua"/>
+    <sourceFile filename="gui/renderer/ContractsRenderer.lua"/>
+    <sourceFile filename="gui/renderer/ContractsRenderer.lua"/>
+    <sourceFile filename="gui/renderer/InvoicesInboxRenderer.lua"/>
+    <sourceFile filename="gui/renderer/InvoicesOutboxRenderer.lua"/>
+    <sourceFile filename="gui/MenuCustomContracts.lua"/>
+    <sourceFile filename="gui/dialog/contracts/MenuCreateContract.lua"/>
+    <sourceFile filename="gui/dialog/invoices/DetailInvoiceDialog.lua"/>
+    <sourceFile filename="gui/dialog/invoices/AddInvoiceLineDialog.lua"/>
+    <sourceFile filename="gui/dialog/invoices/CreateInvoiceDialog.lua"/>
+    <sourceFile filename="gui/dialog/contracts/MenuEditContract.lua"/>
+    <sourceFile filename="gui/dialog/invoices/InvoiceLinesRenderer.lua"/>
+
     <sourceFile filename="scripts/extensions/I18NExtension.lua"/>
   </extraSourceFiles>
 </modDesc>
