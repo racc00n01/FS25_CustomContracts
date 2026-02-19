@@ -61,7 +61,7 @@
 
   <Profile name="CC_ContractTagline" extends="fs25_textDefault" with="anchorTopLeft">
     <textSize value="18px"/>
-    <textColor value="$preset_fs25_colorMainDefault"/>
+    <textColor value="$preset_fs25_colorMainLight"/>
     <position value="0px -10px"/>
     <textAlignment value="left"/>
     <textUpperCase value="true"/>
@@ -69,21 +69,21 @@
 
   <Profile name="CC_ContractTaglineRight" extends="fs25_textDefault" with="anchorTopRight">
     <textSize value="18px"/>
-    <textColor value="$preset_fs25_colorMainDefault"/>
+    <textColor value="$preset_fs25_colorMainLight"/>
     <textAlignment value="right"/>
   </Profile>
 
   <Profile name="CC_ContractOwner" extends="fs25_textGrey" with="anchorTopLeft">
     <textSize value="18px"/>
     <textBold value="false"/>
-    <textColor value="$preset_fs25_colorMainDefault"/>
+    <textColor value="$preset_fs25_colorMainLight"/>
     <textAlignment value="left"/>
   </Profile>
 
   <Profile name="CC_ContractStatus" extends="fs25_textDefault" with="anchorTopRight">
     <textSize value="24px"/>
     <textBold value="false"/>
-    <textColor value="$preset_fs25_colorMainDefault"/>
+    <textColor value="$preset_fs25_colorMainLight"/>
     <textAlignment value="right"/>
     <textUpperCase value="true"/>
   </Profile>
@@ -92,7 +92,7 @@
     <textSize value="20px"/>
     <textBold value="true"/>
     <textUpperCase value="true"/>
-    <textColor value="$preset_fs25_colorMainHighlighted"/>
+    <textColor value="$preset_fs25_colorMainHighlight"/>
     <textAlignment value="right"/>
   </Profile>
 
@@ -114,7 +114,6 @@
     <textSize value="14px"/>
     <textBold value="true"/>
     <textUpperCase value="true"/>
-    <textColor value="$preset_fs25_colorMainDefault"/>
     <textAlignment value="left"/>
   </Profile>
 
@@ -142,7 +141,6 @@
     <textBold value="true" />
     <position value="20px 0px"/>
     <textAlignment value="left" />
-    <textColor value="$preset_fs25_colorMainLight" />
     <width value="350px"/>
   </Profile>
 

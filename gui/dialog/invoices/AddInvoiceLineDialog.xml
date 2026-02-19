@@ -8,11 +8,11 @@
     <ThreePartBitmap profile="fs25_dialogBgBottom" />
 
     <GuiElement profile="fs25_dialogContentContainer">
-      <Text profile="dialogTitle" text="Add invoice line" position="0px -30px"/>
+      <Text profile="dialogTitle" text="$l10n_cc_dialog_invoice_add_invoice_line_title" position="0px -30px"/>
 
       <BoxLayout flowDirection="vertical" position="15px -100px">
         <BoxLayout flowDirection="vertical" size="400px 400px" elementSpacing="5px" extends="emptyPanel" with="anchorTopLeft">
-          <Text profile="CC_ContractInputLabel" text="Description" position="0px 0px" />
+          <Text profile="CC_ContractInputLabel" text="$l10n_cc_dialog_invoice_add_invoice_line_description_label" position="0px 0px" />
           <TextInput profile="CC_Input" id="lineTextInput" position="0px -30px" size="410px 40px" maxCharacters="60">
             <ThreePartBitmap profile="fs25_textInputBg" absoluteSizeOffset="0px 0px"/>
             <Bitmap profile="fs25_textInputIconBox" position="0px 0px">
@@ -20,15 +20,13 @@
             </Bitmap>
           </TextInput>
 
-          <Text profile="CC_ContractInputLabel" text="Price" position="0px -95px" />
+          <Text profile="CC_ContractInputLabel" text="$l10n_cc_dialog_invoice_add_invoice_line_price_label" position="0px -95px" />
           <TextInput profile="CC_Input" id="linePriceInput" position="0px -125px" size="410px 40px" maxCharacters="12">
             <ThreePartBitmap profile="fs25_textInputBg" absoluteSizeOffset="0px 0px"/>
             <Bitmap profile="fs25_textInputIconBox" position="0px 0px">
               <Bitmap profile="fs25_textInputIcon" />
             </Bitmap>
           </TextInput>
-
-          <Text profile="CC_ContractInputLabel" id="lineErrorText" position="0px -175px" text="" />
         </BoxLayout>
       </BoxLayout>
     </GuiElement>

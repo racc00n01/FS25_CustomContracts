@@ -278,10 +278,10 @@ function CustomContractManager:handleCompleteRequest(farmId, contractId, connect
 
   local draft = {
     receiverFarmId = contract.creatorFarmId,
-    title = string.format("Invoice for Contract %d", contract.id),
+    title = string.format(g_i18n:getText("cc_contract_id_label"), contract.id),
     description = contract.description or "",
     lines = {
-      { title = string.format("Contract reward (Contract #%d)", contract.id), amount = contract.reward }
+      { title = string.format(g_i18n:getText("cc_dialog_invoice_create_auto_line_title"), contract.id), amount = contract.reward }
     },
     total = contract.reward,
     dueAt = contract.duePeriod,
@@ -290,10 +290,6 @@ function CustomContractManager:handleCompleteRequest(farmId, contractId, connect
   }
 
   self:_rebuildAccessCache()
-
-  print(string.format("[CC] complete contract id=%s status=%s",
-    tostring(contract.id), tostring(contract.status)))
-
   self:syncContracts()
 
   if connection ~= nil then

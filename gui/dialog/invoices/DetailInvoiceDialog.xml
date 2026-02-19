@@ -8,7 +8,7 @@
     <ThreePartBitmap profile="fs25_dialogBgBottom" />
 
     <GuiElement profile="fs25_dialogContentContainer">
-      <Text profile="dialogTitle" text="Invoice details" position="0px -30px"/>
+      <Text profile="dialogTitle" text="$l10n_cc_dialog_detail_invoice_title" position="0px -30px"/>
 
       <GuiElement id="contractsInfoContainer" width="840px" position="20px -80px">
 
@@ -17,10 +17,10 @@
         <Text profile="CC_ContractTaglineRight" id="invoiceStatusLabel" position="0px -20px"/>
         <Text profile="CC_ContractStatus" id="invoiceStatusValue" position="0px -60px"/>
 
-        <Text profile="CC_ContractH6" text="From:" position="0px -80px"/>
+        <Text profile="CC_ContractH6" text="$l10n_cc_dialog_detail_invoice_from_label" position="0px -80px"/>
         <Text profile="CC_ContractTagline" id="invoiceFromFarm" position="0px -100px"/>
 
-        <Text profile="CC_ContractH6" text="To:" position="200px -80px"/>
+        <Text profile="CC_ContractH6" text="$l10n_cc_dialog_detail_invoice_to_label" position="200px -80px"/>
         <Text profile="CC_ContractTagline" id="invoiceReceiverFarm" position="200px -100px"/>
 
         <ThreePartBitmap profile="fs25_lineSeparatorTopSoft" position="0px -160px"/>
@@ -29,8 +29,8 @@
         <Text profile="CC_ContractBody" position="0px -210px" id="invoiceDescriptionValue"/>
 
         <GuiElement profile="fs25_statisticsHeaderBox" position="0px -280px">
-          <Button profile="CC_TableHeader" position="20px 0px" size="200px 32px" text="Title" handleFocus="false" />
-          <Button profile="CC_TableHeaderRight" position="0.325 0px" size="160px 32px" text="Amount" handleFocus="false" />
+          <Button profile="CC_TableHeader" position="20px 0px" size="200px 32px" text="$l10n_cc_dialog_detail_invoice_line_title_label" handleFocus="false" />
+          <Button profile="CC_TableHeaderRight" position="0.325 0px" size="160px 32px" text="$l10n_cc_dialog_detail_invoice_line_amount_label" handleFocus="false" />
           <ThreePartBitmap profile="fs25_lineSeparatorBottomSoft" position="0px -2dp" />
         </GuiElement>
         <SmoothList id="invoiceLineTable" profile="CC_Table" size="100% 200px" position="0px -310px">
@@ -41,17 +41,17 @@
         </SmoothList>
 
         <ThreePartBitmap profile="fs25_lineSeparatorTopSoft" position="0px -570px"/>
-        <Text profile="CC_ContractFooter" position="0px -590px" text="$l10n_cc_contract_total_reward"/>
+        <Text profile="CC_ContractFooter" position="0px -590px" text="$l10n_cc_dialog_detail_invoice_total_label"/>
         <Text profile="CC_ContractFooterRight" position="0px -590px" id="invoiceTotalValue"/>
       </GuiElement>
     </GuiElement>
 
     <BoxLayout profile="fs25_dialogButtonBox">
       <Button profile="buttonBack" text="$l10n_cc_dialog_create_btn_cancel" onClick="onCancel" />
-      <Button profile="buttonOK" id="btnDeleteInvoice" text="Delete invoice" onClick="onDeleteInvoice" />
-      <Button profile="buttonOK" id="btnPay" text="Pay" onClick="onPay" />
-      <Button profile="buttonOK" id="btnEdit" text="Edit" onClick="onEdit" />
-      <Button profile="buttonOK" id="btnSent" text="Sent" onClick="onSent" />
+      <Button profile="buttonOK" id="btnDeleteInvoice" text="$l10n_cc_dialog_detail_invoice_delete_btn" onClick="onDeleteInvoice" />
+      <Button profile="buttonOK" id="btnPay" text="$l10n_cc_dialog_detail_invoice_pay_btn" onClick="onPay" />
+      <Button profile="buttonOK" id="btnEdit" text="$l10n_cc_dialog_detail_invoice_edit_btn" onClick="onEdit" />
+      <Button profile="buttonOK" id="btnSent" text="$l10n_cc_dialog_detail_invoice_sent_btn" onClick="onSent" />
     </BoxLayout>
   </GuiElement>
 </GUI>

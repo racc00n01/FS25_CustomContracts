@@ -37,10 +37,6 @@ function AddInvoiceLineDialog:onOpen()
     self.invoiceDraft = g_currentMission.CustomContracts.invoiceDraft
   end
 
-  if self.lineErrorText ~= nil then
-    self.lineErrorText:setText("")
-  end
-
   if self.lineTextInput ~= nil then
     self.lineTextInput:setText(self.prefillText or "")
   end
@@ -71,20 +67,6 @@ function AddInvoiceLineDialog:onOk()
 
   local amountText = self.linePriceInput:getText() or ""
   local amount = parsePrice(amountText)
-
-  if title == "" then
-    if self.lineErrorText then
-      self.lineErrorText:setText("Description is required")
-    end
-    return
-  end
-
-  if amount == nil then
-    if self.lineErrorText then
-      self.lineErrorText:setText("Price must be a number")
-    end
-    return
-  end
 
   table.insert(self.invoiceDraft.lines, {
     title = title,

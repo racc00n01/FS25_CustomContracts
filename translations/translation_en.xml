@@ -78,6 +78,44 @@
     <text name="cc_invoice_status_label" text="Status:"/>
     <text name="cc_dialog_invoice_pay_yes_no" text="Pay invoice %s and receive €%s?"/>
     <text name="cc_dialog_invoice_pay_yes_no_btn" text="Pay Invoice"/>
+    <text name="cc_dialog_invoice_create_auto_title" text="Invoice for Contract %d"/>
+    <text name="cc_dialog_invoice_create_auto_line_title" text="Contract reward (Contract #%d)"/>
+
+    <text name="cc_dialog_invoice_add_invoice_line_title" text="Add invoice line"/>
+    <text name="cc_dialog_invoice_add_invoice_line_description_label" text="Description"/>
+    <text name="cc_dialog_invoice_add_invoice_line_price_label" text="Price"/>
     <text name="cc_dialog_invoice_add_invoice_line_confirm_btn" text="Add"/>
+
+    <text name="cc_dialog_create_invoice_title" text="Create Invoice"/>
+    <text name="cc_dialog_create_invoice_title_label" text="Invoice Title"/>
+    <text name="cc_dialog_create_invoice_description_label" text="Description"/>
+    <text name="cc_dialog_create_invoice_receiver_label" text="Receiver"/>
+    <text name="cc_dialog_create_invoice_total_label" text="Total"/>
+    <text name="cc_dialog_create_invoice_line_title_label" text="Title"/>
+    <text name="cc_dialog_create_invoice_line_amount_label" text="Amount"/>
+
+    <text name="cc_dialog_create_invoice_add_line_btn" text="Add Line"/>
+    <text name="cc_dialog_create_invoice_save_draft_btn" text="Save Draft"/>
+    <text name="cc_dialog_create_invoice_create_and_send_btn" text="Create and Send"/>
+
+    <text name="cc_dialog_detail_invoice_title" text="Detail Invoice"/>
+    <text name="cc_dialog_detail_invoice_from_label" text="From:"/>
+    <text name="cc_dialog_detail_invoice_to_label" text="To:"/>
+    <text name="cc_dialog_detail_invoice_line_title_label" text="Title"/>
+    <text name="cc_dialog_detail_invoice_line_amount_label" text="Amount"/>
+    <text name="cc_dialog_detail_invoice_total_label" text="Total"/>
+    <text name="cc_dialog_detail_invoice_delete_btn" text="Delete"/>
+    <text name="cc_dialog_detail_invoice_edit_btn" text="Edit"/>
+    <text name="cc_dialog_detail_invoice_sent_btn" text="Sent"/>
+
+
+    <text name="cc_dialog_invoice_table_id" text="ID"/>
+    <text name="cc_dialog_invoice_table_status" text="Status"/>
+    <text name="cc_dialog_invoice_table_from" text="From"/>
+    <text name="cc_dialog_invoice_table_to" text="To"/>
+    <text name="cc_dialog_invoice_table_amount" text="Amount"/>
+    <text name="cc_dialog_invoice_table_related_contract_id" text="Contract"/>
+    <text name="cc_dialog_invoice_table_due_date" text="Due Date"/>
+
   </texts>
 </l10n>

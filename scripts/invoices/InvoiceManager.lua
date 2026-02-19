@@ -3,6 +3,9 @@ InvoiceManager_mt = Class(InvoiceManager)
 InvoiceManager.dir = g_currentModDirectory
 InvoiceManager.modName = g_currentModName
 
+table.insert(FinanceStats.statNames, "invoices")
+FinanceStats.statNameToIndex["invoices"] = #FinanceStats.statNames
+
 function InvoiceManager.new()
   local self = setmetatable({}, InvoiceManager_mt)
 
