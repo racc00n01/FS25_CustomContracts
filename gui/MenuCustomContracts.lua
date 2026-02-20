@@ -16,9 +16,10 @@ MenuCustomContracts.SUB_CATEGORY = {
 MenuCustomContracts.CONTRACTS_LIST_TYPE = {
   NEW = 1,
   ACTIVE = 2,
-  OWNED = 3
+  OWNED = 3,
+  COMPLETED = 4
 }
-MenuCustomContracts.CONTRACTS_STATE_TEXTS = { "cc_new", "cc_active", "cc_owned" }
+MenuCustomContracts.CONTRACTS_STATE_TEXTS = { "cc_new", "cc_active", "cc_owned", "cc_completed" }
 
 MenuCustomContracts.HEADER_TITLES = {
   [MenuCustomContracts.SUB_CATEGORY.CONTRACTS] = "cc_header_contracts",
@@ -166,8 +167,16 @@ function MenuCustomContracts:initialize()
     end
   end
 
+  -- Set the filter switcher dots to follow the switcher state
+  for i = 1, #self.contractsFilterDots.elements do
+    self.contractsFilterDots.elements[i].getIsSelected = function()
+      return self.contractDisplaySwitcher:getState() == i
+    end
+  end
 
-  -- Set the new/active/owned contract switcher texts
+  self.contractsFilterDots:invalidateLayout()
+
+  -- Set the new/active/owned/completed contract switcher texts
   local contractSwitcherTexts = {}
   for k, v in pairs(MenuCustomContracts.CONTRACTS_STATE_TEXTS) do
     table.insert(contractSwitcherTexts, g_i18n:getText(v))
@@ -211,7 +220,7 @@ function MenuCustomContracts:initialize()
     end
   }
   self.btnDeleteInvoice = {
-    inputAction = InputAction.MENU_ACCEPT,
+    inputAction = InputAction.MENU_CANCEL,
     text = "Delete invoice",
     callback = function()
       self
@@ -254,7 +263,7 @@ function MenuCustomContracts:initialize()
 
   self.btnDelete = {
     text = g_i18n:getText("cc_btn_delete_contract"),
-    inputAction = InputAction.MENU_EXTRA_2,
+    inputAction = InputAction.MENU_CANCEL,
     callback = function()
       self:onDeleteContract()
     end
@@ -301,6 +310,14 @@ function MenuCustomContracts:initialize()
     self.btnCancel,
     self.btnReopen,
     self.btnEdit,
+    self.btnCreateContract
+  }
+
+  -- COMPLETED contracts
+  self.contractButtonSets[MenuCustomContracts.CONTRACTS_LIST_TYPE.COMPLETED] = {
+    self.btnBack,
+    self.btnDelete,
+    self.btnCreateInvoice,
     self.btnCreateContract
   }
 
@@ -396,11 +413,13 @@ function MenuCustomContracts:updateContent()
     local newContracts = contractManager:getNewContractsForCurrentFarm()
     local activeContracts = contractManager:getActiveContractsForCurrentFarm()
     local ownedContracts = contractManager:getOwnedContractsForCurrentFarm()
+    local completedContracts = contractManager:getCompletedContractsForCurrentFarm()
 
     local renderData = {
       [MenuCustomContracts.CONTRACTS_LIST_TYPE.NEW] = newContracts,
       [MenuCustomContracts.CONTRACTS_LIST_TYPE.ACTIVE] = activeContracts,
-      [MenuCustomContracts.CONTRACTS_LIST_TYPE.OWNED] = ownedContracts
+      [MenuCustomContracts.CONTRACTS_LIST_TYPE.OWNED] = ownedContracts,
+      [MenuCustomContracts.CONTRACTS_LIST_TYPE.COMPLETED] = completedContracts
     }
 
     self.contractsRenderer:setData(renderData)
@@ -546,9 +565,6 @@ function MenuCustomContracts:shouldShowButton(button, listType, contract)
     if button == self.btnCancel then
       return status == CustomContract.STATUS.ACCEPTED and isContractor
     end
-    if button == self.btnCreateInvoice then
-      return status == CustomContract.STATUS.COMPLETED_AWAITING_INVOICE and isContractor and contract.invoiceId < 0
-    end
     return false
   end
 
@@ -577,8 +593,18 @@ function MenuCustomContracts:shouldShowButton(button, listType, contract)
           or status == CustomContract.STATUS.CANCELLED
           or status == CustomContract.STATUS.EXPIRED
           or status == CustomContract.STATUS.COMPLETED
+          or status == CustomContract.STATUS.INVOICED
+          or status == CustomContract.STATUS.COMPLETED_AWAITING_INVOICE
     end
 
+    return false
+  end
+
+  -- COMPLETED tab rules
+  if listType == MenuCustomContracts.CONTRACTS_LIST_TYPE.COMPLETED then
+    if button == self.btnCreateInvoice then
+      return status == CustomContract.STATUS.COMPLETED_AWAITING_INVOICE and isContractor and contract.invoiceId < 0
+    end
     return false
   end
 

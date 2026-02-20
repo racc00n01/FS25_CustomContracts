@@ -191,7 +191,7 @@ function CustomContractManager:getActiveContractsForCurrentFarm()
 
   for _, contract in pairs(contractManager.contracts) do
     -- Contracts accepted by you or cancelled by you or the owner
-    if (contract.status == CustomContract.STATUS.ACCEPTED or contract.status == CustomContract.STATUS.CANCELLED or contract.status == CustomContract.STATUS.INVOICED or contract.status == CustomContract.STATUS.COMPLETED_AWAITING_INVOICE)
+    if (contract.status == CustomContract.STATUS.ACCEPTED or contract.status == CustomContract.STATUS.CANCELLED)
         and contract.contractorFarmId == farmId then
       table.insert(activeForFarm, contract)
     end
@@ -218,6 +218,26 @@ function CustomContractManager:getOwnedContractsForCurrentFarm()
   end
 
   return ownedForFarm
+end
+
+function CustomContractManager:getCompletedContractsForCurrentFarm()
+  local completedForFarm = {}
+
+  local farmId = g_currentMission:getFarmId();
+  if farmId == nil or farmId == 0 then
+    return completedForFarm
+  end
+
+  local contractManager = g_currentMission.CustomContracts.ContractManager
+
+  for _, contract in pairs(contractManager.contracts) do
+    -- Contracts completed
+    if contract.creatorFarmId == farmId and (contract.status == CustomContract.STATUS.COMPLETED or contract.status == CustomContract.STATUS.INVOICED or contract.status == CustomContract.STATUS.COMPLETED_AWAITING_INVOICE) then
+      table.insert(completedForFarm, contract)
+    end
+  end
+
+  return completedForFarm
 end
 
 -- Called by CreateContractEvent, runs on server

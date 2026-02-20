@@ -31,7 +31,8 @@
           <Bitmap profile="fs25_menuContainerArrow"/>
           <GuiElement profile="fs25_subCategoryContainer">
             <MultiTextOption profile="CC_FilterSwitcher" id="contractDisplaySwitcher" onClick="onSwitchContractDisplay" size="380px 32px" position="20px -40px"/>
-            <BoxLayout profile="fs25_subCategorySelectorBox">
+            <BoxLayout profile="fs25_subCategorySelectorBox" id="contractsFilterDots" position="0px -90px">
+              <RoundCorner profile="fs25_subCategorySelectorDot"/>
               <RoundCorner profile="fs25_subCategorySelectorDot"/>
               <RoundCorner profile="fs25_subCategorySelectorDot"/>
               <RoundCorner profile="fs25_subCategorySelectorDot"/>

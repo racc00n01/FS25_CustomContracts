@@ -9,6 +9,7 @@
     <text name="cc_new" text="New"/>
     <text name="cc_active" text="Active"/>
     <text name="cc_owned" text="Owned"/>
+    <text name="cc_completed" text="Completed"/>
     <text name="cc_contract_id_label" text="Contract #%d"/>
     <text name="cc_contract_owner_label" text="Owned by: %s"/>
     <text name="cc_contract_status_label" text="Accepted by:"/>

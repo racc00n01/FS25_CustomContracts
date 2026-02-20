@@ -45,8 +45,13 @@ function ContractsRenderer:populateCellForItemInSection(list, section, index, ce
 
   cell:getAttribute("farmIcon"):setImageSlice(nil, farm:getIconSliceId())
   cell:getAttribute("farmland"):setText(string.format(g_i18n:getText("cc_contract_list_field_label"), contract
-  .farmlandId))
-  cell:getAttribute("reward"):setText(g_i18n:formatMoney(contract.reward, 0, true, true))
+    .farmlandId))
+
+  if contract.status == CustomContract.STATUS.COMPLETED or contract.status == CustomContract.STATUS.COMPLETED_AWAITING_INVOICE or contract.status == CustomContract.STATUS.CANCELLED or contract.status == CustomContract.STATUS.EXPIRED or contract.status == CustomContract.STATUS.INVOICED then
+    cell:getAttribute("reward"):setText(g_i18n:getText("cc_status_" .. string.lower(contract.status)))
+  else
+    cell:getAttribute("reward"):setText(g_i18n:formatMoney(contract.reward, 0, true, true))
+  end
 end
 
 function ContractsRenderer:onListSelectionChanged(list, section, index)
