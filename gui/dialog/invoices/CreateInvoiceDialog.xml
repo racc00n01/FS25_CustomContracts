@@ -49,6 +49,14 @@
           </TextInput>
         </Bitmap>
 
+
+        <Bitmap profile="CC_MultiTextOptionContainerLight" position="15px -275px">
+          <MultiTextOption id="relatedContractSelector" profile="CC_MultiTextOption" onClick="onRelatedContractSelectChange">
+            <Text profile="fs25_multiTextOptionText" name="text" />
+          </MultiTextOption>
+          <Text text="$l10n_cc_dialog_create_invoice_related_contract_label" profile="CC_ContractInputLabel" />
+        </Bitmap>
+
         <Text text="$l10n_cc_dialog_create_invoice_lines_label" profile="fs25_textDefault" position="15px -325px" with="anchorTopleft"/>
         <Bitmap profile="CC_MultiTextOptionContainerDark" position="15px -350px" height="350px">
           <GuiElement profile="fs25_statisticsHeaderBox">

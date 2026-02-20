@@ -103,13 +103,40 @@ end
 
 function DetailInvoiceDialog:onPay()
   if self.invoice == nil then return end
-  g_client:getServerConnection():sendEvent(PayInvoiceEvent.new(self.invoice.id, self.farmId))
+
+  YesNoDialog.show(
+    function(_, yes)
+      if yes then
+        g_client:getServerConnection():sendEvent(PayInvoiceEvent.new(self.invoice.id, self.farmId))
+      end
+    end,
+    self,
+    string.format(
+      g_i18n:getText("cc_dialog_invoice_pay_yes_no"),
+      self.invoice.number,
+      g_i18n:formatMoney(self.invoice.total)
+    ),
+    g_i18n:getText("cc_dialog_invoice_pay_yes_no_btn")
+  )
   self:close()
 end
 
 function DetailInvoiceDialog:onDelete()
   if self.invoice == nil then return end
-  g_client:getServerConnection():sendEvent(DeleteInvoiceEvent.new(self.invoice.id, self.farmId))
+
+  YesNoDialog.show(
+    function(_, yes)
+      if yes then
+        g_client:getServerConnection():sendEvent(DeleteInvoiceEvent.new(self.invoice.id, self.farmId))
+      end
+    end,
+    self,
+    string.format(
+      g_i18n:getText("cc_dialog_invoice_delete_yes_no"),
+      self.invoice.number
+    ),
+    g_i18n:getText("cc_dialog_invoice_delete_yes_no_btn")
+  )
   self:close()
 end
 
@@ -122,6 +149,20 @@ end
 
 function DetailInvoiceDialog:onSent()
   if self.invoice == nil then return end
-  g_client:getServerConnection():sendEvent(SendInvoiceEvent.new(self.invoice.id, self.farmId))
+
+  YesNoDialog.show(
+    function(_, yes)
+      if yes then
+        g_client:getServerConnection():sendEvent(SendInvoiceEvent.new(self.invoice.id, self.farmId))
+      end
+    end,
+    self,
+    string.format(
+      g_i18n:getText("cc_dialog_invoice_send_yes_no"),
+      self.invoice.number,
+      g_i18n:formatMoney(self.invoice.total)
+    ),
+    g_i18n:getText("cc_dialog_invoice_send_yes_no_btn")
+  )
   self:close()
 end

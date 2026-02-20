@@ -298,13 +298,8 @@
   </Profile>
 
   <Profile name="CC_TableSlider" extends="fs25_listSliderBox" with="anchorTopRight">
-    <position value="28px -40px" />
-    <size value="6px 640px"/>
-  </Profile>
-
-  <Profile name="CC_TableSlider" extends="fs25_listSliderBox" with="anchorTopRight">
-    <position value="28px -40px" />
-    <size value="6px 640px"/>
+    <position value="-10px -90px" />
+    <size value="6px 450px"/>
   </Profile>
 
   <Profile name="CC_InvoiceTableTitle" extends="fs25_textDefault" with="anchorTopLeft">

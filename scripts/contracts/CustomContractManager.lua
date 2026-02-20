@@ -495,3 +495,7 @@ function CustomContractManager:sendOpenCreateInvoiceDialog(contractorFarmId, dra
     end
   end
 end
+
+function CustomContractManager:getContractById(id)
+  return self.contracts[id]
+end

@@ -57,6 +57,7 @@ https://github.com/racc00n01/FS25_CustomContracts
     <sourceFile filename="scripts/events/invoices/PayInvoiceEvent.lua"/>
     <sourceFile filename="scripts/events/invoices/SendInvoiceEvent.lua"/>
     <sourceFile filename="scripts/events/invoices/SyncInvoicesEvent.lua"/>
+    <sourceFile filename="scripts/events/invoices/DeleteInvoiceEvent.lua"/>
     <sourceFile filename="scripts/events/invoices/OpenCreateInvoiceDialogEvent.lua"/>
 
     <sourceFile filename="gui/renderer/ContractsRenderer.lua"/>
@@ -67,6 +68,7 @@ https://github.com/racc00n01/FS25_CustomContracts
     <sourceFile filename="gui/dialog/contracts/MenuCreateContract.lua"/>
     <sourceFile filename="gui/dialog/invoices/DetailInvoiceDialog.lua"/>
     <sourceFile filename="gui/dialog/invoices/AddInvoiceLineDialog.lua"/>
+    <sourceFile filename="gui/dialog/invoices/DeleteInvoiceDialog.lua"/>
     <sourceFile filename="gui/dialog/invoices/CreateInvoiceDialog.lua"/>
     <sourceFile filename="gui/dialog/contracts/MenuEditContract.lua"/>
     <sourceFile filename="gui/dialog/invoices/InvoiceLinesRenderer.lua"/>

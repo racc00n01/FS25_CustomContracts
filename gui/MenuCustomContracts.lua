@@ -290,6 +290,7 @@ function MenuCustomContracts:initialize()
     self.btnBack,
     self.btnComplete,
     self.btnCancel,
+    self.btnCreateInvoice,
     self.btnCreateContract
   }
 
@@ -508,7 +509,6 @@ function MenuCustomContracts:getSelectedInvoice()
   if inboxIndex ~= nil and inboxIndex > 0 then
     return self.invoicesInboxRenderer.data and self.invoicesInboxRenderer.data[inboxIndex] or nil
   elseif outboxIndex ~= nil and outboxIndex > 0 then
-    print("getting selected invoice from outbox with index " .. tostring(outboxIndex))
     return self.invoicesOutboxRenderer.data and self.invoicesOutboxRenderer.data[outboxIndex] or nil
   end
 end
@@ -545,6 +545,9 @@ function MenuCustomContracts:shouldShowButton(button, listType, contract)
     end
     if button == self.btnCancel then
       return status == CustomContract.STATUS.ACCEPTED and isContractor
+    end
+    if button == self.btnCreateInvoice then
+      return status == CustomContract.STATUS.COMPLETED_AWAITING_INVOICE and isContractor and contract.invoiceId < 0
     end
     return false
   end

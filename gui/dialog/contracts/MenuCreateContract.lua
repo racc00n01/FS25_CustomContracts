@@ -56,6 +56,7 @@ function MenuCreateContract:onOpen()
   self.workTypeSelector:setTexts(workTypeTexts)
   self.workTypeSelector:setState(1, false)
   self.workTypeIndex = 1
+  self.workAreaTypeIndex = CustomContract.WORKAREATYPES[self.workTypeIndex].index
 
   -- Populate field MultiTextOption with owned fields
   local farmlandTexts = {}
@@ -66,6 +67,7 @@ function MenuCreateContract:onOpen()
   self.fieldSelector:setTexts(farmlandTexts)
   self.fieldSelector:setState(1, false)
   self.fieldIndex = 1
+  self.farmlandId = self.farmlandIds[self.fieldIndex]
 
   -- Populate startDate MultiTextOption with dates from now
   self:fillMonthMultiTextOption(self.startDateSelector, "startDateValues")

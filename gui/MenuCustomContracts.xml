@@ -95,16 +95,16 @@
 
     </GuiElement>
     <GuiElement profile="fs25_subCategorySelectorTabbedContainer" id="subCategoryPages[2]">
-      <GuiElement width="720px">
+      <GuiElement width="755px" position="0px 0px">
         <Text profile="CC_InvoiceTableTitle" text="Inbox" position="20px -20px" width="350px" />
-        <GuiElement profile="fs25_statisticsHeaderBox" position="0px -50px">
+        <GuiElement profile="fs25_statisticsHeaderBox" position="0px -50px" size="715px 32px">
           <Button profile="CC_TableHeader" position="20px 0px" size="150px 32px" text="$l10n_cc_dialog_invoice_table_id" handleFocus="false" />
           <Button profile="CC_TableHeader" position="170px 0px" size="150px 32px" text="$l10n_cc_dialog_invoice_table_status" handleFocus="false" />
           <Button profile="CC_TableHeader" position="370px 0px" size="250px 32px" text="$l10n_cc_dialog_invoice_table_from" handleFocus="false" />
           <Button profile="CC_TableHeader" position="620px 0px" size="140px 32px" text="$l10n_cc_dialog_invoice_table_amount" handleFocus="false" />
           <ThreePartBitmap profile="fs25_lineSeparatorBottom" position="0px -2dp" />
         </GuiElement>
-        <SmoothList id="inboxInvoicesTable" profile="CC_Table" size="700px 450px" position="0px -90px">
+        <SmoothList id="inboxInvoicesTable" profile="CC_Table" size="715px 450px" position="20px -90px">
           <ListItem profile="CC_Row">
             <Text profile="CC_RowCellLeft" position="20px 0px" name="id"/>
             <Text profile="CC_RowCellLeft" position="170px 0px" name="status"/>
@@ -117,16 +117,16 @@
         </ThreePartBitmap>
       </GuiElement>
 
-      <GuiElement width="720px">
-        <Text profile="CC_InvoiceTableTitle" text="Outbox" position="820px -20px" width="350px" />
-        <GuiElement profile="fs25_statisticsHeaderBox" position="0px -50px">
-          <Button profile="CC_TableHeader" position="820px 0px" size="150px 32px" text="$l10n_cc_dialog_invoice_table_id" handleFocus="false" />
-          <Button profile="CC_TableHeader" position="960px 0px" size="150px 32px" text="$l10n_cc_dialog_invoice_table_status" handleFocus="false" />
-          <Button profile="CC_TableHeader" position="1110px 0px" size="250px 32px" text="$l10n_cc_dialog_invoice_table_to" handleFocus="false" />
-          <Button profile="CC_TableHeader" position="1360px 0px" size="140px 32px" text="$l10n_cc_dialog_invoice_table_amount" handleFocus="false" />
-          <ThreePartBitmap profile="fs25_lineSeparatorBottom" position="800px -2dp" />
+      <GuiElement width="755px" position="795px 0px">
+        <Text profile="CC_InvoiceTableTitle" text="Outbox" position="20px -20px" width="350px" />
+        <GuiElement profile="fs25_statisticsHeaderBox" position="0px -50px" size="715px 32px">
+          <Button profile="CC_TableHeader" position="20px 0px" size="150px 32px" text="$l10n_cc_dialog_invoice_table_id" handleFocus="false" />
+          <Button profile="CC_TableHeader" position="170px 0px" size="150px 32px" text="$l10n_cc_dialog_invoice_table_status" handleFocus="false" />
+          <Button profile="CC_TableHeader" position="370px 0px" size="250px 32px" text="$l10n_cc_dialog_invoice_table_to" handleFocus="false" />
+          <Button profile="CC_TableHeader" position="620px 0px" size="140px 32px" text="$l10n_cc_dialog_invoice_table_amount" handleFocus="false" />
+          <ThreePartBitmap profile="fs25_lineSeparatorBottom" position="0px -2dp" />
         </GuiElement>
-        <SmoothList id="outboxInvoicesTable" profile="CC_Table" size="700px 450px" position="800px -90px">
+        <SmoothList id="outboxInvoicesTable" profile="CC_Table" size="715px 450px" position="20px -90px">
           <ListItem profile="CC_Row">
             <Text profile="CC_RowCellLeft" position="20px 0px" name="outboxId"/>
             <Text profile="CC_RowCellLeft" position="160px 0px" name="outboxStatus"/>
