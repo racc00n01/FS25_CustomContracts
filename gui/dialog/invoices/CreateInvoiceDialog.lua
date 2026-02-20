@@ -114,11 +114,9 @@ function CreateInvoiceDialog:onSaveAsDraft(sender)
   if g_client == nil then return end
 
   local title             = self.titleInput:getText() or ""
-  title                   = title:gsub("^%s+", ""):gsub("%s+$", "")
 
   -- Description
   local description       = self.descriptionInput:getText() or ""
-  description             = description:gsub("^%s+", ""):gsub("%s+$", "")
 
   -- Receiver farmId (from selector)
   local receiverFarmId    = self.receiverFarmIds[self.selectedReceiverFarmIndex]
@@ -129,7 +127,6 @@ function CreateInvoiceDialog:onSaveAsDraft(sender)
   -- Validation
   local creatorFarmId     = (g_currentMission ~= nil and g_currentMission:getFarmId()) or FarmManager.SPECTATOR_FARM_ID
 
-  local cc                = g_currentMission.CustomContracts
   local lines             = self.invoiceDraft and self.invoiceDraft.lines or {}
 
   local relatedContractId = self.invoiceDraft.relatedContractId or -1
@@ -173,8 +170,7 @@ function CreateInvoiceDialog:onConfirm(sender)
   -- Validation
   local creatorFarmId  = (g_currentMission ~= nil and g_currentMission:getFarmId()) or FarmManager.SPECTATOR_FARM_ID
 
-  local cc             = g_currentMission.CustomContracts
-  local lines          = cc.invoiceDraft and cc.invoiceDraft.lines or {}
+  local lines          = self.invoiceDraft and self.invoiceDraft.lines or {}
 
   local payload        = {
     receiverFarmId = receiverFarmId,
@@ -261,6 +257,7 @@ function CreateInvoiceDialog:calculateTotalFromDraftLines()
       total = total + (tonumber(line.amount) or 0)
     end
   else
+    print("No lines")
     return tonumber(self.totalInput:getText())
   end
 

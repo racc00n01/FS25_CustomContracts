@@ -106,7 +106,8 @@
     <text name="cc_dialog_detail_invoice_total_label" text="Total"/>
     <text name="cc_dialog_detail_invoice_delete_btn" text="Delete"/>
     <text name="cc_dialog_detail_invoice_edit_btn" text="Edit"/>
-    <text name="cc_dialog_detail_invoice_sent_btn" text="Sent"/>
+    <text name="cc_dialog_detail_invoice_sent_btn" text="Send"/>
+    <text name="cc_dialog_detail_invoice_pay_btn" text="Pay"/>
 
 
     <text name="cc_dialog_invoice_table_id" text="ID"/>
@@ -117,5 +118,10 @@
     <text name="cc_dialog_invoice_table_related_contract_id" text="Contract"/>
     <text name="cc_dialog_invoice_table_due_date" text="Due Date"/>
 
+    <text name="cc_dialog_invoice_send_yes_no" text="Send invoice %s to %s?"/>
+    <text name="cc_dialog_invoice_send_yes_no_btn" text="Send Invoice"/>
+
+    <text name="cc_dialog_invoice_delete_yes_no" text="Delete invoice %s to %s?"/>
+    <text name="cc_dialog_invoice_delete_yes_no_btn" text="Delete Invoice"/>
   </texts>
 </l10n>

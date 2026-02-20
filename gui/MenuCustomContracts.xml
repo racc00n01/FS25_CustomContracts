@@ -129,9 +129,9 @@
         <SmoothList id="outboxInvoicesTable" profile="CC_Table" size="700px 450px" position="800px -90px">
           <ListItem profile="CC_Row">
             <Text profile="CC_RowCellLeft" position="20px 0px" name="outboxId"/>
-            <Text profile="CC_RowCellLeft" position="170px 0px" name="outboxStatus"/>
-            <Text profile="CC_RowCellLeft" position="370px 0px" name="outboxTo"/>
-            <Text profile="CC_RowCellLeft" position="620px 0px" name="outboxAmount"/>
+            <Text profile="CC_RowCellLeft" position="160px 0px" name="outboxStatus"/>
+            <Text profile="CC_RowCellLeft" position="350px 0px" name="outboxTo"/>
+            <Text profile="CC_RowCellLeft" position="600px 0px" name="outboxAmount"/>
           </ListItem>
         </SmoothList>
         <ThreePartBitmap profile="CC_TableSlider">
