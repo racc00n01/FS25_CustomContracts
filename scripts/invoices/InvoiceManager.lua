@@ -185,7 +185,7 @@ function InvoiceManager:getInboundInvoicesByCurrentFarm()
   for _, invoice in pairs(self.invoices) do
     local isReceiver = invoice.receiverFarmId == farmId
 
-    if isReceiver then
+    if isReceiver and invoice.status ~= Invoice.STATUS.DRAFT then
       table.insert(invoices, invoice)
     end
   end
