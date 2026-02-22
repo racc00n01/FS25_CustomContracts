@@ -34,10 +34,7 @@ function CompleteContractEvent:readStream(streamId, connection)
 end
 
 function CompleteContractEvent:run(connection)
-  if not connection:getIsServer() then
-    g_server:broadcastEvent(CompleteContractEvent.new(self.contractId, self.farmId))
+  if g_currentMission:getIsServer() then
+    g_currentMission.CustomContracts.ContractManager:handleCompleteRequest(self.farmId, self.contractId, connection)
   end
-
-  local contractManager = g_currentMission.CustomContracts.ContractManager
-  contractManager:handleCompleteRequest(self.farmId, self.contractId)
 end

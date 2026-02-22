@@ -14,6 +14,7 @@ function CustomContractManager:new()
   local self = {}
   setmetatable(self, CustomContractManager_mt)
   self.contracts = {}
+  self.accessByFarmland = {}
   self.nextId = 1
 
   if g_currentMission:getIsServer() then
@@ -39,8 +40,8 @@ function CustomContractManager:saveToXmlFile(xmlFile)
     setXMLInt(xmlFile, key .. "#id", contract.id)
     setXMLInt(xmlFile, key .. "#creatorFarmId", contract.creatorFarmId)
     setXMLInt(xmlFile, key .. "#contractorFarmId", contract.contractorFarmId or -1)
-    setXMLInt(xmlFile, key .. "#fieldId", contract.fieldId)
-    setXMLString(xmlFile, key .. "#workType", contract.workType)
+    setXMLInt(xmlFile, key .. "#farmlandId", contract.farmlandId)
+    setXMLInt(xmlFile, key .. "#workAreaTypeIndex", contract.workAreaTypeIndex)
     setXMLInt(xmlFile, key .. "#reward", contract.reward)
     setXMLString(xmlFile, key .. "#status", contract.status)
     setXMLString(xmlFile, key .. "#description", contract.description or '-')
@@ -48,6 +49,7 @@ function CustomContractManager:saveToXmlFile(xmlFile)
     setXMLInt(xmlFile, key .. "#startDay", contract.startDay or -1)
     setXMLInt(xmlFile, key .. "#duePeriod", contract.duePeriod or -1)
     setXMLInt(xmlFile, key .. "#dueDay", contract.dueDay or -1)
+    setXMLInt(xmlFile, key .. "#invoiceId", contract.invoiceId or -1)
 
     count = count + 1
   end
@@ -71,8 +73,8 @@ function CustomContractManager:loadFromXmlFile(xmlFile)
     local id                  = getXMLInt(xmlFile, contractKey .. "#id")
     local creatorFarmId       = getXMLInt(xmlFile, contractKey .. "#creatorFarmId")
     local contractorFarmId    = getXMLInt(xmlFile, contractKey .. "#contractorFarmId")
-    local fieldId             = getXMLInt(xmlFile, contractKey .. "#fieldId")
-    local workType            = getXMLString(xmlFile, contractKey .. "#workType")
+    local farmlandId          = getXMLInt(xmlFile, contractKey .. "#farmlandId")
+    local workAreaTypeIndex   = getXMLInt(xmlFile, contractKey .. "#workAreaTypeIndex")
     local reward              = getXMLInt(xmlFile, contractKey .. "#reward")
     local status              = getXMLString(xmlFile, contractKey .. "#status")
     local description         = getXMLString(xmlFile, contractKey .. "#description")
@@ -80,18 +82,20 @@ function CustomContractManager:loadFromXmlFile(xmlFile)
     local startDay            = getXMLInt(xmlFile, contractKey .. "#startDay")
     local duePeriod           = getXMLInt(xmlFile, contractKey .. "#duePeriod")
     local dueDay              = getXMLInt(xmlFile, contractKey .. "#dueDay")
+    local invoiceId           = getXMLInt(xmlFile, contractKey .. "#invoiceId")
 
     local contract            = CustomContract.new(
       id,
       creatorFarmId,
-      fieldId,
-      workType,
+      farmlandId,
+      workAreaTypeIndex,
       reward,
       description,
       startPeriod,
       startDay,
       duePeriod,
-      dueDay
+      dueDay,
+      invoiceId
     )
 
     contract.contractorFarmId = contractorFarmId ~= -1 and contractorFarmId or nil
@@ -103,14 +107,13 @@ function CustomContractManager:loadFromXmlFile(xmlFile)
     i                         = i + 1
   end
 
+  self:_rebuildAccessCache()
   self:syncContracts()
 end
 
 function CustomContractManager:writeInitialClientState(streamId, connection)
-  -- nextId
   streamWriteInt32(streamId, self.nextId)
 
-  -- contract count
   local count = table.size(self.contracts)
   streamWriteInt32(streamId, count)
 
@@ -130,11 +133,11 @@ function CustomContractManager:readInitialClientState(streamId, connection)
     self.contracts[contract.id] = contract
   end
 
+  self:_rebuildAccessCache()
   -- notify UI
   g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
 end
 
--- Function to sync contracts to clients
 function CustomContractManager:syncContracts(connection)
   if not g_currentMission:getIsServer() then return end
 
@@ -217,13 +220,29 @@ function CustomContractManager:getOwnedContractsForCurrentFarm()
   return ownedForFarm
 end
 
+function CustomContractManager:getCompletedContractsForCurrentFarm()
+  local completedForFarm = {}
+
+  local farmId = g_currentMission:getFarmId();
+  if farmId == nil or farmId == 0 then
+    return completedForFarm
+  end
+
+  local contractManager = g_currentMission.CustomContracts.ContractManager
+
+  for _, contract in pairs(contractManager.contracts) do
+    -- Contracts completed
+    if (contract.creatorFarmId == farmId or contract.contractorFarmId == farmId) and (contract.status == CustomContract.STATUS.COMPLETED or contract.status == CustomContract.STATUS.INVOICED or contract.status == CustomContract.STATUS.COMPLETED_AWAITING_INVOICE) then
+      table.insert(completedForFarm, contract)
+    end
+  end
+
+  return completedForFarm
+end
+
 -- Called by CreateContractEvent, runs on server
 function CustomContractManager:handleCreateRequest(farmId, payload)
   if not g_currentMission:getIsServer() then return end
-
-  if payload.fieldId == nil or payload.workType == nil or payload.reward <= 0 then
-    return
-  end
 
   local id           = self.nextId
   self.nextId        = self.nextId + 1
@@ -231,18 +250,18 @@ function CustomContractManager:handleCreateRequest(farmId, payload)
   local contract     = CustomContract.new(
     id,
     farmId,
-    payload.fieldId,
-    payload.workType,
+    payload.farmlandId,
+    payload.workAreaTypeIndex,
     payload.reward,
     payload.description,
     payload.startPeriod,
     payload.startDay,
     payload.duePeriod,
-    payload.dueDay
+    payload.dueDay,
+    payload.invoiceId
   )
 
   self.contracts[id] = contract
-
   self:syncContracts()
 end
 
@@ -262,13 +281,12 @@ function CustomContractManager:handleAcceptRequest(farmId, contractId)
   contract.contractorFarmId = farmId
   contract.status = CustomContract.STATUS.ACCEPTED
 
+  self:_rebuildAccessCache()
   self:syncContracts()
-
-  -- TODO: grant field access
 end
 
 -- Function to completeContract, called by CompleteContractEvent
-function CustomContractManager:handleCompleteRequest(farmId, contractId)
+function CustomContractManager:handleCompleteRequest(farmId, contractId, connection)
   if not g_currentMission:getIsServer() then return end
 
   local contract = self.contracts[contractId]
@@ -276,36 +294,29 @@ function CustomContractManager:handleCompleteRequest(farmId, contractId)
   if contract.status ~= CustomContract.STATUS.ACCEPTED then return end
   if contract.contractorFarmId ~= farmId then return end
 
-  if g_farmManager:getFarmById(contract.creatorFarmId).money < contract.reward then
-    return
-  end
+  contract.status = CustomContract.STATUS.COMPLETED_AWAITING_INVOICE
 
-  if g_currentMission:getIsServer() then
-    -- Remove money from creator farm
-    g_currentMission:addMoneyChange(
-      -contract.reward,
-      contract.creatorFarmId,
-      MoneyType.MISSIONS,
-      true
-    )
+  local draft = {
+    receiverFarmId = contract.creatorFarmId,
+    title = string.format(g_i18n:getText("cc_contract_id_label"), contract.id),
+    description = contract.description or "",
+    lines = {
+      { title = string.format(g_i18n:getText("cc_dialog_invoice_create_auto_line_title"), contract.id), amount = contract.reward }
+    },
+    total = contract.reward,
+    dueAt = contract.duePeriod,
+    relatedContractId = contract.id,
+    autoGenerated = true
+  }
 
-    -- Pay the contractor
-    g_currentMission:addMoneyChange(
-      contract.reward,
-      contract.contractorFarmId,
-      MoneyType.MISSIONS,
-      true
-    )
-  end
-
-  g_farmManager:getFarmById(contract.creatorFarmId):changeBalance(-contract.reward, MoneyType.MISSIONS)
-  g_farmManager:getFarmById(contract.contractorFarmId):changeBalance(contract.reward, MoneyType.MISSIONS)
-
-  -- Change status of contract to be completed
-  contract.status = CustomContract.STATUS.COMPLETED
-
-  -- Update all clients
+  self:_rebuildAccessCache()
   self:syncContracts()
+
+  -- CreateInvoiceDialog.show(draft)
+
+  if connection ~= nil then
+    connection:sendEvent(OpenCreateInvoiceDialogEvent.new(draft))
+  end
 end
 
 -- Function to cancelContract, called by CancelContractEvent
@@ -324,6 +335,7 @@ function CustomContractManager:handleCancelRequest(farmId, contractId)
     -- TODO: Add fine, 10% of contract money will be transfered to contractor if the start date is past.
     contract.status = CustomContract.STATUS.CANCELLED
   end
+  self:_rebuildAccessCache()
   self:syncContracts()
 end
 
@@ -337,6 +349,7 @@ function CustomContractManager:handleDeleteRequest(farmId, contractId)
 
   self.contracts[contractId] = nil
 
+  self:_rebuildAccessCache()
   self:syncContracts()
 end
 
@@ -351,6 +364,8 @@ function CustomContractManager:handleReopenRequest(farmId, contractId)
   self.contracts[contractId].contractorFarmId = nil
   self.contracts[contractId].status = CustomContract.STATUS.OPEN
 
+
+  self:_rebuildAccessCache()
   self:syncContracts()
 end
 
@@ -371,17 +386,65 @@ function CustomContractManager:handleEditRequest(farmId, contractId, data)
   end
 
   -- apply edits
-  contract.fieldId     = data.fieldId
-  contract.workType    = data.workType
-  contract.reward      = data.reward
-  contract.description = data.description
-  contract.startPeriod = data.startPeriod
-  contract.startDay    = data.startDay
-  contract.duePeriod   = data.duePeriod
-  contract.dueDay      = data.dueDay
+  contract.farmlandId        = data.farmlandId
+  contract.workAreaTypeIndex = data.workAreaTypeIndex
+  contract.reward            = data.reward
+  contract.description       = data.description
+  contract.startPeriod       = data.startPeriod
+  contract.startDay          = data.startDay
+  contract.duePeriod         = data.duePeriod
+  contract.dueDay            = data.dueDay
 
-  -- mark dirty / sync
   self:syncContracts()
+end
+
+function CustomContractManager:_rebuildAccessCache()
+  self.accessByFarmland = {}
+
+  for _, c in pairs(self.contracts) do
+    if c.status == CustomContract.STATUS.ACCEPTED and c.contractorFarmId ~= nil then
+      local farmlandId = c.farmlandId
+      if farmlandId ~= nil then
+        self.accessByFarmland[farmlandId] = self.accessByFarmland[farmlandId] or {}
+        self.accessByFarmland[farmlandId][c.contractorFarmId] = true
+      end
+    end
+  end
+end
+
+function CustomContractManager:hasWorkAreaAccessByContract(farmId, landOwnerFarmId, x, z, workAreaType, workArea)
+  local farmlandIdAtPos = g_farmlandManager:getFarmlandIdAtWorldPosition(x, z)
+  if farmlandIdAtPos == nil then
+    return false
+  end
+
+  for _, c in pairs(self.contracts) do
+    if c.status == CustomContract.STATUS.ACCEPTED
+        and c.contractorFarmId == farmId
+        and c.creatorFarmId == landOwnerFarmId
+        and c.farmlandId ~= nil then
+      if c.farmlandId == farmlandIdAtPos then
+        -- optional: restrict by workAreaType / c.workType here later
+        return true
+      end
+    end
+  end
+
+  return false
+end
+
+function CustomContractManager:hasAcceptedContractWithOwner(contractorFarmId, ownerFarmId)
+  if contractorFarmId == nil or ownerFarmId == nil then return false end
+
+  for _, c in pairs(self.contracts) do
+    if c.status == CustomContract.STATUS.ACCEPTED
+        and c.contractorFarmId == contractorFarmId
+        and c.creatorFarmId == ownerFarmId then
+      return true
+    end
+  end
+
+  return false
 end
 
 local function toOrdinal(period, day, daysPerPeriod)
@@ -427,7 +490,6 @@ function CustomContractManager:updateExpiredContracts()
   for _, contract in pairs(self.contracts) do
     if contract.status == CustomContract.STATUS.OPEN
         or contract.status == CustomContract.STATUS.ACCEPTED then
-      -- ✅ Only expire contracts whose deadline is in the current period (month)
       if contract.duePeriod == g_currentMission.CustomContracts.lastPeriod then
         if CustomUtils.isPastDue(contract, curPeriod, curDay, daysPerPeriod) then
           contract.status = CustomContract.STATUS.EXPIRED
@@ -443,4 +505,19 @@ function CustomContractManager:updateExpiredContracts()
   end
 
   return changed
+end
+
+function CustomContractManager:sendOpenCreateInvoiceDialog(contractorFarmId, draft)
+  if g_server == nil then return end
+
+  for _, connection in pairs(g_server.clientConnections) do
+    if connection ~= nil and connection.farmId == contractorFarmId then
+      connection:sendEvent(OpenCreateInvoiceDialogEvent.new(draft))
+      return
+    end
+  end
+end
+
+function CustomContractManager:getContractById(id)
+  return self.contracts[id]
 end

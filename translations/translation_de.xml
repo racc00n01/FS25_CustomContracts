@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+  <texts>
+
+    <text name="cc_money_type_invoices" text="Rechnungen"/>
+    <text name="finance_invoices" text="Rechnungen"/>
+
+    <text name="cc_header_contracts" text="Aufträge"/>
+    <text name="cc_header_invoices" text="Rechnungen"/>
+    <text name="cc_current_balance" text="Aktueller Kontostand:"/>
+
+    <text name="cc_new" text="Neu"/>
+    <text name="cc_active" text="Aktiv"/>
+    <text name="cc_owned" text="Eigene"/>
+    <text name="cc_completed" text="Abgeschlossen"/>
+
+    <text name="cc_contract_id_label" text="Auftrag Nr. %d"/>
+    <text name="cc_contract_owner_label" text="Besitzer: %s"/>
+    <text name="cc_contract_status_label" text="Akzeptiert von:"/>
+    <text name="cc_contract_status_label_default" text="Aktueller Status:"/>
+    <text name="cc_contract_list_field_label" text="Feld %d"/>
+    <text name="cc_contract_description" text="%s auf Feld %d (%.2f ha)"/>
+    <text name="cc_contract_empty" text="Kein Auftrag ausgewählt"/>
+    <text name="cc_contract_start_date_label" text="Beginn:"/>
+    <text name="cc_contract_due_date_label" text="Fällig:"/>
+    <text name="cc_contract_total_reward" text="Gesamtbelohnung"/>
+
+    <text name="cc_status_open" text="Offen"/>
+    <text name="cc_status_accepted" text="Akzeptiert"/>
+    <text name="cc_status_completed" text="Abgeschlossen"/>
+    <text name="cc_status_cancelled" text="Abgebrochen"/>
+    <text name="cc_status_expired" text="Abgelaufen"/>
+    <text name="cc_status_draft" text="Entwurf"/>
+    <text name="cc_status_sent" text="Gesendet"/>
+    <text name="cc_status_paid" text="Bezahlt"/>
+    <text name="cc_status_overdue" text="Überfällig"/>
+    <text name="cc_status_rejected" text="Abgelehnt"/>
+    <text name="cc_status_completed_awaiting_invoice" text="Abgeschlossen (Wartet auf Rechnung)"/>
+    <text name="cc_status_invoiced" text="In Rechnung gestellt"/>
+
+    <text name="cc_contract_info_title" text="Allgemeine Informationen"/>
+    <text name="cc_contract_notes_title" text="Notizen"/>
+    <text name="cc_contract_disclaimer" text="Durch das Annehmen dieses Auftrags erklären Sie sich damit einverstanden, die aufgeführten Arbeiten wie beschrieben abzuschließen. Die Zahlung erfolgt nach Abschluss über eine Rechnung."/>
+
+    <text name="cc_btn_create_contract" text="Auftrag erstellen"/>
+    <text name="cc_btn_accept_contract" text="Auftrag annehmen"/>
+    <text name="cc_btn_complete_contract" text="Auftrag abschließen"/>
+    <text name="cc_btn_cancel_contract" text="Auftrag abbrechen"/>
+    <text name="cc_btn_delete_contract" text="Auftrag löschen"/>
+    <text name="cc_btn_reopen_contract" text="Auftrag wieder öffnen"/>
+    <text name="cc_btn_edit_contract" text="Auftrag bearbeiten"/>
+
+    <text name="cc_dialog_create_yes_no" text="Auftrag für Feld %d abschließen und €%s erhalten?"/>
+    <text name="cc_dialog_create_yes_no_btn" text="Auftrag abschließen"/>
+    <text name="cc_dialog_accept_yes_no" text="Auftrag für Feld %d (%s) für €%s annehmen?"/>
+    <text name="cc_dialog_accept_yes_no_btn" text="Auftrag annehmen"/>
+    <text name="cc_dialog_complete_yes_no" text="Auftrag für Feld %d abschließen und €%s erhalten?"/>
+    <text name="cc_dialog_complete_yes_no_btn" text="Auftrag abschließen"/>
+    <text name="cc_dialog_cancel_yes_no" text="Auftrag für Feld %d abbrechen?"/>
+    <text name="cc_dialog_cancel_yes_no_btn" text="Auftrag abbrechen"/>
+    <text name="cc_dialog_delete_yes_no" text="Auftrag für Feld %d löschen?"/>
+    <text name="cc_dialog_delete_yes_no_btn" text="Auftrag löschen"/>
+    <text name="cc_dialog_reopen_yes_no" text="Auftrag für Feld %d wieder öffnen?"/>
+    <text name="cc_dialog_reopen_yes_no_btn" text="Auftrag wieder öffnen"/>
+
+    <text name="cc_dialog_create_validation_fields" text="Bitte alle Felder ausfüllen"/>
+    <text name="cc_dialog_create_validation_fields_due_date" text="Bitte Start- und Fälligkeitsdatum wählen"/>
+    <text name="cc_dialog_create_validation_fields_start_date" text="Das Fälligkeitsdatum darf nicht vor dem Startdatum liegen"/>
+
+    <text name="cc_dialog_edit_title" text="Auftrag bearbeiten"/>
+    <text name="cc_dialog_edit_input_field" text="Feld-ID"/>
+    <text name="cc_dialog_edit_input_worktype" text="Arbeitsart"/>
+    <text name="cc_dialog_edit_input_reward" text="Belohnung (€)"/>
+    <text name="cc_dialog_edit_input_description" text="Beschreibung (optional)"/>
+    <text name="cc_dialog_edit_input_startdate" text="Startdatum"/>
+    <text name="cc_dialog_edit_input_duedate" text="Fälligkeitsdatum"/>
+    <text name="cc_dialog_edit_btn_cancel" text="Abbrechen"/>
+    <text name="cc_dialog_edit_btn_edit" text="Bearbeiten"/>
+
+    <text name="cc_dialog_create_title" text="Auftrag erstellen"/>
+    <text name="cc_dialog_create_input_field" text="Feld-ID"/>
+    <text name="cc_dialog_create_input_worktype" text="Arbeitsart"/>
+    <text name="cc_dialog_create_input_reward" text="Belohnung (€)"/>
+    <text name="cc_dialog_create_input_description" text="Beschreibung (optional)"/>
+    <text name="cc_dialog_create_input_startdate" text="Startdatum"/>
+    <text name="cc_dialog_create_input_duedate" text="Fälligkeitsdatum"/>
+    <text name="cc_dialog_create_btn_cancel" text="Abbrechen"/>
+    <text name="cc_dialog_create_btn_create" text="Erstellen"/>
+
+    <text name="cc_invoices_inbox_title" text="Posteingang"/>
+    <text name="cc_invoices_outbox_title" text="Postausgang"/>
+
+    <text name="cc_invoice_status_label" text="Status:"/>
+    <text name="cc_dialog_invoice_pay_yes_no" text="Rechnung %s bezahlen und €%s erhalten?"/>
+    <text name="cc_dialog_invoice_pay_yes_no_btn" text="Rechnung bezahlen"/>
+
+    <text name="cc_dialog_invoice_create_auto_title" text="Rechnung für Auftrag %d"/>
+    <text name="cc_dialog_invoice_create_auto_line_title" text="Auftragsbelohnung (Auftrag Nr. %d)"/>
+
+    <text name="cc_dialog_invoice_add_invoice_line_title" text="Rechnungsposition hinzufügen"/>
+    <text name="cc_dialog_invoice_add_invoice_line_description_label" text="Beschreibung"/>
+    <text name="cc_dialog_invoice_add_invoice_line_price_label" text="Preis"/>
+    <text name="cc_dialog_invoice_add_invoice_line_confirm_btn" text="Hinzufügen"/>
+
+    <text name="cc_dialog_create_invoice_title" text="Rechnung erstellen"/>
+    <text name="cc_dialog_create_invoice_title_label" text="Rechnungstitel"/>
+    <text name="cc_dialog_create_invoice_description_label" text="Beschreibung"/>
+    <text name="cc_dialog_create_invoice_receiver_label" text="Empfänger"/>
+    <text name="cc_dialog_create_invoice_total_label" text="Gesamtbetrag"/>
+    <text name="cc_dialog_create_invoice_line_title_label" text="Titel"/>
+    <text name="cc_dialog_create_invoice_line_amount_label" text="Betrag"/>
+    <text name="cc_dialog_create_invoice_related_contract_label" text="Zugehöriger Auftrag"/>
+
+    <text name="cc_dialog_create_invoice_add_line_btn" text="Position hinzufügen"/>
+    <text name="cc_dialog_create_invoice_save_draft_btn" text="Als Entwurf speichern"/>
+    <text name="cc_dialog_create_invoice_create_and_send_btn" text="Erstellen und senden"/>
+
+    <text name="cc_dialog_detail_invoice_title" text="Rechnungsdetails"/>
+    <text name="cc_dialog_detail_invoice_from_label" text="Von:"/>
+    <text name="cc_dialog_detail_invoice_to_label" text="An:"/>
+    <text name="cc_dialog_detail_invoice_line_title_label" text="Titel"/>
+    <text name="cc_dialog_detail_invoice_line_amount_label" text="Betrag"/>
+    <text name="cc_dialog_detail_invoice_total_label" text="Gesamtbetrag"/>
+    <text name="cc_dialog_detail_invoice_delete_btn" text="Löschen"/>
+    <text name="cc_dialog_detail_invoice_edit_btn" text="Bearbeiten"/>
+    <text name="cc_dialog_detail_invoice_sent_btn" text="Senden"/>
+    <text name="cc_dialog_detail_invoice_pay_btn" text="Bezahlen"/>
+
+    <text name="cc_dialog_invoice_table_id" text="ID"/>
+    <text name="cc_dialog_invoice_table_status" text="Status"/>
+    <text name="cc_dialog_invoice_table_from" text="Von"/>
+    <text name="cc_dialog_invoice_table_to" text="An"/>
+    <text name="cc_dialog_invoice_table_amount" text="Betrag"/>
+    <text name="cc_dialog_invoice_table_related_contract_id" text="Auftrag"/>
+    <text name="cc_dialog_invoice_table_due_date" text="Fälligkeitsdatum"/>
+
+    <text name="cc_dialog_invoice_send_yes_no" text="Rechnung %s an %s senden?"/>
+    <text name="cc_dialog_invoice_send_yes_no_btn" text="Rechnung senden"/>
+
+    <text name="cc_dialog_invoice_delete_yes_no" text="Rechnung %s löschen?"/>
+    <text name="cc_dialog_invoice_delete_yes_no_btn" text="Rechnung löschen"/>
+
+  </texts>
+</l10n>

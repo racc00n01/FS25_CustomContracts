@@ -13,15 +13,17 @@
       </BoxLayout>
     </GuiElement>
     <BoxLayout profile="fs25_subCategorySelectorTabbedBox" id="subCategoryBox">
-      <Button profile="fs25_subCategorySelectorTabbedTab" id="subCategoryTabs[1]" text="$l10n_cc_header_contracts" onClick="onClickPolicies">
+      <Button profile="fs25_subCategorySelectorTabbedTab" id="subCategoryTabs[1]" text="$l10n_cc_header_contracts" onClick="onClickContracts">
         <ThreePartBitmap profile="fs25_subCategorySelectorTabbedTabBg" name="background"/>
       </Button>
-      <Button profile="fs25_subCategorySelectorTabbedTab" id="subCategoryTabs[2]" text="$l10n_cc_header_invoices" onClick="onClickSchemes">
+      <Button profile="fs25_subCategorySelectorTabbedTab" id="subCategoryTabs[2]" text="$l10n_cc_header_invoices" onClick="onClickInvoices">
         <ThreePartBitmap profile="fs25_subCategorySelectorTabbedTabBg" name="background"/>
       </Button>
     </BoxLayout>
+
     <ThreePartBitmap profile="fs25_lineSeparatorTopHighlighted" position="0px -57px"/>
     <MultiTextOption profile="fs25_subCategorySelectorTabbed" id="subCategoryPaging" position="0px -10px" onClick="updateSubCategoryPages"/>
+
     <GuiElement profile="fs25_subCategorySelectorTabbedContainer" id="subCategoryPages[1]">
       <GuiElement position="0px -20px">
 
@@ -29,7 +31,8 @@
           <Bitmap profile="fs25_menuContainerArrow"/>
           <GuiElement profile="fs25_subCategoryContainer">
             <MultiTextOption profile="CC_FilterSwitcher" id="contractDisplaySwitcher" onClick="onSwitchContractDisplay" size="380px 32px" position="20px -40px"/>
-            <BoxLayout profile="fs25_subCategorySelectorBox">
+            <BoxLayout profile="fs25_subCategorySelectorBox" id="contractsFilterDots" position="0px -90px">
+              <RoundCorner profile="fs25_subCategorySelectorDot"/>
               <RoundCorner profile="fs25_subCategorySelectorDot"/>
               <RoundCorner profile="fs25_subCategorySelectorDot"/>
               <RoundCorner profile="fs25_subCategorySelectorDot"/>
@@ -41,7 +44,7 @@
               <SmoothList id="contractsTable" profile="CC_ContractList" startClipperElementName="startClipper" endClipperElementName="endClipper">
                 <ListItem profile="fs25_subCategoryListItem">
                   <Bitmap profile="fs25_subCategoryListItemIcon" name="farmIcon"/>
-                  <Text profile="CC_ContractListItemTitle" name="field"/>
+                  <Text profile="CC_ContractListItemTitle" name="farmland"/>
                   <Text profile="CC_ContractListItemReward" name="reward"/>
                 </ListItem>
               </SmoothList>
@@ -92,11 +95,50 @@
       </GuiElement>
 
     </GuiElement>
-  </GuiElement>
-  <GuiElement profile="fs25_subCategorySelectorTabbedContainer" id="subCategoryPages[2]">
+    <GuiElement profile="fs25_subCategorySelectorTabbedContainer" id="subCategoryPages[2]">
+      <GuiElement width="755px" position="0px 0px">
+        <Text profile="CC_InvoiceTableTitle" text="$l10n_cc_invoices_inbox_title" position="20px -20px" width="350px" />
+        <GuiElement profile="fs25_statisticsHeaderBox" position="0px -50px" size="715px 32px">
+          <Button profile="CC_TableHeader" position="20px 0px" size="150px 32px" text="$l10n_cc_dialog_invoice_table_id" handleFocus="false" />
+          <Button profile="CC_TableHeader" position="170px 0px" size="150px 32px" text="$l10n_cc_dialog_invoice_table_status" handleFocus="false" />
+          <Button profile="CC_TableHeader" position="370px 0px" size="250px 32px" text="$l10n_cc_dialog_invoice_table_from" handleFocus="false" />
+          <Button profile="CC_TableHeader" position="620px 0px" size="140px 32px" text="$l10n_cc_dialog_invoice_table_amount" handleFocus="false" />
+          <ThreePartBitmap profile="fs25_lineSeparatorBottom" position="0px -2dp" />
+        </GuiElement>
+        <SmoothList id="inboxInvoicesTable" profile="CC_Table" size="715px 450px" position="20px -90px">
+          <ListItem profile="CC_Row">
+            <Text profile="CC_RowCellLeft" position="20px 0px" name="id"/>
+            <Text profile="CC_RowCellLeft" position="170px 0px" name="status"/>
+            <Text profile="CC_RowCellLeft" position="370px 0px" name="from"/>
+            <Text profile="CC_RowCellLeft" position="620px 0px" name="amount"/>
+          </ListItem>
+        </SmoothList>
+        <ThreePartBitmap profile="CC_TableSlider">
+          <Slider profile="fs25_listSlider" dataElementId="inboxInvoicesTable"/>
+        </ThreePartBitmap>
+      </GuiElement>
 
-    <GuiElement position="0px -20px">
-      <Text text="$l10n_cc_header_invoices" position="0px 20px"/>
+      <GuiElement width="755px" position="795px 0px">
+        <Text profile="CC_InvoiceTableTitle" text="$l10n_cc_invoices_outbox_title" position="20px -20px" width="350px" />
+        <GuiElement profile="fs25_statisticsHeaderBox" position="0px -50px" size="715px 32px">
+          <Button profile="CC_TableHeader" position="20px 0px" size="150px 32px" text="$l10n_cc_dialog_invoice_table_id" handleFocus="false" />
+          <Button profile="CC_TableHeader" position="170px 0px" size="150px 32px" text="$l10n_cc_dialog_invoice_table_status" handleFocus="false" />
+          <Button profile="CC_TableHeader" position="370px 0px" size="250px 32px" text="$l10n_cc_dialog_invoice_table_to" handleFocus="false" />
+          <Button profile="CC_TableHeader" position="620px 0px" size="140px 32px" text="$l10n_cc_dialog_invoice_table_amount" handleFocus="false" />
+          <ThreePartBitmap profile="fs25_lineSeparatorBottom" position="0px -2dp" />
+        </GuiElement>
+        <SmoothList id="outboxInvoicesTable" profile="CC_Table" size="715px 450px" position="20px -90px">
+          <ListItem profile="CC_Row">
+            <Text profile="CC_RowCellLeft" position="20px 0px" name="outboxId"/>
+            <Text profile="CC_RowCellLeft" position="160px 0px" name="outboxStatus"/>
+            <Text profile="CC_RowCellLeft" position="350px 0px" name="outboxTo"/>
+            <Text profile="CC_RowCellLeft" position="600px 0px" name="outboxAmount"/>
+          </ListItem>
+        </SmoothList>
+        <ThreePartBitmap profile="CC_TableSlider">
+          <Slider profile="fs25_listSlider" dataElementId="outboxInvoicesTable"/>
+        </ThreePartBitmap>
+      </GuiElement>
     </GuiElement>
   </GuiElement>
 </GUI>

@@ -16,22 +16,24 @@ MenuCustomContracts.SUB_CATEGORY = {
 MenuCustomContracts.CONTRACTS_LIST_TYPE = {
   NEW = 1,
   ACTIVE = 2,
-  OWNED = 3
+  OWNED = 3,
+  COMPLETED = 4
 }
-MenuCustomContracts.CONTRACTS_STATE_TEXTS = { "cc_new", "cc_active", "cc_owned" }
+MenuCustomContracts.CONTRACTS_STATE_TEXTS = { "cc_new", "cc_active", "cc_owned", "cc_completed" }
 
 MenuCustomContracts.HEADER_TITLES = {
   [MenuCustomContracts.SUB_CATEGORY.CONTRACTS] = "cc_header_contracts",
   [MenuCustomContracts.SUB_CATEGORY.INVOICES] = "cc_header_invoices",
 }
 
-
 CustomContract.STATUS = {
-  OPEN      = "OPEN",
-  ACCEPTED  = "ACCEPTED",
-  COMPLETED = "COMPLETED",
-  CANCELLED = "CANCELLED",
-  EXPIRED   = "EXPIRED"
+  OPEN                       = "OPEN",
+  ACCEPTED                   = "ACCEPTED",
+  COMPLETED                  = "COMPLETED",
+  CANCELLED                  = "CANCELLED",
+  EXPIRED                    = "EXPIRED",
+  COMPLETED_AWAITING_INVOICE = "COMPLETED_AWAITING_INVOICE",
+  INVOICED                   = "INVOICED"
 }
 
 function MenuCustomContracts.new(i18n, messageCenter)
@@ -41,7 +43,10 @@ function MenuCustomContracts.new(i18n, messageCenter)
   self.messageCenter = messageCenter
   self.menuButtonInfo = {}
 
+  -- Intialize renderers
   self.contractsRenderer = ContractsRenderer.new()
+  self.invoicesInboxRenderer = InvoicesInboxRenderer.new()
+  self.invoicesOutboxRenderer = InvoicesOutboxRenderer.new()
 
   return self
 end
@@ -54,7 +59,7 @@ function MenuCustomContracts:displaySelectedContract()
     local contract = self.contractsRenderer.data[selection][index]
 
     if contract ~= nil then
-      local field = g_fieldManager:getFieldById(contract.fieldId)
+      local farmland = g_farmlandManager:getFarmlandById(contract.farmlandId)
       self.contractsInfoContainer:setVisible(true)
       self.noSelectedContractText:setVisible(false)
 
@@ -63,7 +68,7 @@ function MenuCustomContracts:displaySelectedContract()
       if farm ~= nil then
         self.contractId:setText(string.format(g_i18n:getText("cc_contract_id_label"), contract.id))
         self.contractFarmName:setText(string.format(g_i18n:getText("cc_contract_owner_label"), farm.name))
-        self.contractWorkType:setText(contract.workType)
+        self.contractWorkType:setText(contract:getWorkTypeAreaName(contract.workAreaTypeIndex))
       else
         self.contractFarmName:setText("-")
         self.contractWorkType:setText("-")
@@ -79,7 +84,7 @@ function MenuCustomContracts:displaySelectedContract()
       if contract.contractorFarmId ~= nil then
         local contractorFarm = g_farmManager:getFarmById(contract.contractorFarmId)
 
-        if contractorFarm ~= nil and contract.status ~= CustomContract.STATUS.EXPIRED and contract.status ~= CustomContract.STATUS.CANCELLED then
+        if contractorFarm ~= nil and contract.status ~= CustomContract.STATUS.EXPIRED and contract.status ~= CustomContract.STATUS.CANCELLED and contract.status ~= CustomContract.STATUS.COMPLETED and contract.status ~= CustomContract.STATUS.INVOICED and contract.status ~= CustomContract.STATUS.COMPLETED_AWAITING_INVOICE then
           statusTextLabel = g_i18n:getText("cc_contract_status_label")
           statusText = contractorFarm.name
         else
@@ -101,7 +106,8 @@ function MenuCustomContracts:displaySelectedContract()
       )
 
       self.contractDescriptionValue:setText(
-        string.format(g_i18n:getText("cc_contract_description"), contract.workType, contract.fieldId, field.areaHa)
+        string.format(g_i18n:getText("cc_contract_description"), contract:getWorkTypeAreaName(contract.workAreaTypeIndex),
+          contract.farmlandId, farmland.areaInHa)
       )
       self.contractStartDateValue:setText(CustomUtils:formatPeriodDay(contract.startPeriod, contract.startDay))
       self.contractDueDateValue:setText(CustomUtils:formatPeriodDay(contract.duePeriod, contract.dueDay))
@@ -118,9 +124,35 @@ function MenuCustomContracts:onGuiSetupFinished()
   self.contractsTable:setDataSource(self.contractsRenderer)
   self.contractsTable:setDelegate(self.contractsRenderer)
 
+  self.inboxInvoicesTable:setDataSource(self.invoicesInboxRenderer)
+  self.inboxInvoicesTable:setDelegate(self.invoicesInboxRenderer)
+
+  self.outboxInvoicesTable:setDataSource(self.invoicesOutboxRenderer)
+  self.outboxInvoicesTable:setDelegate(self.invoicesOutboxRenderer)
+
   self.contractsRenderer.indexChangedCallback = function(index)
     self:displaySelectedContract()
     self:updateMenuButtons()
+  end
+
+  self.invoicesInboxRenderer.indexChangedCallback = function(index)
+    if index ~= nil and index > 0 then
+      self.activeInvoiceList = "INBOX"
+      self.outboxInvoicesTable:setSelectedIndex(0)
+    end
+
+    self:updateMenuButtons()
+    self:setMenuButtonInfoDirty()
+  end
+
+  self.invoicesOutboxRenderer.indexChangedCallback = function(index)
+    if index ~= nil and index > 0 then
+      self.activeInvoiceList = "OUTBOX"
+      self.inboxInvoicesTable:setSelectedIndex(0)
+    end
+
+    self:updateMenuButtons()
+    self:setMenuButtonInfoDirty()
   end
 end
 
@@ -135,8 +167,16 @@ function MenuCustomContracts:initialize()
     end
   end
 
+  -- Set the filter switcher dots to follow the switcher state
+  for i = 1, #self.contractsFilterDots.elements do
+    self.contractsFilterDots.elements[i].getIsSelected = function()
+      return self.contractDisplaySwitcher:getState() == i
+    end
+  end
 
-  -- Set the new/active/owned contract switcher texts
+  self.contractsFilterDots:invalidateLayout()
+
+  -- Set the new/active/owned/completed contract switcher texts
   local contractSwitcherTexts = {}
   for k, v in pairs(MenuCustomContracts.CONTRACTS_STATE_TEXTS) do
     table.insert(contractSwitcherTexts, g_i18n:getText(v))
@@ -145,6 +185,50 @@ function MenuCustomContracts:initialize()
 
   --- Register custom bottom page buttons
   self.btnBack = { inputAction = InputAction.MENU_BACK }
+
+  -- Invoice related buttons
+  self.btnCreateInvoice = {
+    inputAction = InputAction.MENU_EXTRA_1,
+    text = "Create invoice",
+    callback = function()
+      self
+          :onCreateInvoice()
+    end
+  }
+  self.btnPayInvoice = {
+    inputAction = InputAction.MENU_ACCEPT,
+    text = "Pay invoice",
+    callback = function()
+      self
+          :onPayInvoice()
+    end
+  }
+  self.btnDetailInvoice = {
+    inputAction = InputAction.MENU_ACTIVATE,
+    text = "View details",
+    callback = function()
+      self
+          :onDetailInvoice()
+    end
+  }
+  self.btnSentInvoice = {
+    inputAction = InputAction.MENU_EXTRA_2,
+    text = "Send invoice",
+    callback = function()
+      self
+          :onSentInvoice()
+    end
+  }
+  self.btnDeleteInvoice = {
+    inputAction = InputAction.MENU_CANCEL,
+    text = "Delete invoice",
+    callback = function()
+      self
+          :onDeleteInvoice()
+    end
+  }
+
+  -- Contract related buttons
   self.btnCreateContract = {
     inputAction = InputAction.MENU_EXTRA_1,
     text = g_i18n:getText("cc_btn_create_contract"),
@@ -179,7 +263,7 @@ function MenuCustomContracts:initialize()
 
   self.btnDelete = {
     text = g_i18n:getText("cc_btn_delete_contract"),
-    inputAction = InputAction.MENU_EXTRA_2,
+    inputAction = InputAction.MENU_CANCEL,
     callback = function()
       self:onDeleteContract()
     end
@@ -215,6 +299,7 @@ function MenuCustomContracts:initialize()
     self.btnBack,
     self.btnComplete,
     self.btnCancel,
+    self.btnCreateInvoice,
     self.btnCreateContract
   }
 
@@ -228,17 +313,24 @@ function MenuCustomContracts:initialize()
     self.btnCreateContract
   }
 
+  -- COMPLETED contracts
+  self.contractButtonSets[MenuCustomContracts.CONTRACTS_LIST_TYPE.COMPLETED] = {
+    self.btnBack,
+    self.btnDelete,
+    self.btnCreateInvoice,
+    self.btnCreateContract
+  }
+
   self.menuButtonInfo[MenuCustomContracts.SUB_CATEGORY.CONTRACTS] = {
     self.btnBack
   }
 
-  for _, subCategory in pairs(MenuCustomContracts.SUB_CATEGORY) do
-    if subCategory ~= MenuCustomContracts.SUB_CATEGORY.CONTRACTS then
-      self.menuButtonInfo[subCategory] = {
-        self.btnBack
-      }
-    end
-  end
+  self.menuButtonInfo[MenuCustomContracts.SUB_CATEGORY.INVOICES] = {
+    self.btnBack,
+    self.btnPayInvoice,
+    self.btnDetailInvoice,
+    self.btnCreateInvoice,
+  }
 
   self.currentContractsListType =
       self.contractDisplaySwitcher:getState()
@@ -264,6 +356,7 @@ function MenuCustomContracts:onFrameOpen()
   self:onMoneyChange()
   g_messageCenter:subscribe(MessageType.MONEY_CHANGED, self.onMoneyChange, self)
   g_messageCenter:subscribe(MessageType.CUSTOM_CONTRACTS_UPDATED, self.updateContent, self)
+  g_messageCenter:subscribe(MessageType.INVOICES_UPDATED, self.updateContent, self)
   self:updateContent()
   self:setMenuButtonInfoDirty()
 end
@@ -281,7 +374,7 @@ end
 
 function MenuCustomContracts:onClickInvoices()
   self.subCategoryPaging:setState(MenuCustomContracts.SUB_CATEGORY.INVOICES, true)
-
+  self:updateMenuButtons()
   self:setMenuButtonInfoDirty()
 end
 
@@ -320,11 +413,13 @@ function MenuCustomContracts:updateContent()
     local newContracts = contractManager:getNewContractsForCurrentFarm()
     local activeContracts = contractManager:getActiveContractsForCurrentFarm()
     local ownedContracts = contractManager:getOwnedContractsForCurrentFarm()
+    local completedContracts = contractManager:getCompletedContractsForCurrentFarm()
 
     local renderData = {
       [MenuCustomContracts.CONTRACTS_LIST_TYPE.NEW] = newContracts,
       [MenuCustomContracts.CONTRACTS_LIST_TYPE.ACTIVE] = activeContracts,
-      [MenuCustomContracts.CONTRACTS_LIST_TYPE.OWNED] = ownedContracts
+      [MenuCustomContracts.CONTRACTS_LIST_TYPE.OWNED] = ownedContracts,
+      [MenuCustomContracts.CONTRACTS_LIST_TYPE.COMPLETED] = completedContracts
     }
 
     self.contractsRenderer:setData(renderData)
@@ -340,37 +435,75 @@ function MenuCustomContracts:updateContent()
     end
   end
 
+  -- INVOICES page
+  if state == MenuCustomContracts.SUB_CATEGORY.INVOICES then
+    local invoiceManager = g_currentMission.CustomContracts.InvoiceManager
+
+    local invoices = invoiceManager:getInboundInvoicesByCurrentFarm()
+    self.invoicesInboxRenderer:setData(invoices)
+    self.inboxInvoicesTable:reloadData()
+
+    local outboxInvoices = invoiceManager:getOutboundInvoicesByCurrentFarm()
+    self.invoicesOutboxRenderer:setData(outboxInvoices)
+    self.outboxInvoicesTable:reloadData()
+  end
+
   self:updateMenuButtons()
 end
 
 function MenuCustomContracts:updateMenuButtons()
   local subCategory = self.subCategoryPaging:getState()
 
-  if subCategory ~= MenuCustomContracts.SUB_CATEGORY.CONTRACTS then
-    self.menuButtonInfo[subCategory] = { self.btnBack }
+  if subCategory == MenuCustomContracts.SUB_CATEGORY.INVOICES then
+    local invoice = self:getSelectedInvoice()
+    local myFarmId = g_currentMission:getFarmId() or 0
+
+    -- Default buttons
+    local buttons = { self.btnBack, self.btnDetailInvoice, self.btnCreateInvoice }
+
+    if invoice ~= nil then
+      local isReceiver = invoice.receiverFarmId == myFarmId
+      local isPayable = isReceiver and (invoice.status == Invoice.STATUS.SENT or invoice.status == Invoice.STATUS.OPEN)
+
+      -- Add "Pay invoice" button for incoming invoices that are in SENT or OPEN status
+      if isPayable then
+        table.insert(buttons, self.btnPayInvoice)
+      end
+
+      -- Add "Send invoice" button for outgoing invoices that are in DRAFT status
+      if invoice.status == Invoice.STATUS.DRAFT and invoice.creatorFarmId == myFarmId then
+        table.insert(buttons, self.btnSentInvoice)
+      end
+
+      if invoice.creatorFarmId == myFarmId then
+        table.insert(buttons, self.btnDeleteInvoice)
+      end
+    end
+
+    self.menuButtonInfo[subCategory] = buttons
     self:setMenuButtonInfoDirty()
     return
   end
 
-  local listType = self.currentContractsListType or MenuCustomContracts.CONTRACTS_LIST_TYPE.NEW
-  local baseButtons = self.contractButtonSets[listType] or { self.btnBack, self.btnCreateContract }
+  if subCategory == MenuCustomContracts.SUB_CATEGORY.CONTRACTS then
+    self.menuButtonInfo[subCategory] = { self.btnBack }
 
-  local contract = self:getSelectedContract()
+    local listType = self.currentContractsListType or MenuCustomContracts.CONTRACTS_LIST_TYPE.NEW
+    local baseButtons = self.contractButtonSets[listType] or { self.btnBack, self.btnCreateContract }
 
-  local filtered = {}
-  for _, btn in ipairs(baseButtons) do
-    if self:shouldShowButton(btn, listType, contract) then
-      table.insert(filtered, btn)
+    local contract = self:getSelectedContract()
+
+    local filtered = {}
+    for _, btn in ipairs(baseButtons) do
+      if self:shouldShowButton(btn, listType, contract) then
+        table.insert(filtered, btn)
+      end
     end
-  end
 
-  -- Fallback safety: never allow empty bottom bar
-  if #filtered == 0 then
-    filtered = { self.btnBack, self.btnCreateContract }
+    self.menuButtonInfo[MenuCustomContracts.SUB_CATEGORY.CONTRACTS] = filtered
+    self:setMenuButtonInfoDirty()
+    return
   end
-
-  self.menuButtonInfo[MenuCustomContracts.SUB_CATEGORY.CONTRACTS] = filtered
-  self:setMenuButtonInfoDirty()
 end
 
 function MenuCustomContracts:getSelectedContract()
@@ -386,6 +519,17 @@ function MenuCustomContracts:getSelectedContract()
   end
 
   return list[index]
+end
+
+function MenuCustomContracts:getSelectedInvoice()
+  local inboxIndex = self.inboxInvoicesTable.selectedIndex
+  local outboxIndex = self.outboxInvoicesTable.selectedIndex
+
+  if inboxIndex ~= nil and inboxIndex > 0 then
+    return self.invoicesInboxRenderer.data and self.invoicesInboxRenderer.data[inboxIndex] or nil
+  elseif outboxIndex ~= nil and outboxIndex > 0 then
+    return self.invoicesOutboxRenderer.data and self.invoicesOutboxRenderer.data[outboxIndex] or nil
+  end
 end
 
 function MenuCustomContracts:shouldShowButton(button, listType, contract)
@@ -419,13 +563,12 @@ function MenuCustomContracts:shouldShowButton(button, listType, contract)
       return status == CustomContract.STATUS.ACCEPTED and isContractor
     end
     if button == self.btnCancel then
-      -- if you also show CANCELLED in Active, you probably don't want cancel there anymore
       return status == CustomContract.STATUS.ACCEPTED and isContractor
     end
     return false
   end
 
-  -- OWNED tab rules (this is the busy one)
+  -- OWNED tab rules
   if listType == MenuCustomContracts.CONTRACTS_LIST_TYPE.OWNED then
     if not isOwner then
       return false
@@ -433,7 +576,7 @@ function MenuCustomContracts:shouldShowButton(button, listType, contract)
 
     if button == self.btnEdit then
       return status == CustomContract.STATUS.OPEN or status == CustomContract.STATUS.CANCELLED or
-          CustomContract.STATUS.EXPIRED
+          status == CustomContract.STATUS.EXPIRED
     end
 
     if button == self.btnCancel then
@@ -446,13 +589,22 @@ function MenuCustomContracts:shouldShowButton(button, listType, contract)
     end
 
     if button == self.btnDelete then
-      -- typical: delete once not active anymore
       return status == CustomContract.STATUS.OPEN
           or status == CustomContract.STATUS.CANCELLED
           or status == CustomContract.STATUS.EXPIRED
           or status == CustomContract.STATUS.COMPLETED
+          or status == CustomContract.STATUS.INVOICED
+          or status == CustomContract.STATUS.COMPLETED_AWAITING_INVOICE
     end
 
+    return false
+  end
+
+  -- COMPLETED tab rules
+  if listType == MenuCustomContracts.CONTRACTS_LIST_TYPE.COMPLETED then
+    if button == self.btnCreateInvoice then
+      return status == CustomContract.STATUS.COMPLETED_AWAITING_INVOICE and isContractor and contract.invoiceId < 0
+    end
     return false
   end
 
@@ -526,11 +678,99 @@ function MenuCustomContracts:applyPendingContractsView(renderData)
   self:displaySelectedContract()
 end
 
-function MenuCustomContracts:onCreateContract()
-  self:queueContractsView(MenuCustomContracts.CONTRACTS_LIST_TYPE.OWNED, nil)
-  local dialog = g_gui:showDialog("menuCreateContract")
+-- Function triggered when clicking on the "Create invoice" button
+function MenuCustomContracts:onCreateInvoice()
+  CreateInvoiceDialog.show()
 end
 
+-- Function triggered when clicking on the "View details" button
+function MenuCustomContracts:onDetailInvoice()
+  local invoice = self:getSelectedInvoice()
+  if invoice == nil then
+    return
+  end
+
+  DetailInvoiceDialog.show(invoice)
+end
+
+-- Function triggered when clicking on the "Pay invoice" button
+function MenuCustomContracts:onPayInvoice()
+  local invoice = self:getSelectedInvoice()
+
+  if invoice == nil then return end
+
+  YesNoDialog.show(
+    function(_, yes)
+      if yes then
+        g_client:getServerConnection():sendEvent(
+          PayInvoiceEvent.new(invoice.id, g_currentMission:getFarmId())
+        )
+      end
+    end,
+    self,
+    string.format(
+      g_i18n:getText("cc_dialog_invoice_pay_yes_no"),
+      invoice.number,
+      g_i18n:formatMoney(invoice.total)
+    ),
+    g_i18n:getText("cc_dialog_invoice_pay_yes_no_btn")
+  )
+end
+
+-- Function triggered when clicking on the "Send invoice" button
+function MenuCustomContracts:onSentInvoice()
+  local invoice = self:getSelectedInvoice()
+
+  if invoice == nil then return end
+
+  YesNoDialog.show(
+    function(_, yes)
+      if yes then
+        g_client:getServerConnection():sendEvent(
+          SendInvoiceEvent.new(invoice.id, g_currentMission:getFarmId())
+        )
+      end
+    end,
+    self,
+    string.format(
+      g_i18n:getText("cc_dialog_invoice_send_yes_no"),
+      invoice.number,
+      g_i18n:formatMoney(invoice.total)
+    ),
+    g_i18n:getText("cc_dialog_invoice_send_yes_no_btn")
+  )
+end
+
+-- Function triggered when clicking on the "Delete invoice" button
+function MenuCustomContracts:onDeleteInvoice()
+  local invoice = self:getSelectedInvoice()
+
+  if invoice == nil then return end
+
+  YesNoDialog.show(
+    function(_, yes)
+      if yes then
+        g_client:getServerConnection():sendEvent(
+          DeleteInvoiceEvent.new(invoice.id, g_currentMission:getFarmId())
+        )
+      end
+    end,
+    self,
+    string.format(
+      g_i18n:getText("cc_dialog_invoice_delete_yes_no"),
+      invoice.number
+    ),
+    g_i18n:getText("cc_dialog_invoice_delete_yes_no_btn")
+  )
+end
+
+-- Function triggered when clicking on the "Create contract" button
+function MenuCustomContracts:onCreateContract()
+  self:queueContractsView(MenuCustomContracts.CONTRACTS_LIST_TYPE.OWNED, nil)
+  CreateContractDialog.show()
+end
+
+-- Function triggered when clicking on the "Complete contract" button
 function MenuCustomContracts:onCompleteContract()
   local index = self.contractsTable.selectedIndex
   local selection = self.contractDisplaySwitcher:getState()
@@ -548,7 +788,7 @@ function MenuCustomContracts:onCompleteContract()
     self,
     string.format(
       g_i18n:getText("cc_dialog_create_yes_no"),
-      contract.fieldId,
+      contract.farmlandId,
       g_i18n:formatMoney(contract.reward)
     ),
     g_i18n:getText("cc_dialog_create_yes_no_btn")
@@ -578,14 +818,15 @@ function MenuCustomContracts:onAcceptContract()
     self,
     string.format(
       g_i18n:getText("cc_dialog_accept_yes_no"),
-      contract.fieldId,
-      contract.workType,
+      contract.farmlandId,
+      contract:getWorkTypeAreaName(contract.workAreaTypeIndex),
       g_i18n:formatMoney(contract.reward)
     ),
     g_i18n:getText("cc_dialog_accept_yes_no_btn")
   )
 end
 
+-- Function triggered when clicking on the "Cancel contract" button
 function MenuCustomContracts:onCancelContract()
   local index = self.contractsTable.selectedIndex
   local selection = self.contractDisplaySwitcher:getState()
@@ -604,12 +845,13 @@ function MenuCustomContracts:onCancelContract()
     self,
     string.format(
       g_i18n:getText("cc_dialog_cancel_yes_no"),
-      contract.fieldId
+      contract.farmlandId
     ),
     g_i18n:getText("cc_dialog_cancel_yes_no_btn")
   )
 end
 
+-- Function triggered when clicking on the "Delete contract" button
 function MenuCustomContracts:onDeleteContract()
   local index = self.contractsTable.selectedIndex
   local selection = self.contractDisplaySwitcher:getState()
@@ -629,12 +871,13 @@ function MenuCustomContracts:onDeleteContract()
     self,
     string.format(
       g_i18n:getText("cc_dialog_delete_yes_no"),
-      contract.fieldId
+      contract.farmlandId
     ),
     g_i18n:getText("cc_dialog_delete_yes_no_btn")
   )
 end
 
+-- Function triggered when clicking on the "Reopen contract" button
 function MenuCustomContracts:onReopenContract()
   local index = self.contractsTable.selectedIndex
   local selection = self.contractDisplaySwitcher:getState()
@@ -654,12 +897,13 @@ function MenuCustomContracts:onReopenContract()
     self,
     string.format(
       g_i18n:getText("cc_dialog_reopen_yes_no"),
-      contract.fieldId
+      contract.farmlandId
     ),
     g_i18n:getText("cc_dialog_reopen_yes_no_btn")
   )
 end
 
+-- Function triggered when clicking on the "Edit contract" button
 function MenuCustomContracts:onEditContract()
   local index = self.contractsTable.selectedIndex
   local selection = self.contractDisplaySwitcher:getState()
@@ -667,6 +911,5 @@ function MenuCustomContracts:onEditContract()
 
   if contract == nil then return end
 
-  g_currentMission.CustomContracts.editContract = contract
-  g_gui:showDialog("menuEditContract")
+  EditContractDialog.show(contract)
 end

@@ -1,30 +1,46 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <l10n>
   <texts>
+    <text name="cc_money_type_invoices" text="Invoices"/>
+    <text name="finance_invoices" text="Invoices"/>
+
     <text name="cc_header_contracts" text="Contracts"/>
     <text name="cc_header_invoices" text="Invoices"/>
     <text name="cc_current_balance" text="Current Balance:"/>
+
     <text name="cc_new" text="New"/>
     <text name="cc_active" text="Active"/>
     <text name="cc_owned" text="Owned"/>
+    <text name="cc_completed" text="Completed"/>
+
     <text name="cc_contract_id_label" text="Contract #%d"/>
     <text name="cc_contract_owner_label" text="Owned by: %s"/>
     <text name="cc_contract_status_label" text="Accepted by:"/>
     <text name="cc_contract_status_label_default" text="Current status:"/>
-    <text name="cc_contract_list_field_label" text="Field %d"/>
-    <text name="cc_contract_description" text="%s on Field %d (%.2f ha)"/>
+    <text name="cc_contract_list_field_label" text="Farmland %d"/>
+    <text name="cc_contract_description" text="%s on Farmland %d (%.2f ha)"/>
     <text name="cc_contract_empty" text="No contract selected"/>
     <text name="cc_contract_start_date_label" text="Start:"/>
     <text name="cc_contract_due_date_label" text="Due:"/>
     <text name="cc_contract_total_reward" text="Total reward"/>
+
     <text name="cc_status_open" text="Open"/>
     <text name="cc_status_accepted" text="Accepted"/>
     <text name="cc_status_completed" text="Completed"/>
     <text name="cc_status_cancelled" text="Cancelled"/>
     <text name="cc_status_expired" text="Expired"/>
+    <text name="cc_status_draft" text="Draft"/>
+    <text name="cc_status_sent" text="Sent"/>
+    <text name="cc_status_paid" text="Paid"/>
+    <text name="cc_status_overdue" text="Overdue"/>
+    <text name="cc_status_rejected" text="Rejected"/>
+    <text name="cc_status_completed_awaiting_invoice" text="Completed (Awaiting Invoice)"/>
+    <text name="cc_status_invoiced" text="Invoiced"/>
+
     <text name="cc_contract_info_title" text="General information"/>
     <text name="cc_contract_notes_title" text="Notes"/>
-    <text name="cc_contract_disclaimer" text="By accepting this contract, you agree to complete the listed work as described. Payment is made upon completion."/>
+    <text name="cc_contract_disclaimer" text="By accepting this contract, you agree to complete the listed work as described. Payment is made upon completion, through an invoice."/>
+
     <text name="cc_btn_create_contract" text="Create contract"/>
     <text name="cc_btn_accept_contract" text="Accept contract"/>
     <text name="cc_btn_complete_contract" text="Complete contract"/>
@@ -32,23 +48,26 @@
     <text name="cc_btn_delete_contract" text="Delete contract"/>
     <text name="cc_btn_reopen_contract" text="Reopen contract"/>
     <text name="cc_btn_edit_contract" text="Edit contract"/>
-    <text name="cc_dialog_create_yes_no" text="Complete contract for Field %d and receive €%s?"/>
+
+    <text name="cc_dialog_create_yes_no" text="Complete contract for Farmland %d and receive €%s?"/>
     <text name="cc_dialog_create_yes_no_btn" text="Complete Contract"/>
-    <text name="cc_dialog_accept_yes_no" text="Accept contract for Field %d (%s) for €%s?"/>
+    <text name="cc_dialog_accept_yes_no" text="Accept contract for Farmland %d (%s) for €%s?"/>
     <text name="cc_dialog_accept_yes_no_btn" text="Accept Contract"/>
-    <text name="cc_dialog_complete_yes_no" text="Complete contract for Field %d and receive €%s?"/>
+    <text name="cc_dialog_complete_yes_no" text="Complete contract for Farmland %d and receive €%s?"/>
     <text name="cc_dialog_complete_yes_no_btn" text="Complete Contract"/>
-    <text name="cc_dialog_cancel_yes_no" text="Cancel contract for Field %d?"/>
+    <text name="cc_dialog_cancel_yes_no" text="Cancel contract for Farmland %d?"/>
     <text name="cc_dialog_cancel_yes_no_btn" text="Cancel Contract"/>
-    <text name="cc_dialog_delete_yes_no" text="Delete contract for Field %d?"/>
+    <text name="cc_dialog_delete_yes_no" text="Delete contract for Farmland %d?"/>
     <text name="cc_dialog_delete_yes_no_btn" text="Delete Contract"/>
-    <text name="cc_dialog_reopen_yes_no" text="Reopen contract for Field %d?"/>
+    <text name="cc_dialog_reopen_yes_no" text="Reopen contract for Farmland %d?"/>
     <text name="cc_dialog_reopen_yes_no_btn" text="Reopen Contract"/>
+
     <text name="cc_dialog_create_validation_fields" text="Please fill all fields"/>
     <text name="cc_dialog_create_validation_fields_due_date" text="Please select start and due date"/>
     <text name="cc_dialog_create_validation_fields_start_date" text="Due date cannot be before start date"/>
+
     <text name="cc_dialog_edit_title" text="Edit Contract"/>
-    <text name="cc_dialog_edit_input_field" text="Field ID"/>
+    <text name="cc_dialog_edit_input_field" text="Farmland ID"/>
     <text name="cc_dialog_edit_input_worktype" text="Work Type"/>
     <text name="cc_dialog_edit_input_reward" text="Reward (€)"/>
     <text name="cc_dialog_edit_input_description" text="Description (optional)"/>
@@ -56,8 +75,9 @@
     <text name="cc_dialog_edit_input_duedate" text="Due date"/>
     <text name="cc_dialog_edit_btn_cancel" text="Cancel"/>
     <text name="cc_dialog_edit_btn_edit" text="Edit"/>
+
     <text name="cc_dialog_create_title" text="Create Contract"/>
-    <text name="cc_dialog_create_input_field" text="Field ID"/>
+    <text name="cc_dialog_create_input_field" text="Farmland ID"/>
     <text name="cc_dialog_create_input_worktype" text="Work Type"/>
     <text name="cc_dialog_create_input_reward" text="Reward (€)"/>
     <text name="cc_dialog_create_input_description" text="Description (optional)"/>
@@ -65,5 +85,59 @@
     <text name="cc_dialog_create_input_duedate" text="Due date"/>
     <text name="cc_dialog_create_btn_cancel" text="Cancel"/>
     <text name="cc_dialog_create_btn_create" text="Create"/>
+
+    <text name="cc_invoices_inbox_title" text="Inbox"/>
+    <text name="cc_invoices_outbox_title" text="Outbox"/>
+
+    <text name="cc_invoice_status_label" text="Status:"/>
+    <text name="cc_dialog_invoice_pay_yes_no" text="Pay invoice %s and receive €%s?"/>
+    <text name="cc_dialog_invoice_pay_yes_no_btn" text="Pay Invoice"/>
+
+    <text name="cc_dialog_invoice_create_auto_title" text="Invoice for Contract %d"/>
+    <text name="cc_dialog_invoice_create_auto_line_title" text="Contract reward (Contract #%d)"/>
+
+    <text name="cc_dialog_invoice_add_invoice_line_title" text="Add invoice line"/>
+    <text name="cc_dialog_invoice_add_invoice_line_description_label" text="Description"/>
+    <text name="cc_dialog_invoice_add_invoice_line_price_label" text="Price"/>
+    <text name="cc_dialog_invoice_add_invoice_line_confirm_btn" text="Add"/>
+
+    <text name="cc_dialog_create_invoice_title" text="Create Invoice"/>
+    <text name="cc_dialog_create_invoice_title_label" text="Invoice Title"/>
+    <text name="cc_dialog_create_invoice_description_label" text="Description"/>
+    <text name="cc_dialog_create_invoice_receiver_label" text="Receiver"/>
+    <text name="cc_dialog_create_invoice_total_label" text="Total"/>
+    <text name="cc_dialog_create_invoice_line_title_label" text="Title"/>
+    <text name="cc_dialog_create_invoice_line_amount_label" text="Amount"/>
+    <text name="cc_dialog_create_invoice_related_contract_label" text="Related contract"/>
+
+    <text name="cc_dialog_create_invoice_add_line_btn" text="Add Line"/>
+    <text name="cc_dialog_create_invoice_save_draft_btn" text="Save Draft"/>
+    <text name="cc_dialog_create_invoice_create_and_send_btn" text="Create and Send"/>
+
+    <text name="cc_dialog_detail_invoice_title" text="Detail Invoice"/>
+    <text name="cc_dialog_detail_invoice_from_label" text="From:"/>
+    <text name="cc_dialog_detail_invoice_to_label" text="To:"/>
+    <text name="cc_dialog_detail_invoice_line_title_label" text="Title"/>
+    <text name="cc_dialog_detail_invoice_line_amount_label" text="Amount"/>
+    <text name="cc_dialog_detail_invoice_total_label" text="Total"/>
+    <text name="cc_dialog_detail_invoice_delete_btn" text="Delete"/>
+    <text name="cc_dialog_detail_invoice_edit_btn" text="Edit"/>
+    <text name="cc_dialog_detail_invoice_sent_btn" text="Send"/>
+    <text name="cc_dialog_detail_invoice_pay_btn" text="Pay"/>
+
+
+    <text name="cc_dialog_invoice_table_id" text="ID"/>
+    <text name="cc_dialog_invoice_table_status" text="Status"/>
+    <text name="cc_dialog_invoice_table_from" text="From"/>
+    <text name="cc_dialog_invoice_table_to" text="To"/>
+    <text name="cc_dialog_invoice_table_amount" text="Amount"/>
+    <text name="cc_dialog_invoice_table_related_contract_id" text="Contract"/>
+    <text name="cc_dialog_invoice_table_due_date" text="Due Date"/>
+
+    <text name="cc_dialog_invoice_send_yes_no" text="Send invoice %s to %s?"/>
+    <text name="cc_dialog_invoice_send_yes_no_btn" text="Send Invoice"/>
+
+    <text name="cc_dialog_invoice_delete_yes_no" text="Delete invoice %s"/>
+    <text name="cc_dialog_invoice_delete_yes_no_btn" text="Delete Invoice"/>
   </texts>
 </l10n>
