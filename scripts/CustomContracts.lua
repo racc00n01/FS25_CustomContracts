@@ -10,18 +10,11 @@ CustomContracts.dir = g_currentModDirectory
 CustomContracts.modName = g_currentModName
 CustomContracts.SaveKey = "CustomContracts"
 
-source(CustomContracts.dir .. "gui/MenuCustomContracts.lua")
-source(CustomContracts.dir .. "gui/dialog/MenuCreateContract.lua")
-source(CustomContracts.dir .. "gui/dialog/MenuEditContract.lua")
-source(CustomContracts.dir .. "gui/ContractsRenderer.lua")
-source(CustomContracts.dir .. "scripts/events/SyncContractsEvent.lua")
-source(CustomContracts.dir .. "scripts/events/InitialClientStateEvent.lua")
-source(CustomContracts.dir .. "scripts/util/CustomUtils.lua")
-
 function CustomContracts:loadMap()
   g_currentMission.CustomContracts = self
 
   MessageType.CUSTOM_CONTRACTS_UPDATED = nextMessageTypeId()
+  MessageType.INVOICES_UPDATED = nextMessageTypeId()
   MessageType.PLAYER_CONNECTED = nextMessageTypeId()
 
   g_gui:loadProfiles(CustomContracts.dir .. "gui/guiProfiles.xml")
@@ -33,23 +26,24 @@ function CustomContracts:loadMap()
   CustomContracts.addIngameMenuPage(menuCustomContracts, "menuCustomContracts", { 0, 0, 1024, 1024 },
     CustomContracts:makeIsCustomContractsCheckEnabledPredicate(), "pageSettings")
 
-  -- Register Create contract dialog
-  local createContractDialog = MenuCreateContract.new(g_i18n)
-  g_gui:loadGui(CustomContracts.dir .. "gui/dialog/MenuCreateContract.xml", "menuCreateContract", createContractDialog)
-
-  -- Register Edit contract dialog
-  local editContractDialog = MenuEditContract.new(g_i18n)
-  g_gui:loadGui(CustomContracts.dir .. "gui/dialog/MenuEditContract.xml", "menuEditContract", editContractDialog)
+  CreateContractDialog.register()
+  EditContractDialog.register()
+  CreateInvoiceDialog.register()
+  AddInvoiceLineDialog.register()
+  DetailInvoiceDialog.register()
 
   menuCustomContracts:initialize()
 
   self.ContractManager = CustomContractManager:new()
+  self.InvoiceManager = InvoiceManager:new()
   self.CustomContractsMenu = menuCustomContracts
+
   self.lastPeriod = g_currentMission.environment.currentPeriod - 1
   self.currentPeriod = g_currentMission.environment.currentPeriod
   self.currentDay = g_currentMission.environment.currentDay
 
   g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
+  g_messageCenter:publish(MessageType.INVOICES_UPDATED)
 
   self:loadFromXmlFile()
 end
@@ -70,6 +64,7 @@ function CustomContracts:loadFromXmlFile()
   if fileExists(savegameFolderPath .. CustomContracts.SaveKey .. ".xml") then
     local xmlFile = loadXMLFile(CustomContracts.SaveKey, savegameFolderPath .. CustomContracts.SaveKey .. ".xml");
     g_currentMission.CustomContracts.ContractManager:loadFromXmlFile(xmlFile)
+    g_currentMission.CustomContracts.InvoiceManager:loadFromXmlFile(xmlFile)
 
     delete(xmlFile)
   end
@@ -88,6 +83,7 @@ function CustomContracts:saveToXmlFile()
     CustomContracts.SaveKey)
 
   g_currentMission.CustomContracts.ContractManager:saveToXmlFile(xmlFile)
+  g_currentMission.CustomContracts.InvoiceManager:saveToXmlFile(xmlFile)
 
   saveXMLFile(xmlFile)
   delete(xmlFile)
@@ -175,10 +171,12 @@ end
 
 function CustomContracts:playerFarmChanged()
   g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
+  g_messageCenter:publish(MessageType.INVOICES_UPDATED)
 end
 
 function CustomContracts:hourChanged()
-  g_currentMission.CustomContracts.ContractManager:syncContracts();
+  g_currentMission.CustomContracts.ContractManager:syncContracts()
+  g_currentMission.CustomContracts.InvoiceManager:syncInvoices()
 
   local period = g_currentMission.environment.currentPeriod
   if period ~= g_currentMission.CustomContracts.currentPeriod then
@@ -199,13 +197,124 @@ function CustomContracts:onPeriodChanged()
   g_currentMission.CustomContracts.currentDay = g_currentMission.environment.currentDay
 
   g_currentMission.CustomContracts.ContractManager:updateExpiredContracts()
+  -- TODO: Add function for expired invoices
 end
 
 function CustomContracts:onDayChanged()
   g_currentMission.CustomContracts.currentDay = g_currentMission.environment.currentDay
 
   g_currentMission.CustomContracts.ContractManager:updateExpiredContracts()
+  -- TODO: Add function for expired invoices
 end
+
+function CustomContracts.getIsAccessibleAtWorldPosition(self, superFunc, farmId, x, z, workAreaType)
+  -- base game first
+  local isAccessible, landOwner, landValid = superFunc(self, farmId, x, z, workAreaType)
+  if isAccessible then
+    return true, landOwner, landValid
+  end
+
+  -- landOwner is the farmId owning that farmland at (x,z)
+  if landOwner == nil or landOwner == FarmlandManager.NO_OWNER_FARM_ID then
+    return false, landOwner, landValid
+  end
+
+  -- contract exception function
+  if g_currentMission.CustomContracts.ContractManager:hasWorkAreaAccessByContract(farmId, landOwner, x, z, workAreaType, self) then
+    return true, landOwner, true
+  end
+
+  return false, landOwner, landValid
+end
+
+-- function CustomContracts.canFarmAccessOtherId(self, superFunc, farmId, otherFarmId, ...)
+--   -- base game first
+--   if superFunc(self, farmId, otherFarmId, ...) then
+--     return true
+--   end
+
+--   -- ignore nonsense ids
+--   if farmId == nil or otherFarmId == nil then
+--     return false
+--   end
+--   if farmId == FarmlandManager.NO_OWNER_FARM_ID or otherFarmId == FarmlandManager.NO_OWNER_FARM_ID then
+--     return false
+--   end
+
+--   -- custom-contract exception
+--   if g_currentMission.CustomContracts.ContractManager.hasAcceptedContractWithOwner ~= nil then
+--     if g_currentMission.CustomContracts.ContractManager:hasAcceptedContractWithOwner(farmId, otherFarmId) then
+--       return true
+--     end
+--   end
+
+--   return false
+-- end
+
+-- function CustomContracts.placeableInfoTrigger_onDraw(self, superFunc)
+--   local spec = self.spec_infoTrigger
+--   if spec.showInfo then
+--     if spec.showAllPlayers then
+--       -- unchanged
+--     else
+--       local myFarmId = g_currentMission:getFarmId()
+--       local ownerFarmId = self:getOwnerFarmId()
+
+--       -- Allow owner OR accepted-contract contractor
+--       local allow = (ownerFarmId == myFarmId)
+--       if not allow then
+--         allow = g_currentMission.accessHandler:canFarmAccessOtherId(myFarmId, ownerFarmId)
+--       end
+
+--       if not allow then
+--         return
+--       end
+--     end
+--   end
+
+--   return superFunc(self)
+-- end
+
+-- function CustomContracts.canPlayerAccess(self, superFunc, object, ...)
+--   -- Base game first
+--   if superFunc(self, object, ...) then
+--     return true
+--   end
+
+--   if object == nil or object.getOwnerFarmId == nil then
+--     return false
+--   end
+
+--   local ownerFarmId = object:getOwnerFarmId()
+--   if ownerFarmId == nil then
+--     return false
+--   end
+
+--   local myFarmId = g_currentMission:getFarmId()
+
+--   if g_currentMission.CustomContracts.ContractManager.hasAcceptedContractWithOwner ~= nil then
+--     if g_currentMission.CustomContracts.ContractManager:hasAcceptedContractWithOwner(myFarmId, ownerFarmId) then
+--       return true
+--     end
+--   end
+
+--   return false
+-- end
+
+-- AccessHandler.canPlayerAccess =
+--     Utils.overwrittenFunction(
+--       AccessHandler.canPlayerAccess,
+--       CustomContracts.canPlayerAccess
+--     )
+
+-- PlaceableInfoTrigger.onDraw =
+--     Utils.overwrittenFunction(PlaceableInfoTrigger.onDraw, CustomContracts.placeableInfoTrigger_onDraw)
+
+-- AccessHandler.canFarmAccessOtherId =
+--     Utils.overwrittenFunction(AccessHandler.canFarmAccessOtherId, CustomContracts.canFarmAccessOtherId)
+
+WorkArea.getIsAccessibleAtWorldPosition =
+    Utils.overwrittenFunction(WorkArea.getIsAccessibleAtWorldPosition, CustomContracts.getIsAccessibleAtWorldPosition)
 
 FSBaseMission.sendInitialClientState = Utils.appendedFunction(FSBaseMission.sendInitialClientState,
   CustomContracts.sendInitialClientState)

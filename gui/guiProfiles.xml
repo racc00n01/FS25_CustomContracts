@@ -61,7 +61,7 @@
 
   <Profile name="CC_ContractTagline" extends="fs25_textDefault" with="anchorTopLeft">
     <textSize value="18px"/>
-    <textColor value="$preset_fs25_colorMainDefault"/>
+    <textColor value="$preset_fs25_colorMainLight"/>
     <position value="0px -10px"/>
     <textAlignment value="left"/>
     <textUpperCase value="true"/>
@@ -69,21 +69,21 @@
 
   <Profile name="CC_ContractTaglineRight" extends="fs25_textDefault" with="anchorTopRight">
     <textSize value="18px"/>
-    <textColor value="$preset_fs25_colorMainDefault"/>
+    <textColor value="$preset_fs25_colorMainLight"/>
     <textAlignment value="right"/>
   </Profile>
 
   <Profile name="CC_ContractOwner" extends="fs25_textGrey" with="anchorTopLeft">
     <textSize value="18px"/>
     <textBold value="false"/>
-    <textColor value="$preset_fs25_colorMainDefault"/>
+    <textColor value="$preset_fs25_colorMainLight"/>
     <textAlignment value="left"/>
   </Profile>
 
   <Profile name="CC_ContractStatus" extends="fs25_textDefault" with="anchorTopRight">
     <textSize value="24px"/>
     <textBold value="false"/>
-    <textColor value="$preset_fs25_colorMainDefault"/>
+    <textColor value="$preset_fs25_colorMainLight"/>
     <textAlignment value="right"/>
     <textUpperCase value="true"/>
   </Profile>
@@ -92,7 +92,7 @@
     <textSize value="20px"/>
     <textBold value="true"/>
     <textUpperCase value="true"/>
-    <textColor value="$preset_fs25_colorMainHighlighted"/>
+    <textColor value="$preset_fs25_colorMainHighlight"/>
     <textAlignment value="right"/>
   </Profile>
 
@@ -114,7 +114,6 @@
     <textSize value="14px"/>
     <textBold value="true"/>
     <textUpperCase value="true"/>
-    <textColor value="$preset_fs25_colorMainDefault"/>
     <textAlignment value="left"/>
   </Profile>
 
@@ -128,22 +127,36 @@
   <Profile name="CC_ContractBodyRight" extends="CC_ContractBody" with="anchorTopRight"/>
 
   <!-- Input -->
-  <Profile name="CC_ContractInputLabel" extends="baseReference" with="anchorStretchingYLeft">
-    <textBold value="true" />
-    <textAlignment value="left" />
-    <textColor value="$preset_fs25_colorMainLight" />
-    <size value="350px 20px"/>
-    <textSize value="16px"/>
-    <textWrapWidth value="350px"/>
+  <Profile name="CC_MultiTextOptionContainerLight" extends="fs25_multiTextOptionContainer">
+    <size value="95% 50px"/>
+    <imageColor value="0.02956 0.02956 0.02956 0.6"/>
   </Profile>
 
-  <Profile name="CC_Input" extends="fs25_textInput">
-    <size value="100% 44px"/>
-    <maxCharacters value="9"/>
+  <Profile name="CC_MultiTextOptionContainerDark" extends="fs25_multiTextOptionContainer">
+    <size value="95% 50px"/>
+    <imageColor value="0.02956 0.02956 0.02956 0.2"/>
   </Profile>
+
+  <Profile name="CC_ContractInputLabel" extends="fs25_textDefault" with="anchorMiddleLeft">
+    <textBold value="true" />
+    <position value="20px 0px"/>
+    <textAlignment value="left" />
+    <width value="350px"/>
+  </Profile>
+
+  <Profile name="CC_Input" extends="fs25_textInput" with="anchorMiddleRight">
+    <size value="244px 34px"/>
+    <position value="-20px 0px"/>
+    <maxInputTextWidth value="220px"/>
+  </Profile>
+
+  <Profile name="CC_MultiTextOption" extends="fs25_multiTextOption" with="anchorMiddleRight">
+    <size value="244px 34px"/>
+    <position value="-20px 0px"/>
+  </Profile>
+
   <Profile name="CC_InputTextArea" extends="CC_Input">
-    <size value="100% 44px"/>
-    <maxCharacters value="200"/>
+    <size value="100% 40px"/>
     <textAlignment value="left"/>
   </Profile>
 
@@ -231,5 +244,70 @@
   <Profile name="CC_ContractDetailItemBgAlt" extends="baseReference" with="anchorTopCenter">
     <size value="312px 32px"/>
     <imageColor value="$preset_fs25_colorGrey_20"/>
+  </Profile>
+
+
+  <Profile name="CC_TableHeader" extends="baseReference">
+    <imageColor value="0 0 0 0" />
+    <textFocusedColor value="$preset_fs25_colorMainHighlight" />
+    <textHighlightedColor value="$preset_fs25_colorMainHighlight" />
+    <textSize value="16px" />
+    <textBold value="true" />
+    <textUpperCase value="true" />
+    <textColor value="$preset_colorWhite_50" />
+    <textAlignment value="left" />
+    <textDisabledColor value="$preset_colorDisabled" />
+  </Profile>
+
+  <Profile name="CC_TableHeaderRight" extends="baseReference">
+    <imageColor value="0 0 0 0" />
+    <textFocusedColor value="$preset_fs25_colorMainHighlight" />
+    <textHighlightedColor value="$preset_fs25_colorMainHighlight" />
+    <textSize value="16px" />
+    <textBold value="true" />
+    <textUpperCase value="true" />
+    <textColor value="$preset_colorWhite_50" />
+    <textAlignment value="right" />
+    <textDisabledColor value="$preset_colorDisabled" />
+  </Profile>
+
+  <Profile name="CC_Table" extends="emptyPanel" with="anchorStretchingYLeft pivotTopLeft">
+    <position value="0px -40px" />
+  </Profile>
+
+  <Profile name="CC_Row" extends="baseReference" with="anchorTopStretchingX alternating">
+    <height value="32px"/>
+    <imageColor value="$preset_fs25_colorGrey" />
+    <imageSelectedColor value="$preset_fs25_colorMainHighlight" />
+    <alternateBackgroundColor value="$preset_fs25_colorGreyDark_50" />
+  </Profile>
+
+  <Profile name="CC_RowCell" extends="baseReference" with="anchorStretchingYLeft">
+    <textSize value="16px" />
+    <textAlignment value="center" />
+    <textColor value="$preset_fs25_colorMainLight" />
+    <textSelectedColor value="$preset_fs25_colorMainDark" />
+    <textDisabledColor value="$preset_colorDisabled" />
+  </Profile>
+
+  <Profile name="CC_RowCellLeft" extends="CC_RowCell" with="anchorStretchingYLeft">
+    <textAlignment value="left" />
+  </Profile>
+  <Profile name="CC_RowCellRight" extends="CC_RowCell" with="anchorStretchingYRight">
+    <textAlignment value="right" />
+  </Profile>
+
+  <Profile name="CC_TableSlider" extends="fs25_listSliderBox" with="anchorTopRight">
+    <position value="-10px -90px" />
+    <size value="6px 450px"/>
+  </Profile>
+
+  <Profile name="CC_InvoiceTableTitle" extends="fs25_textDefault" with="anchorTopLeft">
+    <textSize value="24px"/>
+    <textColor value="$preset_fs25_colorMainLight"/>
+    <position value="0px -10px"/>
+    <textAlignment value="left"/>
+    <textUpperCase value="true"/>
+    <textBold value="true"/>
   </Profile>
 </GUIProfiles>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<GUI name="menuEditContract" onOpen="onOpen" onClose="onClose" onCreate="onCreate">
+<GUI name="editContractDialog" onOpen="onOpen" onClose="onClose" onCreate="onCreate">
   <GuiElement profile="newLayer" />
   <Bitmap profile="dialogFullscreenBg" id="dialogBg" />
-  <GuiElement profile="dialogBg" id="dialogElement" size="900px 800px">
+  <GuiElement profile="fs25_dialogBg" id="dialogElement" size="900px 800px">
     <ThreePartBitmap profile="fs25_dialogBgMiddle" />
     <ThreePartBitmap profile="fs25_dialogBgTop" />
     <ThreePartBitmap profile="fs25_dialogBgBottom" />
@@ -15,7 +15,7 @@
 
           <!-- Field -->
           <Text text="$l10n_cc_dialog_edit_input_field" profile="CC_ContractInputLabel"/>
-          <MultiTextOption id="fieldSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onFieldSelectChange">
+          <MultiTextOption id="fieldSelector" profile="fs25_multiTextOption" size="100% 44px" onClick="onFarmlandSelectChange">
             <Text profile="fs25_multiTextOptionText" name="text" />
           </MultiTextOption>
 

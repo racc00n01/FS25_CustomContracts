@@ -85,14 +85,6 @@ function CustomUtils:formatPeriodDay(period, day)
   return monthName
 end
 
-function CustomUtils:retrieveFieldInfo(fieldId)
-  local field = g_fieldManager:getFieldById(fieldId)
-
-  if field == nil then
-    return nil
-  end
-end
-
 function CustomUtils:buildMonthOptionData()
   local env = g_currentMission.environment
   if env == nil then
@@ -142,16 +134,6 @@ function CustomUtils:findIndex(list, value)
   return nil
 end
 
-function CustomUtils:findWorkTypeIndexByText(text)
-  if text == nil then return nil end
-  for i, wt in ipairs(CustomContractWorkTypes) do
-    if wt.text == text then
-      return i
-    end
-  end
-  return nil
-end
-
 function CustomUtils:findDateIndex(values, period, day)
   if values == nil or period == nil or day == nil then return nil end
   for i, v in ipairs(values) do
@@ -160,4 +142,30 @@ function CustomUtils:findDateIndex(values, period, day)
     end
   end
   return nil
+end
+
+function CustomUtils.sendEventToFarm(targetFarmId, event)
+  if g_server == nil or g_currentMission == nil then
+    return false
+  end
+
+  local userManager = g_currentMission.userManager
+  if userManager == nil or userManager.users == nil then
+    return false
+  end
+
+  local sent = false
+
+  for _, user in pairs(userManager.users) do
+    -- FS usually has user.farmId and user.connection
+    local userFarmId = user.farmId
+    local connection = user.connection
+
+    if userFarmId == targetFarmId and connection ~= nil then
+      connection:sendEvent(event)
+      sent = true
+    end
+  end
+
+  return sent
 end

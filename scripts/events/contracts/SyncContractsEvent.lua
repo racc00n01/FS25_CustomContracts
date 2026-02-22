@@ -24,10 +24,8 @@ function SyncContractsEvent.new(contracts, nextId)
 end
 
 function SyncContractsEvent:writeStream(streamId, connection)
-  -- nextId
   streamWriteInt32(streamId, self.nextId)
 
-  -- contract count
   local count = table.size(self.contracts)
   streamWriteInt32(streamId, count)
 
@@ -35,8 +33,8 @@ function SyncContractsEvent:writeStream(streamId, connection)
     streamWriteInt32(streamId, contract.id)
     streamWriteInt32(streamId, contract.creatorFarmId)
     streamWriteInt32(streamId, contract.contractorFarmId or -1)
-    streamWriteInt32(streamId, contract.fieldId)
-    streamWriteString(streamId, contract.workType)
+    streamWriteInt32(streamId, contract.farmlandId)
+    streamWriteInt32(streamId, contract.workAreaTypeIndex)
     streamWriteInt32(streamId, contract.reward)
     streamWriteString(streamId, contract.status)
     streamWriteString(streamId, contract.description or "")
@@ -57,8 +55,8 @@ function SyncContractsEvent:readStream(streamId, connection)
     local id                  = streamReadInt32(streamId)
     local creatorFarmId       = streamReadInt32(streamId)
     local contractorFarmId    = streamReadInt32(streamId)
-    local fieldId             = streamReadInt32(streamId)
-    local workType            = streamReadString(streamId)
+    local farmlandId          = streamReadInt32(streamId)
+    local workAreaTypeIndex   = streamReadInt32(streamId)
     local reward              = streamReadInt32(streamId)
     local status              = streamReadString(streamId)
     local description         = streamReadString(streamId)
@@ -70,8 +68,8 @@ function SyncContractsEvent:readStream(streamId, connection)
     local contract            = CustomContract.new(
       id,
       creatorFarmId,
-      fieldId,
-      workType,
+      farmlandId,
+      workAreaTypeIndex,
       reward,
       description,
       startPeriod,
@@ -96,10 +94,8 @@ function SyncContractsEvent:run(connection)
     return
   end
 
-  -- overwrite local (client) state
   contractManager.contracts = self.contracts
   contractManager.nextId = self.nextId
 
-  -- notify UI
   g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
 end
