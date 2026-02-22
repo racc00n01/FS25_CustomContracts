@@ -35,9 +35,8 @@ end
 
 function DeleteInvoiceEvent:run(connection)
   if not connection:getIsServer() then
-    g_server:broadcastEvent(DeleteInvoiceEvent.new(self.farmId))
+    g_server:broadcastEvent(DeleteInvoiceEvent.new(self.invoiceId, self.farmId))
   end
 
-  local invoiceManager = g_currentMission.CustomContracts.InvoiceManager
-  invoiceManager:handleDeleteRequest(self.invoiceId)
+  g_currentMission.CustomContracts.InvoiceManager:handleDeleteRequest(self.invoiceId)
 end

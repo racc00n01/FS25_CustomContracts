@@ -26,30 +26,11 @@ function CustomContracts:loadMap()
   CustomContracts.addIngameMenuPage(menuCustomContracts, "menuCustomContracts", { 0, 0, 1024, 1024 },
     CustomContracts:makeIsCustomContractsCheckEnabledPredicate(), "pageSettings")
 
-  -- Register Create contract dialog
-  local createContractDialog = MenuCreateContract.new(g_i18n)
-  g_gui:loadGui(CustomContracts.dir .. "gui/dialog/contracts/MenuCreateContract.xml", "menuCreateContract",
-    createContractDialog)
-
-  -- Register Edit contract dialog
-  local editContractDialog = MenuEditContract.new(g_i18n)
-  g_gui:loadGui(CustomContracts.dir .. "gui/dialog/contracts/MenuEditContract.xml", "menuEditContract",
-    editContractDialog)
-
-  -- Register Create invoice dialog
-  local createInvoiceDialog = CreateInvoiceDialog.new(g_i18n)
-  g_gui:loadGui(CustomContracts.dir .. "gui/dialog/invoices/CreateInvoiceDialog.xml", "createInvoiceDialog",
-    createInvoiceDialog)
-
-  -- Register Detail invoice dialog
-  local detailInvoiceDialog = DetailInvoiceDialog.new(g_i18n)
-  g_gui:loadGui(CustomContracts.dir .. "gui/dialog/invoices/DetailInvoiceDialog.xml", "detailInvoiceDialog",
-    detailInvoiceDialog)
-
-  -- Register Add invoice line invoice dialog
-  local addInvoiceLineDialog = AddInvoiceLineDialog.new(g_i18n)
-  g_gui:loadGui(CustomContracts.dir .. "gui/dialog/invoices/AddInvoiceLineDialog.xml", "addInvoiceLineDialog",
-    addInvoiceLineDialog)
+  CreateContractDialog.register()
+  EditContractDialog.register()
+  CreateInvoiceDialog.register()
+  AddInvoiceLineDialog.register()
+  DetailInvoiceDialog.register()
 
   menuCustomContracts:initialize()
 

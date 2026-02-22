@@ -9,23 +9,26 @@
   <multiplayer supported="true" />
 
   <title>
-    <en>Custom Contracts</en>
-    <nl>Custom Contracten</nl>
-    <de>Benutzerdefinierte Verträge</de>
+    <en>Contracts and Invoices</en>
+    <nl>Contracten en Facturen</nl>
+    <de>Verträge und Rechnungen</de>
   </title>
 
   <description>
-    <en><![CDATA[Custom Contracts enables player-to-player contracting on multiplayer servers.
-Whether you’re helping a neighbor or running a farming business, you can create, accept, and manage contracts to perform field work for other players and get paid for the job.
+    <en><![CDATA[Contracts and Invoices enables advanced player-to-player contracting on multiplayer servers. Whether helping a neighbor or running a full farming business, players can create, accept, and manage contracts to perform field work for other farms and get paid for the job.
+
+The mod includes a complete invoice system that allows farms to send, pay, and delete invoices. After completing a contract, contractors can generate an invoice directly from the job and send it to the hiring farm for payment, creating a realistic and structured workflow. Field access is handled automatically, when a contract is accepted, the contractor farm receives permission to work the specific field tied to that contract.
 https://github.com/racc00n01/FS25_CustomContracts
 ]]>    </en>
 
-    <nl><![CDATA[Custom Contracts maakt speler-tot-speler contracten mogelijk op multiplayer servers.
-Of je nu een andere boer helpt of een landbouwbedrijf runt, je kunt contracten aanmaken, accepteren en beheren om veldwerk voor andere spelers uit te voeren en hiervoor betaald te krijgen.
+    <nl><![CDATA[Contracten en Facturen maakt geavanceerd speler-tot-speler contractwerk mogelijk op multiplayer-servers. Of je nu een buur helpt of een loonbedrijf runt, spelers kunnen contracten aanmaken, accepteren en beheren om veldwerk voor andere boerderijen uit te voeren en daarvoor betaald te worden.
+
+De mod bevat een volledig factuursysteem waarmee boerderijen facturen kunnen verzenden, betalen en verwijderen. Na het voltooien van een contract kan de uitvoerende partij direct vanuit de opdracht een factuur aanmaken en naar de opdrachtgevende boerderij sturen voor betaling, wat zorgt voor een realistische en gestructureerde workflow. Veldtoegang wordt automatisch geregeld, zodra een contract wordt geaccepteerd, krijgt de uitvoerende boerderij toegang tot het betreffende veld om het werk uit te voeren.
 https://github.com/racc00n01/FS25_CustomContracts
 ]]>    </nl>
-    <de><![CDATA[Custom Contracts ermöglicht Spieler-zu-Spieler-Verträge auf Multiplayer-Servern.
-Egal ob du einem Nachbarn hilfst oder einen landwirtschaftlichen Betrieb führst – du kannst Verträge erstellen, annehmen und verwalten, um Feldarbeiten für andere Spieler durchzuführen und dafür bezahlt zu werden.
+    <de><![CDATA[Verträge und Rechnungen ermöglicht erweitertes Spieler-zu-Spieler-Contracting auf Multiplayer-Servern. Egal ob du einem Nachbarn hilfst oder ein landwirtschaftliches Lohnunternehmen führst – Spieler können Verträge erstellen, annehmen und verwalten, um Feldarbeiten für andere Höfe auszuführen und dafür bezahlt zu werden.
+
+Die Mod enthält ein vollständiges Rechnungssystem, mit dem Höfe Rechnungen senden, bezahlen und löschen können. Nach Abschluss eines Vertrags kann der Auftragnehmer direkt aus dem Auftrag eine Rechnung erstellen und sie zur Bezahlung an den Auftraggeber senden, was für einen realistischen und strukturierten Ablauf sorgt. Der Feldzugriff wird automatisch verwaltet, sobald ein Vertrag angenommen wird, erhält der Auftragnehmer Zugriff auf das entsprechende Feld, um die Arbeiten durchführen zu können.
 https://github.com/racc00n01/FS25_CustomContracts
 ]]>    </de>
   </description>
@@ -65,12 +68,12 @@ https://github.com/racc00n01/FS25_CustomContracts
     <sourceFile filename="gui/renderer/InvoicesInboxRenderer.lua"/>
     <sourceFile filename="gui/renderer/InvoicesOutboxRenderer.lua"/>
     <sourceFile filename="gui/MenuCustomContracts.lua"/>
-    <sourceFile filename="gui/dialog/contracts/MenuCreateContract.lua"/>
+    <sourceFile filename="gui/dialog/contracts/CreateContractDialog.lua"/>
+    <sourceFile filename="gui/dialog/contracts/EditContractDialog.lua"/>
     <sourceFile filename="gui/dialog/invoices/DetailInvoiceDialog.lua"/>
     <sourceFile filename="gui/dialog/invoices/AddInvoiceLineDialog.lua"/>
     <sourceFile filename="gui/dialog/invoices/DeleteInvoiceDialog.lua"/>
     <sourceFile filename="gui/dialog/invoices/CreateInvoiceDialog.lua"/>
-    <sourceFile filename="gui/dialog/contracts/MenuEditContract.lua"/>
     <sourceFile filename="gui/dialog/invoices/InvoiceLinesRenderer.lua"/>
 
     <sourceFile filename="scripts/extensions/I18NExtension.lua"/>

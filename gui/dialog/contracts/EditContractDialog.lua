@@ -1,24 +1,34 @@
-MenuEditContract = {}
-local MenuEditContract_mt = Class(MenuEditContract, MessageDialog)
+EditContractDialog = {}
+local EditContractDialog_mt = Class(EditContractDialog, MessageDialog)
+local modDirectory = g_currentModDirectory
 
-function MenuEditContract.new(target, custom_mt)
-  local self = MessageDialog.new(target, custom_mt or MenuEditContract_mt)
+function EditContractDialog.register()
+  local dialog = EditContractDialog.new()
+  g_gui:loadGui(modDirectory .. "gui/dialog/contracts/EditContractDialog.xml", "editContractDialog", dialog)
+  EditContractDialog.INSTANCE = dialog
+end
+
+function EditContractDialog.new(target, custom_mt)
+  local self = MessageDialog.new(target, custom_mt or EditContractDialog_mt)
   self.editContract = nil
   return self
 end
 
-function MenuEditContract:onCreate()
-  MenuEditContract:superClass().onCreate(self)
+function EditContractDialog.show(contract)
+  if EditContractDialog.INSTANCE == nil then EditContractDialog.register() end
+
+  local dialog = EditContractDialog.INSTANCE
+  dialog.editContract = contract
+
+  g_gui:showDialog("editContractDialog")
 end
 
-function MenuEditContract:setContract(contract)
-  self.editContract = contract
+function EditContractDialog:onCreate()
+  EditContractDialog:superClass().onCreate(self)
 end
 
-function MenuEditContract:onOpen()
-  MenuEditContract:superClass().onOpen(self)
-
-  self.editContract = g_currentMission.CustomContracts.editContract
+function EditContractDialog:onOpen()
+  EditContractDialog:superClass().onOpen(self)
 
   -- must have a contract to edit
   local contract = self.editContract
@@ -62,7 +72,7 @@ function MenuEditContract:onOpen()
   self:prefillFromContract(contract)
 end
 
-function MenuEditContract:prefillFromContract(contract)
+function EditContractDialog:prefillFromContract(contract)
   -- Farmland -> index
   self.selectedFarmlandIndex = CustomUtils:findIndex(self.farmlandIds, contract.farmlandId) or 1
   self.fieldSelector:setState(self.selectedFarmlandIndex, false)
@@ -75,24 +85,24 @@ function MenuEditContract:prefillFromContract(contract)
   self.descriptionInput:setText(contract.description or "-")
 end
 
-function MenuEditContract:onFarmlandSelectChange(state)
+function EditContractDialog:onFarmlandSelectChange(state)
   self.selectedFarmlandIndex = state
 end
 
-function MenuEditContract:onWorkTypeSelectChange(state)
+function EditContractDialog:onWorkTypeSelectChange(state)
   self.selectedWorkTypeIndex = state
 end
 
-function MenuEditContract:onStartDateSelectChange(state)
+function EditContractDialog:onStartDateSelectChange(state)
   self.selectedStartDateIndex = state
 end
 
-function MenuEditContract:onDueDateSelectChange(state)
+function EditContractDialog:onDueDateSelectChange(state)
   self.selectedDueDateIndex = state
 end
 
 -- XML onClick handlers
-function MenuEditContract:onConfirm(sender)
+function EditContractDialog:onConfirm(sender)
   if g_client == nil then return end
 
   local old = self.editContract
@@ -103,7 +113,7 @@ function MenuEditContract:onConfirm(sender)
   local description = self.descriptionInput:getText()
 
   local index = self.selectedWorkTypeIndex or 1
-  local workAreaTypeIndex = CustomContract.WORKAREATYPES[index]
+  local workAreaTypeIndex = CustomContract.WORKAREATYPES[index].index
 
   if farmLandId == nil or reward == nil or index == nil then
     InfoDialog.show(g_i18n:getText("cc_dialog_create_validation_fields"))
@@ -145,11 +155,11 @@ function MenuEditContract:onConfirm(sender)
   self:close()
 end
 
-function MenuEditContract:onCancel(sender)
+function EditContractDialog:onCancel(sender)
   self:close()
 end
 
-function MenuEditContract:fillMonthMultiTextOption(multiTextOption, valuesFieldName)
+function EditContractDialog:fillMonthMultiTextOption(multiTextOption, valuesFieldName)
   local texts, values = CustomUtils:buildMonthOptionData()
 
   self[valuesFieldName] = values

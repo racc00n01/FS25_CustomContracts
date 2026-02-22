@@ -50,9 +50,5 @@ function OpenCreateInvoiceDialogEvent:readStream(streamId, connection)
 end
 
 function OpenCreateInvoiceDialogEvent:run(connection)
-  if g_currentMission ~= nil and g_currentMission.CustomContracts ~= nil then
-    g_currentMission.CustomContracts.invoiceDraft = self.draft
-  end
-
-  g_gui:showDialog("createInvoiceDialog")
+  CreateInvoiceDialog.show(self.draft)
 end

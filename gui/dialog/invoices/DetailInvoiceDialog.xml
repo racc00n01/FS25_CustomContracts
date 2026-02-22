@@ -33,7 +33,7 @@
           <Button profile="CC_TableHeaderRight" position="0.325 0px" size="160px 32px" text="$l10n_cc_dialog_detail_invoice_line_amount_label" handleFocus="false" />
           <ThreePartBitmap profile="fs25_lineSeparatorBottomSoft" position="0px -2dp" />
         </GuiElement>
-        <SmoothList id="invoiceLineTable" profile="CC_Table" size="100% 200px" position="0px -310px">
+        <SmoothList id="invoiceLineTable" profile="CC_Table" size="100% 200px" position="0px -320px">
           <ListItem profile="CC_Row">
             <Text profile="CC_RowCellLeft" position="20px 0px" name="title"/>
             <Text profile="CC_RowCellRight" position="-20px 0px" name="amount"/>
@@ -50,7 +50,6 @@
       <Button profile="buttonBack" text="$l10n_cc_dialog_create_btn_cancel" onClick="onCancel" />
       <Button profile="buttonOK" id="btnDeleteInvoice" text="$l10n_cc_dialog_detail_invoice_delete_btn" onClick="onDeleteInvoice" />
       <Button profile="buttonOK" id="btnPay" text="$l10n_cc_dialog_detail_invoice_pay_btn" onClick="onPay" />
-      <Button profile="buttonOK" id="btnEdit" text="$l10n_cc_dialog_detail_invoice_edit_btn" onClick="onEdit" />
       <Button profile="buttonOK" id="btnSent" text="$l10n_cc_dialog_detail_invoice_sent_btn" onClick="onSent" />
     </BoxLayout>
   </GuiElement>

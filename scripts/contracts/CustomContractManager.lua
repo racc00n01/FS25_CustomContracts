@@ -232,7 +232,7 @@ function CustomContractManager:getCompletedContractsForCurrentFarm()
 
   for _, contract in pairs(contractManager.contracts) do
     -- Contracts completed
-    if contract.creatorFarmId == farmId and (contract.status == CustomContract.STATUS.COMPLETED or contract.status == CustomContract.STATUS.INVOICED or contract.status == CustomContract.STATUS.COMPLETED_AWAITING_INVOICE) then
+    if (contract.creatorFarmId == farmId or contract.contractorFarmId == farmId) and (contract.status == CustomContract.STATUS.COMPLETED or contract.status == CustomContract.STATUS.INVOICED or contract.status == CustomContract.STATUS.COMPLETED_AWAITING_INVOICE) then
       table.insert(completedForFarm, contract)
     end
   end
@@ -311,6 +311,8 @@ function CustomContractManager:handleCompleteRequest(farmId, contractId, connect
 
   self:_rebuildAccessCache()
   self:syncContracts()
+
+  -- CreateInvoiceDialog.show(draft)
 
   if connection ~= nil then
     connection:sendEvent(OpenCreateInvoiceDialogEvent.new(draft))

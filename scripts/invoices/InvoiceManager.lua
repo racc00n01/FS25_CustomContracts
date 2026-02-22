@@ -226,6 +226,7 @@ function InvoiceManager:handleCreateRequest(farmId, payload)
 
   -- Update all clients with the new invoice and contract status
   self:syncInvoices()
+  g_currentMission.CustomContracts.ContractManager:syncContracts()
 end
 
 function InvoiceManager:handleSendRequest(invoiceId)

@@ -5,11 +5,25 @@
 -- @Version: 0.0.1.1
 --
 
-MenuCreateContract = {}
-local MenuCreateContract_mt = Class(MenuCreateContract, MessageDialog)
+CreateContractDialog = {}
+local CreateContractDialog_mt = Class(CreateContractDialog, MessageDialog)
+local modDirectory = g_currentModDirectory
 
-function MenuCreateContract.new(target, custom_mt)
-  local self = MessageDialog.new(target, custom_mt or MenuCreateContract_mt)
+function CreateContractDialog.register()
+  local dialog = CreateContractDialog.new()
+  g_gui:loadGui(modDirectory .. "gui/dialog/contracts/CreateContractDialog.xml", "createContractDialog", dialog)
+  CreateContractDialog.INSTANCE = dialog
+end
+
+function CreateContractDialog.show()
+  if CreateContractDialog.INSTANCE == nil then CreateContractDialog.register() end
+
+  local dialog = CreateContractDialog.INSTANCE
+  g_gui:showDialog("createContractDialog")
+end
+
+function CreateContractDialog.new(target, custom_mt)
+  local self = MessageDialog.new(target, custom_mt or CreateContractDialog_mt)
 
   self.farmId = g_currentMission:getFarmId()
 
@@ -31,16 +45,16 @@ function MenuCreateContract.new(target, custom_mt)
   return self
 end
 
-function MenuCreateContract:onCreate()
-  MenuCreateContract:superClass().onCreate(self)
+function CreateContractDialog:onCreate()
+  CreateContractDialog:superClass().onCreate(self)
 end
 
-function MenuCreateContract:onGuiSetupFinished()
-  MenuCreateContract:superClass().onGuiSetupFinished(self)
+function CreateContractDialog:onGuiSetupFinished()
+  CreateContractDialog:superClass().onGuiSetupFinished(self)
 end
 
-function MenuCreateContract:onOpen()
-  MenuCreateContract:superClass().onOpen(self)
+function CreateContractDialog:onOpen()
+  CreateContractDialog:superClass().onOpen(self)
 
   -- Initialize variables
   self.farmId = g_currentMission:getFarmId()
@@ -78,35 +92,35 @@ function MenuCreateContract:onOpen()
   self.selectedDueDateIndex = 1
 end
 
-function MenuCreateContract:onClose()
-  MenuCreateContract:superClass().onClose(self)
+function CreateContractDialog:onClose()
+  CreateContractDialog:superClass().onClose(self)
 end
 
-function MenuCreateContract:onFarmlandSelectChange(state)
+function CreateContractDialog:onFarmlandSelectChange(state)
   self.farmlandIndex = state
   self.farmlandId = self.farmlandIds[self.farmlandIndex]
 end
 
-function MenuCreateContract:onGroupSelectChange(state)
+function CreateContractDialog:onGroupSelectChange(state)
   self.workTypeIndex = state
   self.workAreaTypeIndex = CustomContract.WORKAREATYPES[self.workTypeIndex].index
 end
 
-function MenuCreateContract:onStartDateSelectChange(state)
+function CreateContractDialog:onStartDateSelectChange(state)
   self.selectedStartDateIndex = state
 end
 
-function MenuCreateContract:onDueDateSelectChange(state)
+function CreateContractDialog:onDueDateSelectChange(state)
   self.selectedDueDateIndex = state
 end
 
-function MenuCreateContract:onClickVehicleList(list, section, index)
+function CreateContractDialog:onClickVehicleList(list, section, index)
   self:toggleRentableVehicle(index)
   list:reloadData()
 end
 
 -- Submit create contract button
-function MenuCreateContract:onConfirm(sender)
+function CreateContractDialog:onConfirm(sender)
   if g_client == nil then return end
 
   self.reward = tonumber(self.rewardInput:getText())
@@ -154,7 +168,7 @@ function MenuCreateContract:onConfirm(sender)
   self:close()
 end
 
-function MenuCreateContract:onCancel(sender)
+function CreateContractDialog:onCancel(sender)
   -- Cleanup form
   self.reward = nil
   self.description = nil
@@ -164,7 +178,7 @@ function MenuCreateContract:onCancel(sender)
   self:close()
 end
 
-function MenuCreateContract:fillMonthMultiTextOption(multiTextOption, valuesFieldName)
+function CreateContractDialog:fillMonthMultiTextOption(multiTextOption, valuesFieldName)
   local texts, values = CustomUtils:buildMonthOptionData()
 
   self[valuesFieldName] = values

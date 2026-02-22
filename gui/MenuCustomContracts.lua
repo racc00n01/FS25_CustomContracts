@@ -680,7 +680,7 @@ end
 
 -- Function triggered when clicking on the "Create invoice" button
 function MenuCustomContracts:onCreateInvoice()
-  local dialog = g_gui:showDialog("createInvoiceDialog")
+  CreateInvoiceDialog.show()
 end
 
 -- Function triggered when clicking on the "View details" button
@@ -690,8 +690,7 @@ function MenuCustomContracts:onDetailInvoice()
     return
   end
 
-  g_currentMission.CustomContracts.selectedInvoice = invoice
-  g_gui:showDialog("detailInvoiceDialog")
+  DetailInvoiceDialog.show(invoice)
 end
 
 -- Function triggered when clicking on the "Pay invoice" button
@@ -768,7 +767,7 @@ end
 -- Function triggered when clicking on the "Create contract" button
 function MenuCustomContracts:onCreateContract()
   self:queueContractsView(MenuCustomContracts.CONTRACTS_LIST_TYPE.OWNED, nil)
-  local dialog = g_gui:showDialog("menuCreateContract")
+  CreateContractDialog.show()
 end
 
 -- Function triggered when clicking on the "Complete contract" button
@@ -912,6 +911,5 @@ function MenuCustomContracts:onEditContract()
 
   if contract == nil then return end
 
-  g_currentMission.CustomContracts.editContract = contract
-  g_gui:showDialog("menuEditContract")
+  EditContractDialog.show(contract)
 end

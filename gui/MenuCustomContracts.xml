@@ -97,7 +97,7 @@
     </GuiElement>
     <GuiElement profile="fs25_subCategorySelectorTabbedContainer" id="subCategoryPages[2]">
       <GuiElement width="755px" position="0px 0px">
-        <Text profile="CC_InvoiceTableTitle" text="Inbox" position="20px -20px" width="350px" />
+        <Text profile="CC_InvoiceTableTitle" text="$l10n_cc_invoices_inbox_title" position="20px -20px" width="350px" />
         <GuiElement profile="fs25_statisticsHeaderBox" position="0px -50px" size="715px 32px">
           <Button profile="CC_TableHeader" position="20px 0px" size="150px 32px" text="$l10n_cc_dialog_invoice_table_id" handleFocus="false" />
           <Button profile="CC_TableHeader" position="170px 0px" size="150px 32px" text="$l10n_cc_dialog_invoice_table_status" handleFocus="false" />
@@ -119,7 +119,7 @@
       </GuiElement>
 
       <GuiElement width="755px" position="795px 0px">
-        <Text profile="CC_InvoiceTableTitle" text="Outbox" position="20px -20px" width="350px" />
+        <Text profile="CC_InvoiceTableTitle" text="$l10n_cc_invoices_outbox_title" position="20px -20px" width="350px" />
         <GuiElement profile="fs25_statisticsHeaderBox" position="0px -50px" size="715px 32px">
           <Button profile="CC_TableHeader" position="20px 0px" size="150px 32px" text="$l10n_cc_dialog_invoice_table_id" handleFocus="false" />
           <Button profile="CC_TableHeader" position="170px 0px" size="150px 32px" text="$l10n_cc_dialog_invoice_table_status" handleFocus="false" />

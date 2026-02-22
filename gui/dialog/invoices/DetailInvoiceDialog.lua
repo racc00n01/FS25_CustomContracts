@@ -6,6 +6,13 @@
 
 DetailInvoiceDialog = {}
 local DetailInvoiceDialog_mt = Class(DetailInvoiceDialog, MessageDialog)
+local modDirectory = g_currentModDirectory
+
+function DetailInvoiceDialog.register()
+  local dialog = DetailInvoiceDialog.new()
+  g_gui:loadGui(modDirectory .. "gui/dialog/invoices/DetailInvoiceDialog.xml", "detailInvoiceDialog", dialog)
+  DetailInvoiceDialog.INSTANCE = dialog
+end
 
 function DetailInvoiceDialog.new(target, custom_mt)
   local self = MessageDialog.new(target, custom_mt or DetailInvoiceDialog_mt)
@@ -15,6 +22,16 @@ function DetailInvoiceDialog.new(target, custom_mt)
   self.farmId = nil
 
   return self
+end
+
+function DetailInvoiceDialog.show(invoice)
+  if DetailInvoiceDialog.INSTANCE == nil then DetailInvoiceDialog.register() end
+
+  local dialog = DetailInvoiceDialog.INSTANCE
+
+  dialog.invoice = invoice
+
+  g_gui:showDialog("detailInvoiceDialog")
 end
 
 function DetailInvoiceDialog:onCreate()
@@ -28,11 +45,7 @@ end
 function DetailInvoiceDialog:onOpen()
   DetailInvoiceDialog:superClass().onOpen(self)
 
-  self.invoice = g_currentMission.CustomContracts.selectedInvoice
   self.farmId = g_currentMission:getFarmId()
-
-  print("sdtats" .. tostring(self.invoice.status))
-
   self.invoiceNumber:setText(self.invoice.number)
   self.invoiceTitle:setText(self.invoice.title or "")
   self.invoiceStatusLabel:setText(g_i18n:getText("cc_invoice_status_label"))
@@ -77,9 +90,6 @@ function DetailInvoiceDialog:updateButtonVisibility()
   if self.btnPay ~= nil then
     self.btnPay:setVisible(false)
   end
-  if self.btnEdit ~= nil then
-    self.btnEdit:setVisible(false)
-  end
   if self.btnDeleteInvoice ~= nil then
     self.btnDeleteInvoice:setVisible(false)
   end
@@ -88,7 +98,6 @@ function DetailInvoiceDialog:updateButtonVisibility()
   end
 
   if self.invoice.status == Invoice.STATUS.DRAFT then
-    self.btnEdit:setVisible(true)
     self.btnSent:setVisible(true)
   elseif (self.invoice.status == Invoice.STATUS.OPEN or self.invoice.status == Invoice.STATUS.SENT) and self.invoice.receiverFarmId == g_currentMission:getFarmId() then
     self.btnPay:setVisible(true)
@@ -138,13 +147,6 @@ function DetailInvoiceDialog:onDelete()
     g_i18n:getText("cc_dialog_invoice_delete_yes_no_btn")
   )
   self:close()
-end
-
-function DetailInvoiceDialog:onEdit()
-  if self.invoice == nil then return end
-  -- TODO: open edit dialog, set selected invoice, etc.
-  -- g_currentMission.CustomContracts.selectedInvoice = self.invoice
-  -- g_gui:showDialog("editInvoiceDialog")
 end
 
 function DetailInvoiceDialog:onSent()

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+  <texts>
+    <text name="cc_money_type_invoices" text="Facturen"/>
+    <text name="finance_invoices" text="Facturen"/>
+
+    <text name="cc_header_contracts" text="Contracten"/>
+    <text name="cc_header_invoices" text="Facturen"/>
+    <text name="cc_current_balance" text="Huidig saldo:"/>
+
+    <text name="cc_new" text="Nieuw"/>
+    <text name="cc_active" text="Actief"/>
+    <text name="cc_owned" text="Eigen"/>
+    <text name="cc_completed" text="Voltooid"/>
+
+    <text name="cc_contract_id_label" text="Contract #%d"/>
+    <text name="cc_contract_owner_label" text="Eigendom van: %s"/>
+    <text name="cc_contract_status_label" text="Geaccepteerd door:"/>
+    <text name="cc_contract_status_label_default" text="Huidige status:"/>
+    <text name="cc_contract_list_field_label" text="Perceel %d"/>
+    <text name="cc_contract_description" text="%s op perceel %d (%.2f ha)"/>
+    <text name="cc_contract_empty" text="Geen contract geselecteerd"/>
+    <text name="cc_contract_start_date_label" text="Start:"/>
+    <text name="cc_contract_due_date_label" text="Vervaldatum:"/>
+    <text name="cc_contract_total_reward" text="Totale beloning"/>
+
+    <text name="cc_status_open" text="Open"/>
+    <text name="cc_status_accepted" text="Geaccepteerd"/>
+    <text name="cc_status_completed" text="Voltooid"/>
+    <text name="cc_status_cancelled" text="Geannuleerd"/>
+    <text name="cc_status_expired" text="Verlopen"/>
+    <text name="cc_status_draft" text="Concept"/>
+    <text name="cc_status_sent" text="Verzonden"/>
+    <text name="cc_status_paid" text="Betaald"/>
+    <text name="cc_status_overdue" text="Achterstallig"/>
+    <text name="cc_status_rejected" text="Geweigerd"/>
+    <text name="cc_status_completed_awaiting_invoice" text="Voltooid (Wacht op factuur)"/>
+    <text name="cc_status_invoiced" text="Gefactureerd"/>
+
+    <text name="cc_contract_info_title" text="Algemene informatie"/>
+    <text name="cc_contract_notes_title" text="Notities"/>
+    <text name="cc_contract_disclaimer" text="Door dit contract te accepteren, ga je akkoord met het uitvoeren van de beschreven werkzaamheden. Betaling vindt plaats na voltooiing via een factuur."/>
+
+    <text name="cc_btn_create_contract" text="Contract aanmaken"/>
+    <text name="cc_btn_accept_contract" text="Contract accepteren"/>
+    <text name="cc_btn_complete_contract" text="Contract voltooien"/>
+    <text name="cc_btn_cancel_contract" text="Contract annuleren"/>
+    <text name="cc_btn_delete_contract" text="Contract verwijderen"/>
+    <text name="cc_btn_reopen_contract" text="Contract heropenen"/>
+    <text name="cc_btn_edit_contract" text="Contract bewerken"/>
+
+    <text name="cc_dialog_create_yes_no" text="Contract voor perceel %d voltooien en €%s ontvangen?"/>
+    <text name="cc_dialog_create_yes_no_btn" text="Contract voltooien"/>
+    <text name="cc_dialog_accept_yes_no" text="Contract voor perceel %d (%s) accepteren voor €%s?"/>
+    <text name="cc_dialog_accept_yes_no_btn" text="Contract accepteren"/>
+    <text name="cc_dialog_complete_yes_no" text="Contract voor perceel %d voltooien en €%s ontvangen?"/>
+    <text name="cc_dialog_complete_yes_no_btn" text="Contract voltooien"/>
+    <text name="cc_dialog_cancel_yes_no" text="Contract voor perceel %d annuleren?"/>
+    <text name="cc_dialog_cancel_yes_no_btn" text="Contract annuleren"/>
+    <text name="cc_dialog_delete_yes_no" text="Contract voor perceel %d verwijderen?"/>
+    <text name="cc_dialog_delete_yes_no_btn" text="Contract verwijderen"/>
+    <text name="cc_dialog_reopen_yes_no" text="Contract voor perceel %d heropenen?"/>
+    <text name="cc_dialog_reopen_yes_no_btn" text="Contract heropenen"/>
+
+    <text name="cc_dialog_create_validation_fields" text="Vul alle velden in"/>
+    <text name="cc_dialog_create_validation_fields_due_date" text="Selecteer een start- en vervaldatum"/>
+    <text name="cc_dialog_create_validation_fields_start_date" text="De vervaldatum mag niet vóór de startdatum liggen"/>
+
+    <text name="cc_dialog_edit_title" text="Contract bewerken"/>
+    <text name="cc_dialog_edit_input_field" text="Perceel-ID"/>
+    <text name="cc_dialog_edit_input_worktype" text="Werksoort"/>
+    <text name="cc_dialog_edit_input_reward" text="Beloning (€)"/>
+    <text name="cc_dialog_edit_input_description" text="Beschrijving (optioneel)"/>
+    <text name="cc_dialog_edit_input_startdate" text="Startdatum"/>
+    <text name="cc_dialog_edit_input_duedate" text="Vervaldatum"/>
+    <text name="cc_dialog_edit_btn_cancel" text="Annuleren"/>
+    <text name="cc_dialog_edit_btn_edit" text="Bewerken"/>
+
+    <text name="cc_dialog_create_title" text="Contract aanmaken"/>
+    <text name="cc_dialog_create_input_field" text="Perceel-ID"/>
+    <text name="cc_dialog_create_input_worktype" text="Werksoort"/>
+    <text name="cc_dialog_create_input_reward" text="Beloning (€)"/>
+    <text name="cc_dialog_create_input_description" text="Beschrijving (optioneel)"/>
+    <text name="cc_dialog_create_input_startdate" text="Startdatum"/>
+    <text name="cc_dialog_create_input_duedate" text="Vervaldatum"/>
+    <text name="cc_dialog_create_btn_cancel" text="Annuleren"/>
+    <text name="cc_dialog_create_btn_create" text="Aanmaken"/>
+
+    <text name="cc_invoices_inbox_title" text="Postvak IN"/>
+    <text name="cc_invoices_outbox_title" text="Postvak UIT"/>
+
+    <text name="cc_invoice_status_label" text="Status:"/>
+    <text name="cc_dialog_invoice_pay_yes_no" text="Factuur %s betalen en €%s ontvangen?"/>
+    <text name="cc_dialog_invoice_pay_yes_no_btn" text="Factuur betalen"/>
+
+    <text name="cc_dialog_invoice_create_auto_title" text="Factuur voor contract %d"/>
+    <text name="cc_dialog_invoice_create_auto_line_title" text="Contractbeloning (Contract #%d)"/>
+
+    <text name="cc_dialog_invoice_add_invoice_line_title" text="Factuurregel toevoegen"/>
+    <text name="cc_dialog_invoice_add_invoice_line_description_label" text="Beschrijving"/>
+    <text name="cc_dialog_invoice_add_invoice_line_price_label" text="Prijs"/>
+    <text name="cc_dialog_invoice_add_invoice_line_confirm_btn" text="Toevoegen"/>
+
+    <text name="cc_dialog_create_invoice_title" text="Factuur aanmaken"/>
+    <text name="cc_dialog_create_invoice_title_label" text="Factuurtitel"/>
+    <text name="cc_dialog_create_invoice_description_label" text="Beschrijving"/>
+    <text name="cc_dialog_create_invoice_receiver_label" text="Ontvanger"/>
+    <text name="cc_dialog_create_invoice_total_label" text="Totaal"/>
+    <text name="cc_dialog_create_invoice_line_title_label" text="Titel"/>
+    <text name="cc_dialog_create_invoice_line_amount_label" text="Bedrag"/>
+    <text name="cc_dialog_create_invoice_related_contract_label" text="Gerelateerd contract"/>
+
+    <text name="cc_dialog_create_invoice_add_line_btn" text="Regel toevoegen"/>
+    <text name="cc_dialog_create_invoice_save_draft_btn" text="Opslaan als concept"/>
+    <text name="cc_dialog_create_invoice_create_and_send_btn" text="Aanmaken en verzenden"/>
+
+    <text name="cc_dialog_detail_invoice_title" text="Factuurdetails"/>
+    <text name="cc_dialog_detail_invoice_from_label" text="Van:"/>
+    <text name="cc_dialog_detail_invoice_to_label" text="Aan:"/>
+    <text name="cc_dialog_detail_invoice_line_title_label" text="Titel"/>
+    <text name="cc_dialog_detail_invoice_line_amount_label" text="Bedrag"/>
+    <text name="cc_dialog_detail_invoice_total_label" text="Totaal"/>
+    <text name="cc_dialog_detail_invoice_delete_btn" text="Verwijderen"/>
+    <text name="cc_dialog_detail_invoice_edit_btn" text="Bewerken"/>
+    <text name="cc_dialog_detail_invoice_sent_btn" text="Verzenden"/>
+    <text name="cc_dialog_detail_invoice_pay_btn" text="Betalen"/>
+
+    <text name="cc_dialog_invoice_table_id" text="ID"/>
+    <text name="cc_dialog_invoice_table_status" text="Status"/>
+    <text name="cc_dialog_invoice_table_from" text="Van"/>
+    <text name="cc_dialog_invoice_table_to" text="Aan"/>
+    <text name="cc_dialog_invoice_table_amount" text="Bedrag"/>
+    <text name="cc_dialog_invoice_table_related_contract_id" text="Contract"/>
+    <text name="cc_dialog_invoice_table_due_date" text="Vervaldatum"/>
+
+    <text name="cc_dialog_invoice_send_yes_no" text="Factuur %s verzenden naar %s?"/>
+    <text name="cc_dialog_invoice_send_yes_no_btn" text="Factuur verzenden"/>
+
+    <text name="cc_dialog_invoice_delete_yes_no" text="Factuur %s verwijderen?"/>
+    <text name="cc_dialog_invoice_delete_yes_no_btn" text="Factuur verwijderen"/>
+  </texts>
+</l10n>

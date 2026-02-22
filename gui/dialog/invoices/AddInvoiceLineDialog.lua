@@ -4,38 +4,40 @@
 
 AddInvoiceLineDialog = {}
 local AddInvoiceLineDialog_mt = Class(AddInvoiceLineDialog, MessageDialog)
+local modDirectory = g_currentModDirectory
+
+function AddInvoiceLineDialog.register()
+  local dialog = AddInvoiceLineDialog.new()
+  g_gui:loadGui(modDirectory .. "gui/dialog/invoices/AddInvoiceLineDialog.xml", "addInvoiceLineDialog", dialog)
+  AddInvoiceLineDialog.INSTANCE = dialog
+end
 
 function AddInvoiceLineDialog.new(target, custom_mt)
-  local self = MessageDialog.new(target, custom_mt or AddInvoiceLineDialog_mt)
+  local dialog = MessageDialog.new(target, custom_mt or AddInvoiceLineDialog_mt)
 
-  self.invoiceDraft = nil
+  dialog.invoiceDraft = nil
 
-  self.parentDialogName = "createInvoiceDialog"
-  self.prefillText = ""
-  self.prefillPrice = ""
+  return dialog
+end
 
-  return self
+function AddInvoiceLineDialog.show(invoiceDraft)
+  if AddInvoiceLineDialog.INSTANCE == nil then AddInvoiceLineDialog.register() end
+
+  print(string.format("[CC] AddInvoiceLineDialog.show invoiceDraft param=%s", tostring(invoiceDraft)))
+
+  local dialog = AddInvoiceLineDialog.INSTANCE
+
+  dialog.invoiceDraft = invoiceDraft
+
+  g_gui:showDialog("addInvoiceLineDialog")
 end
 
 function AddInvoiceLineDialog:onCreate()
   AddInvoiceLineDialog:superClass().onCreate(self)
 end
 
-function AddInvoiceLineDialog:setParentDialogName(name)
-  self.parentDialogName = name or "createInvoiceDialog"
-end
-
-function AddInvoiceLineDialog:setPrefill(text, priceText)
-  self.prefillText = text or ""
-  self.prefillPrice = priceText or ""
-end
-
 function AddInvoiceLineDialog:onOpen()
   AddInvoiceLineDialog:superClass().onOpen(self)
-
-  if g_currentMission.CustomContracts.invoiceDraft ~= nil then
-    self.invoiceDraft = g_currentMission.CustomContracts.invoiceDraft
-  end
 
   if self.lineTextInput ~= nil then
     self.lineTextInput:setText(self.prefillText or "")
@@ -68,11 +70,21 @@ function AddInvoiceLineDialog:onOk()
   local amountText = self.linePriceInput:getText() or ""
   local amount = parsePrice(amountText)
 
-  table.insert(self.invoiceDraft.lines, {
-    title = title,
-    amount = amount
-  })
+  if self.invoiceDraft.lines == nil then
+    self.invoiceDraft.lines = {}
+
+    table.insert(self.invoiceDraft.lines, {
+      title = title,
+      amount = amount
+    })
+  else
+    table.insert(self.invoiceDraft.lines, {
+      title = title,
+      amount = amount
+    })
+  end
+
 
   self:close()
-  g_gui:showDialog(self.parentDialogName)
+  CreateInvoiceDialog.show(self.invoiceDraft)
 end
