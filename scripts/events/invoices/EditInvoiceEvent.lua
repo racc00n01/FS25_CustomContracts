@@ -5,23 +5,23 @@
 -- @Version: 1.0.0.0
 --
 
-CreateInvoiceEvent = {}
-local CreateInvoiceEvent_mt = Class(CreateInvoiceEvent, Event)
+EditInvoiceEvent = {}
+local EditInvoiceEvent_mt = Class(EditInvoiceEvent, Event)
 
-InitEventClass(CreateInvoiceEvent, "CreateInvoiceEvent")
+InitEventClass(EditInvoiceEvent, "EditInvoiceEvent")
 
-function CreateInvoiceEvent.emptyNew()
-  return Event.new(CreateInvoiceEvent_mt)
+function EditInvoiceEvent.emptyNew()
+  return Event.new(EditInvoiceEvent_mt)
 end
 
-function CreateInvoiceEvent.new(payload, farmId)
-  local self = CreateInvoiceEvent.emptyNew()
+function EditInvoiceEvent.new(payload, farmId)
+  local self = EditInvoiceEvent.emptyNew()
   self.payload = payload
   self.farmId = farmId
   return self
 end
 
-function CreateInvoiceEvent:writeStream(streamId, connection)
+function EditInvoiceEvent:writeStream(streamId, connection)
   streamWriteInt32(streamId, self.farmId)
   streamWriteInt32(streamId, self.payload.receiverFarmId or -1)
   streamWriteString(streamId, self.payload.title or "")
@@ -41,7 +41,7 @@ function CreateInvoiceEvent:writeStream(streamId, connection)
   streamWriteString(streamId, self.payload.status or Invoice.STATUS.DRAFT)
 end
 
-function CreateInvoiceEvent:readStream(streamId, connection)
+function EditInvoiceEvent:readStream(streamId, connection)
   local farmId = streamReadInt32(streamId)
   local receiverFarmId = streamReadInt32(streamId)
   local title = streamReadString(streamId)
@@ -77,9 +77,9 @@ function CreateInvoiceEvent:readStream(streamId, connection)
   self:run(connection)
 end
 
-function CreateInvoiceEvent:run(connection)
+function EditInvoiceEvent:run(connection)
   if not connection:getIsServer() then
-    g_server:broadcastEvent(CreateInvoiceEvent.new(self.payload, self.farmId))
+    g_server:broadcastEvent(EditInvoiceEvent.new(self.payload, self.farmId))
   end
 
   local farmId = self.farmId
@@ -88,5 +88,5 @@ function CreateInvoiceEvent:run(connection)
   end
 
   local invoiceManager = g_currentMission.CustomContracts.InvoiceManager
-  invoiceManager:handleCreateRequest(farmId, self.payload)
+  invoiceManager:handleEditRequest(farmId, self.payload)
 end

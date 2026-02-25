@@ -1,8 +1,8 @@
 --
--- FS25 CustomContracts
+-- FS25 Contract and Invoices
 --
 -- @Author: Racc00n
--- @Version: 0.0.1.1
+-- @Version: 1.0.0.0
 --
 
 CustomContractManager    = {}
@@ -370,6 +370,8 @@ function CustomContractManager:handleReopenRequest(farmId, contractId)
 end
 
 function CustomContractManager:handleEditRequest(farmId, contractId, data)
+  if not g_currentMission:getIsServer() then return end
+
   local contract = self.contracts[contractId]
   if contract == nil then
     return

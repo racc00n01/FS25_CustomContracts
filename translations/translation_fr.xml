@@ -4,16 +4,49 @@
     <text name="cc_money_type_invoices" text="Factures"/>
     <text name="finance_invoices" text="Factures"/>
 
+    <text name="cc_workareatype_cultivate" text="Cultiver"/>
+    <text name="cc_workareatype_plow" text="Labourer"/>
+    <text name="cc_workareatype_seed" text="Semer"/>
+    <text name="cc_workareatype_fertilize" text="Fertiliser"/>
+    <text name="cc_workareatype_harvest" text="Récolter"/>
+    <text name="cc_workareatype_roll" text="Roulage"/>
+    <text name="cc_workareatype_weed" text="Désherber"/>
+    <text name="cc_workareatype_lime" text="Chaulage"/>
+    <text name="cc_workareatype_mulch" text="Pailler"/>
+    <text name="cc_workareatype_stone_pick" text="Ramassage de pierres"/>
+    <text name="cc_workareatype_remove_foliage" text="Retirer le feuillage"/>
+    <text name="cc_workareatype_mowing" text="Fauchage"/>
+    <text name="cc_workareatype_tedding" text="Fanage"/>
+    <text name="cc_workareatype_windrowing" text="Andainage"/>
+    <text name="cc_workareatype_baling" text="Pressage"/>
+    <text name="cc_workareatype_bale_wrapping" text="Enrubannage"/>
+    <text name="cc_workareatype_spraying" text="Pulvérisation"/>
+
+    <text name="cc_month_january" text="Janvier"/>
+    <text name="cc_month_february" text="Février"/>
+    <text name="cc_month_march" text="Mars"/>
+    <text name="cc_month_april" text="Avril"/>
+    <text name="cc_month_may" text="Mai"/>
+    <text name="cc_month_june" text="Juin"/>
+    <text name="cc_month_july" text="Juillet"/>
+    <text name="cc_month_august" text="Août"/>
+    <text name="cc_month_september" text="Septembre"/>
+    <text name="cc_month_october" text="Octobre"/>
+    <text name="cc_month_november" text="Novembre"/>
+    <text name="cc_month_december" text="Décembre"/>
+
     <text name="cc_header_contracts" text="Contrats"/>
     <text name="cc_header_invoices" text="Factures"/>
     <text name="cc_current_balance" text="Solde actuel :"/>
 
     <text name="cc_new" text="Nouveau"/>
     <text name="cc_active" text="Actif"/>
-    <text name="cc_owned" text="Propre"/>
+    <text name="cc_owned" text="Possédé"/>
     <text name="cc_completed" text="Terminé"/>
 
-    <text name="cc_contract_id_label" text="Contrat n° %d"/>
+    <text name="cc_farm" text="Ferme %s"/>
+
+    <text name="cc_contract_id_label" text="Contrat n°%d"/>
     <text name="cc_contract_owner_label" text="Appartient à : %s"/>
     <text name="cc_contract_status_label" text="Accepté par :"/>
     <text name="cc_contract_status_label_default" text="Statut actuel :"/>
@@ -39,7 +72,7 @@
 
     <text name="cc_contract_info_title" text="Informations générales"/>
     <text name="cc_contract_notes_title" text="Notes"/>
-    <text name="cc_contract_disclaimer" text="En acceptant ce contrat, vous acceptez d’effectuer les travaux décrits. Le paiement sera effectué après achèvement via une facture."/>
+    <text name="cc_contract_disclaimer" text="En acceptant ce contrat, vous acceptez d’effectuer le travail indiqué comme décrit. Le paiement est effectué une fois le travail terminé, via une facture."/>
 
     <text name="cc_btn_create_contract" text="Créer un contrat"/>
     <text name="cc_btn_accept_contract" text="Accepter le contrat"/>
@@ -63,7 +96,7 @@
     <text name="cc_dialog_reopen_yes_no_btn" text="Rouvrir le contrat"/>
 
     <text name="cc_dialog_create_validation_fields" text="Veuillez remplir tous les champs"/>
-    <text name="cc_dialog_create_validation_fields_due_date" text="Veuillez sélectionner une date de début et d’échéance"/>
+    <text name="cc_dialog_create_validation_fields_due_date" text="Veuillez sélectionner une date de début et une date d’échéance"/>
     <text name="cc_dialog_create_validation_fields_start_date" text="La date d’échéance ne peut pas être antérieure à la date de début"/>
 
     <text name="cc_dialog_edit_title" text="Modifier le contrat"/>
@@ -89,12 +122,18 @@
     <text name="cc_invoices_inbox_title" text="Boîte de réception"/>
     <text name="cc_invoices_outbox_title" text="Boîte d’envoi"/>
 
+    <text name="cc_btn_create_invoice" text="Créer une facture"/>
+    <text name="cc_btn_pay_invoice" text="Payer la facture"/>
+    <text name="cc_btn_detail_invoice" text="Détails de la facture"/>
+    <text name="cc_btn_send_invoice" text="Envoyer la facture"/>
+    <text name="cc_btn_delete_invoice" text="Supprimer la facture"/>
+
     <text name="cc_invoice_status_label" text="Statut :"/>
-    <text name="cc_dialog_invoice_pay_yes_no" text="Payer la facture %s et recevoir €%s ?"/>
+    <text name="cc_dialog_invoice_pay_yes_no" text="Payer la facture %s et payer €%s ?"/>
     <text name="cc_dialog_invoice_pay_yes_no_btn" text="Payer la facture"/>
 
     <text name="cc_dialog_invoice_create_auto_title" text="Facture pour le contrat %d"/>
-    <text name="cc_dialog_invoice_create_auto_line_title" text="Récompense du contrat (Contrat n° %d)"/>
+    <text name="cc_dialog_invoice_create_auto_line_title" text="Récompense du contrat (Contrat n°%d)"/>
 
     <text name="cc_dialog_invoice_add_invoice_line_title" text="Ajouter une ligne de facture"/>
     <text name="cc_dialog_invoice_add_invoice_line_description_label" text="Description"/>
@@ -111,7 +150,7 @@
     <text name="cc_dialog_create_invoice_related_contract_label" text="Contrat associé"/>
 
     <text name="cc_dialog_create_invoice_add_line_btn" text="Ajouter une ligne"/>
-    <text name="cc_dialog_create_invoice_save_draft_btn" text="Enregistrer comme brouillon"/>
+    <text name="cc_dialog_create_invoice_save_draft_btn" text="Enregistrer le brouillon"/>
     <text name="cc_dialog_create_invoice_create_and_send_btn" text="Créer et envoyer"/>
 
     <text name="cc_dialog_detail_invoice_title" text="Détails de la facture"/>

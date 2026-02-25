@@ -1,3 +1,10 @@
+--
+-- FS25 Contract and Invoices
+--
+-- @Author: Racc00n
+-- @Version: 1.0.0.0
+--
+
 RTI18NExtension = {}
 local modName = g_currentModName
 

@@ -1,5 +1,8 @@
 --
--- FS25 CustomContracts
+-- FS25 Contract and Invoices
+--
+-- @Author: Racc00n
+-- @Version: 1.0.0.0
 --
 
 AddInvoiceLineDialog = {}
@@ -22,8 +25,6 @@ end
 
 function AddInvoiceLineDialog.show(invoiceDraft)
   if AddInvoiceLineDialog.INSTANCE == nil then AddInvoiceLineDialog.register() end
-
-  print(string.format("[CC] AddInvoiceLineDialog.show invoiceDraft param=%s", tostring(invoiceDraft)))
 
   local dialog = AddInvoiceLineDialog.INSTANCE
 

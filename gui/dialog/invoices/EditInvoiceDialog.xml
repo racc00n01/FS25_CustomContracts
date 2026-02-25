@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<GUI name="createInvoiceDialog" onOpen="onOpen" onClose="onClose" onCreate="onCreate">
+<GUI name="editInvoiceDialog" onOpen="onOpen" onClose="onClose" onCreate="onCreate">
   <GuiElement profile="newLayer" />
   <Bitmap profile="dialogFullscreenBg" id="dialogBg" />
   <GuiElement profile="fs25_dialogBg" id="dialogElement" size="0.40 0.8">
