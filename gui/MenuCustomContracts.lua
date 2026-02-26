@@ -1,8 +1,8 @@
 --
--- FS25 CustomContracts
+-- FS25 Contract and Invoices
 --
 -- @Author: Racc00n
--- @Version: 0.0.1.1
+-- @Version: 1.0.0.0
 --
 
 MenuCustomContracts = {}
@@ -68,7 +68,8 @@ function MenuCustomContracts:displaySelectedContract()
       if farm ~= nil then
         self.contractId:setText(string.format(g_i18n:getText("cc_contract_id_label"), contract.id))
         self.contractFarmName:setText(string.format(g_i18n:getText("cc_contract_owner_label"), farm.name))
-        self.contractWorkType:setText(contract:getWorkTypeAreaName(contract.workAreaTypeIndex))
+        self.contractWorkType:setText(g_i18n:getText("cc_workareatype_" ..
+          string.lower(contract:getWorkTypeAreaName(contract.workAreaTypeIndex))))
       else
         self.contractFarmName:setText("-")
         self.contractWorkType:setText("-")
@@ -106,7 +107,8 @@ function MenuCustomContracts:displaySelectedContract()
       )
 
       self.contractDescriptionValue:setText(
-        string.format(g_i18n:getText("cc_contract_description"), contract:getWorkTypeAreaName(contract.workAreaTypeIndex),
+        string.format(g_i18n:getText("cc_contract_description"), g_i18n:getText("cc_workareatype_" ..
+            string.lower(contract:getWorkTypeAreaName(contract.workAreaTypeIndex))),
           contract.farmlandId, farmland.areaInHa)
       )
       self.contractStartDateValue:setText(CustomUtils:formatPeriodDay(contract.startPeriod, contract.startDay))
@@ -189,7 +191,7 @@ function MenuCustomContracts:initialize()
   -- Invoice related buttons
   self.btnCreateInvoice = {
     inputAction = InputAction.MENU_EXTRA_1,
-    text = "Create invoice",
+    text = g_i18n:getText("cc_btn_create_invoice"),
     callback = function()
       self
           :onCreateInvoice()
@@ -197,7 +199,7 @@ function MenuCustomContracts:initialize()
   }
   self.btnPayInvoice = {
     inputAction = InputAction.MENU_ACCEPT,
-    text = "Pay invoice",
+    text = g_i18n:getText("cc_btn_pay_invoice"),
     callback = function()
       self
           :onPayInvoice()
@@ -205,7 +207,7 @@ function MenuCustomContracts:initialize()
   }
   self.btnDetailInvoice = {
     inputAction = InputAction.MENU_ACTIVATE,
-    text = "View details",
+    text = g_i18n:getText("cc_btn_detail_invoice"),
     callback = function()
       self
           :onDetailInvoice()
@@ -213,7 +215,7 @@ function MenuCustomContracts:initialize()
   }
   self.btnSentInvoice = {
     inputAction = InputAction.MENU_EXTRA_2,
-    text = "Send invoice",
+    text = g_i18n:getText("cc_btn_send_invoice"),
     callback = function()
       self
           :onSentInvoice()
@@ -221,7 +223,7 @@ function MenuCustomContracts:initialize()
   }
   self.btnDeleteInvoice = {
     inputAction = InputAction.MENU_CANCEL,
-    text = "Delete invoice",
+    text = g_i18n:getText("cc_btn_delete_invoice"),
     callback = function()
       self
           :onDeleteInvoice()
@@ -819,7 +821,8 @@ function MenuCustomContracts:onAcceptContract()
     string.format(
       g_i18n:getText("cc_dialog_accept_yes_no"),
       contract.farmlandId,
-      contract:getWorkTypeAreaName(contract.workAreaTypeIndex),
+      g_i18n:getText("cc_workareatype_" ..
+        string.lower(contract:getWorkTypeAreaName(contract.workAreaTypeIndex))),
       g_i18n:formatMoney(contract.reward)
     ),
     g_i18n:getText("cc_dialog_accept_yes_no_btn")

@@ -1,8 +1,8 @@
 --
--- FS25 CustomContracts
+-- FS25 Contract and Invoices
 --
 -- @Author: Racc00n
--- @Version: 0.0.1.1
+-- @Version: 1.0.0.0
 --
 
 CustomUtils = {}
@@ -63,7 +63,8 @@ function CustomUtils.isPastDue(contract, curPeriod, curDay, dpp)
 end
 
 function CustomUtils.getMonthName(month)
-  return CustomUtils.MONTH_NAMES[month] or tostring(month)
+  return g_i18n:getText("cc_month_" ..
+    string.lower(CustomUtils.MONTH_NAMES[month] or tostring(month)))
 end
 
 function CustomUtils:formatPeriodDay(period, day)

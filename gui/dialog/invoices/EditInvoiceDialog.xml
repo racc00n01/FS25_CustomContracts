@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<GUI name="createInvoiceDialog" onOpen="onOpen" onClose="onClose" onCreate="onCreate">
+<GUI name="editInvoiceDialog" onOpen="onOpen" onClose="onClose" onCreate="onCreate">
   <GuiElement profile="newLayer" />
   <Bitmap profile="dialogFullscreenBg" id="dialogBg" />
   <GuiElement profile="fs25_dialogBg" id="dialogElement" size="0.40 0.8">
@@ -70,7 +70,7 @@
       <Button profile="buttonBack" text="$l10n_cc_dialog_create_btn_cancel" onClick="onCancel" />
       <Button profile="buttonOK" text="$l10n_cc_dialog_create_invoice_add_line_btn" onClick="onAddInvoiceLine" />
       <Button profile="buttonOK" text="$l10n_cc_dialog_create_invoice_save_draft_btn" onClick="onSaveAsDraft" />
-      <Button profile="buttonOK" text="$l10n_cc_dialog_create_invoice_create_and_send_btn" onClick="onConfirm" />
+      <Button profile="buttonOK" text="$l10n_cc_dialog_edit_invoice_send_btn" onClick="onConfirm" />
     </BoxLayout>
   </GuiElement>
 </GUI>

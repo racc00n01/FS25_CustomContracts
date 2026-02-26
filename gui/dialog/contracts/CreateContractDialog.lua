@@ -1,8 +1,8 @@
 --
--- FS25 CustomContracts
+-- FS25 Contract and Invoices
 --
 -- @Author: Racc00n
--- @Version: 0.0.1.1
+-- @Version: 1.0.0.0
 --
 
 CreateContractDialog = {}
@@ -146,8 +146,6 @@ function CreateContractDialog:onConfirm(sender)
     InfoDialog.show(g_i18n:getText("cc_dialog_create_validation_fields_start_date"))
     return
   end
-
-  print("CC workAreaTypeIndex in onConfirm: " .. tostring(self.workAreaTypeIndex))
 
   local contract = {
     farmlandId        = self.farmlandId,
