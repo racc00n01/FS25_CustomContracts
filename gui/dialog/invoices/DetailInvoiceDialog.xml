@@ -20,7 +20,7 @@
         <Text profile="CC_ContractH6" text="$l10n_cc_dialog_detail_invoice_from_label" position="0px -80px"/>
         <Text profile="CC_ContractTagline" id="invoiceFromFarm" position="0px -100px"/>
 
-        <Text profile="CC_ContractH6" text="$l10n_cc_dialog_detail_invoice_to_label" position="200px -80px"/>
+        <Text profile="CC_ContractH6" text="$l10n_cc_dialog_detail_invoice_to_label" position="300px -80px"/>
         <Text profile="CC_ContractTagline" id="invoiceReceiverFarm" position="300px -100px" maxCharacters="20"/>
 
         <ThreePartBitmap profile="fs25_lineSeparatorTopSoft" position="0px -160px"/>
