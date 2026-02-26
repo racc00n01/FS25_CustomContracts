@@ -177,5 +177,8 @@
 
     <text name="cc_dialog_invoice_delete_yes_no" text="Rechnung %s löschen?"/>
     <text name="cc_dialog_invoice_delete_yes_no_btn" text="Rechnung löschen"/>
+
+    <text name="cc_dialog_edit_invoice_title" text="Rechnung bearbeiten"/>
+    <text name="cc_dialog_edit_invoice_send_btn" text="Send"/>
   </texts>
 </l10n>

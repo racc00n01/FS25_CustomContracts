@@ -178,5 +178,8 @@
 
     <text name="cc_dialog_invoice_delete_yes_no" text="Delete invoice %s"/>
     <text name="cc_dialog_invoice_delete_yes_no_btn" text="Delete Invoice"/>
+
+    <text name="cc_dialog_edit_invoice_title" text="Edit Invoice"/>
+    <text name="cc_dialog_edit_invoice_send_btn" text="Send"/>
   </texts>
 </l10n>

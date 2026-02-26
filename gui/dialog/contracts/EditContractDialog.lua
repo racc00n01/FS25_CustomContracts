@@ -154,9 +154,8 @@ function EditContractDialog:onConfirm(sender)
     dueDay            = dueV.day
   }
 
-  -- IMPORTANT: your event must support passing the updated data
   g_client:getServerConnection():sendEvent(
-    EditContractEvent.new(old.id, updated, g_currentMission:getFarmId())
+    EditContractEvent.new(updated, self.editContract.id)
   )
 
   self:close()

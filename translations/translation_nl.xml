@@ -177,5 +177,8 @@
 
     <text name="cc_dialog_invoice_delete_yes_no" text="Factuur %s verwijderen?"/>
     <text name="cc_dialog_invoice_delete_yes_no_btn" text="Factuur verwijderen"/>
+
+    <text name="cc_dialog_edit_invoice_title" text="Factuur bewerken"/>
+    <text name="cc_dialog_edit_invoice_send_btn" text="Verzenden"/>
   </texts>
 </l10n>

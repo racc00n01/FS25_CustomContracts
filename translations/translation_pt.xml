@@ -177,5 +177,8 @@
 
     <text name="cc_dialog_invoice_delete_yes_no" text="Excluir fatura %s?"/>
     <text name="cc_dialog_invoice_delete_yes_no_btn" text="Excluir fatura"/>
+
+    <text name="cc_dialog_edit_invoice_title" text="Editar fatura"/>
+    <text name="cc_dialog_edit_invoice_send_btn" text="Enviar"/>
   </texts>
 </l10n>

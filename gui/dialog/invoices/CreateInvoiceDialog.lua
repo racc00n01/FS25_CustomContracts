@@ -203,7 +203,9 @@ function CreateInvoiceDialog:onAddInvoiceLine()
   self:storeUiToDraft()
   self:close()
 
-  AddInvoiceLineDialog.show(self.invoiceDraft)
+  AddInvoiceLineDialog.show(self.invoiceDraft, function(draft)
+    CreateInvoiceDialog.show(draft)
+  end)
 end
 
 function CreateInvoiceDialog:storeUiToDraft()
