@@ -1,3 +1,10 @@
+--
+-- FS25 Contract and Invoices
+--
+-- @Author: Racc00n
+-- @Version: 1.0.0.0
+--
+
 EditContractDialog = {}
 local EditContractDialog_mt = Class(EditContractDialog, MessageDialog)
 local modDirectory = g_currentModDirectory
@@ -147,9 +154,8 @@ function EditContractDialog:onConfirm(sender)
     dueDay            = dueV.day
   }
 
-  -- IMPORTANT: your event must support passing the updated data
   g_client:getServerConnection():sendEvent(
-    EditContractEvent.new(old.id, updated, g_currentMission:getFarmId())
+    EditContractEvent.new(updated, self.editContract.id)
   )
 
   self:close()

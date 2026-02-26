@@ -1,3 +1,10 @@
+--
+-- FS25 Contract and Invoices
+--
+-- @Author: Racc00n
+-- @Version: 1.0.0.0
+--
+
 Invoice = {}
 Invoice.dir = g_currentModDirectory
 Invoice.modName = g_currentModName

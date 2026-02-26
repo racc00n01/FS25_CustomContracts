@@ -4,6 +4,37 @@
     <text name="cc_money_type_invoices" text="Invoices"/>
     <text name="finance_invoices" text="Invoices"/>
 
+    <text name="cc_workareatype_cultivate" text="Cultivate"/>
+    <text name="cc_workareatype_plow" text="Plow"/>
+    <text name="cc_workareatype_seed" text="Seed"/>
+    <text name="cc_workareatype_fertilize" text="Fertilize"/>
+    <text name="cc_workareatype_harvest" text="Harvest"/>
+    <text name="cc_workareatype_roll" text="Roll"/>
+    <text name="cc_workareatype_weed" text="Weed"/>
+    <text name="cc_workareatype_lime" text="Lime"/>
+    <text name="cc_workareatype_mulch" text="Mulch"/>
+    <text name="cc_workareatype_stone_pick" text="Stone Pick"/>
+    <text name="cc_workareatype_remove_foliage" text="Remove Foliage"/>
+    <text name="cc_workareatype_mowing" text="Mowing"/>
+    <text name="cc_workareatype_tedding" text="Tedding"/>
+    <text name="cc_workareatype_windrowing" text="Windrowing"/>
+    <text name="cc_workareatype_baling" text="Baling"/>
+    <text name="cc_workareatype_bale_wrapping" text="Bale Wrapping"/>
+    <text name="cc_workareatype_spraying" text="Spraying"/>
+
+    <text name="cc_month_january" text="January"/>
+    <text name="cc_month_february" text="February"/>
+    <text name="cc_month_march" text="March"/>
+    <text name="cc_month_april" text="April"/>
+    <text name="cc_month_may" text="May"/>
+    <text name="cc_month_june" text="June"/>
+    <text name="cc_month_july" text="July"/>
+    <text name="cc_month_august" text="August"/>
+    <text name="cc_month_september" text="September"/>
+    <text name="cc_month_october" text="October"/>
+    <text name="cc_month_november" text="November"/>
+    <text name="cc_month_december" text="December"/>
+
     <text name="cc_header_contracts" text="Contracts"/>
     <text name="cc_header_invoices" text="Invoices"/>
     <text name="cc_current_balance" text="Current Balance:"/>
@@ -12,6 +43,8 @@
     <text name="cc_active" text="Active"/>
     <text name="cc_owned" text="Owned"/>
     <text name="cc_completed" text="Completed"/>
+
+    <text name="cc_farm" text="Farm %s"/>
 
     <text name="cc_contract_id_label" text="Contract #%d"/>
     <text name="cc_contract_owner_label" text="Owned by: %s"/>
@@ -89,8 +122,14 @@
     <text name="cc_invoices_inbox_title" text="Inbox"/>
     <text name="cc_invoices_outbox_title" text="Outbox"/>
 
+    <text name="cc_btn_create_invoice" text="Create invoice"/>
+    <text name="cc_btn_pay_invoice" text="Pay invoice"/>
+    <text name="cc_btn_detail_invoice" text="Detail invoice"/>
+    <text name="cc_btn_send_invoice" text="Send invoice"/>
+    <text name="cc_btn_delete_invoice" text="Delete invoice"/>
+
     <text name="cc_invoice_status_label" text="Status:"/>
-    <text name="cc_dialog_invoice_pay_yes_no" text="Pay invoice %s and receive €%s?"/>
+    <text name="cc_dialog_invoice_pay_yes_no" text="Pay invoice %s and pay €%s?"/>
     <text name="cc_dialog_invoice_pay_yes_no_btn" text="Pay Invoice"/>
 
     <text name="cc_dialog_invoice_create_auto_title" text="Invoice for Contract %d"/>
@@ -139,5 +178,8 @@
 
     <text name="cc_dialog_invoice_delete_yes_no" text="Delete invoice %s"/>
     <text name="cc_dialog_invoice_delete_yes_no_btn" text="Delete Invoice"/>
+
+    <text name="cc_dialog_edit_invoice_title" text="Edit Invoice"/>
+    <text name="cc_dialog_edit_invoice_send_btn" text="Send"/>
   </texts>
 </l10n>

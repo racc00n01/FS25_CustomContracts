@@ -1,5 +1,8 @@
 --
--- FS25 CustomContracts
+-- FS25 Contract and Invoices
+--
+-- @Author: Racc00n
+-- @Version: 1.0.0.0
 --
 
 AddInvoiceLineDialog = {}
@@ -20,14 +23,13 @@ function AddInvoiceLineDialog.new(target, custom_mt)
   return dialog
 end
 
-function AddInvoiceLineDialog.show(invoiceDraft)
+function AddInvoiceLineDialog.show(invoiceDraft, onDone)
   if AddInvoiceLineDialog.INSTANCE == nil then AddInvoiceLineDialog.register() end
-
-  print(string.format("[CC] AddInvoiceLineDialog.show invoiceDraft param=%s", tostring(invoiceDraft)))
 
   local dialog = AddInvoiceLineDialog.INSTANCE
 
   dialog.invoiceDraft = invoiceDraft
+  dialog.onDone = onDone
 
   g_gui:showDialog("addInvoiceLineDialog")
 end
@@ -86,5 +88,8 @@ function AddInvoiceLineDialog:onOk()
 
 
   self:close()
-  CreateInvoiceDialog.show(self.invoiceDraft)
+
+  if self.onDone ~= nil then
+    self.onDone(self.invoiceDraft)
+  end
 end

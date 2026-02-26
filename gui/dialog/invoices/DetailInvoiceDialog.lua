@@ -1,7 +1,8 @@
 --
--- FS25 CustomContracts
+-- FS25 Contract and Invoices
+--
 -- @Author: Racc00n
--- @Version: 0.0.1.1
+-- @Version: 1.0.0.0
 --
 
 DetailInvoiceDialog = {}
@@ -83,12 +84,15 @@ function DetailInvoiceDialog:getFarmName(farmId)
   if farm ~= nil and farm.name ~= nil and farm.name ~= "" then
     return farm.name
   end
-  return string.format("Farm %s", tostring(farmId))
+  return string.format(g_i18n:getText("cc_farm"), tostring(farmId))
 end
 
 function DetailInvoiceDialog:updateButtonVisibility()
   if self.btnPay ~= nil then
     self.btnPay:setVisible(false)
+  end
+  if self.btnEditInvoice ~= nil then
+    self.btnEditInvoice:setVisible(false)
   end
   if self.btnDeleteInvoice ~= nil then
     self.btnDeleteInvoice:setVisible(false)
@@ -99,6 +103,7 @@ function DetailInvoiceDialog:updateButtonVisibility()
 
   if self.invoice.status == Invoice.STATUS.DRAFT then
     self.btnSent:setVisible(true)
+    self.btnEditInvoice:setVisible(true)
   elseif (self.invoice.status == Invoice.STATUS.OPEN or self.invoice.status == Invoice.STATUS.SENT) and self.invoice.receiverFarmId == g_currentMission:getFarmId() then
     self.btnPay:setVisible(true)
   end
@@ -107,7 +112,6 @@ end
 function DetailInvoiceDialog:onCancelInvoice()
   if self.invoice == nil then return end
   -- TODO: call your cancel event / manager function
-  -- g_currentMission.CustomContracts.InvoiceManager:cancelInvoice(self.invoice.id)
 end
 
 function DetailInvoiceDialog:onPay()
@@ -166,5 +170,12 @@ function DetailInvoiceDialog:onSent()
     ),
     g_i18n:getText("cc_dialog_invoice_send_yes_no_btn")
   )
+  self:close()
+end
+
+function DetailInvoiceDialog:onEdit()
+  if self.invoice == nil then return end
+
+  EditInvoiceDialog.show(self.invoice)
   self:close()
 end

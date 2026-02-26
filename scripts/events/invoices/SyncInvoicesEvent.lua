@@ -1,3 +1,10 @@
+--
+-- FS25 Contract and Invoices
+--
+-- @Author: Racc00n
+-- @Version: 1.0.0.0
+--
+
 SyncInvoicesEvent = {}
 local SyncInvoicesEvent_mt = Class(SyncInvoicesEvent, Event)
 
