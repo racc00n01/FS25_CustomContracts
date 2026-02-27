@@ -61,6 +61,7 @@ function CustomContract.new(id, creatorFarmId, farmlandId, workAreaTypeIndex, re
   self.duePeriod         = duePeriod or -1
   self.dueDay            = dueDay or -1
   self.invoiceId         = invoiceId or -1
+  self.progress = 0
 
   return self
 end

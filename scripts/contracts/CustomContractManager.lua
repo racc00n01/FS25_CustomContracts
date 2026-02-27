@@ -523,3 +523,7 @@ end
 function CustomContractManager:getContractById(id)
   return self.contracts[id]
 end
+
+function CustomContractManager:updateContractProgress(contractId, deltaOrAbsolute)
+end
+
