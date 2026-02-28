@@ -80,12 +80,13 @@ function EditContractDialog:onOpen()
 end
 
 function EditContractDialog:prefillFromContract(contract)
-  -- Farmland -> index
+  -- Farmland -> index (for TRANSPORT, farmlandId is -1 so use 1)
   self.selectedFarmlandIndex = CustomUtils:findIndex(self.farmlandIds, contract.farmlandId) or 1
   self.fieldSelector:setState(self.selectedFarmlandIndex, false)
 
-  -- Worktype
-  self.workTypeSelector:setState(contract.workAreaTypeIndex, false)
+  -- Worktype (for TRANSPORT, workAreaTypeIndex is 0; use 1-based state)
+  local workState = (contract.workAreaTypeIndex and contract.workAreaTypeIndex > 0) and contract.workAreaTypeIndex or 1
+  self.workTypeSelector:setState(workState, false)
 
   -- Inputs
   self.rewardInput:setText(tostring(contract.reward or ""))

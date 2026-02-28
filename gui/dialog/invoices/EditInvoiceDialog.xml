@@ -53,7 +53,7 @@
         <Bitmap profile="CC_MultiTextOptionContainerDark" position="15px -350px" height="350px">
           <GuiElement profile="fs25_statisticsHeaderBox">
             <Button profile="CC_TableHeader" position="20px 0px" size="200px 32px" text="$l10n_cc_dialog_create_invoice_line_title_label" handleFocus="false" />
-            <Button profile="CC_TableHeaderRight" position="0.275 0px" size="160px 32px" text="$l10n_cc_dialog_create_invoice_line_amount_label" handleFocus="false" />
+            <Button profile="CC_TableHeaderRight" position="-20px 0px" size="160px 32px" text="$l10n_cc_dialog_create_invoice_line_amount_label" handleFocus="false" />
             <ThreePartBitmap profile="fs25_lineSeparatorBottom" position="0px -2dp" />
           </GuiElement>
           <SmoothList id="invoiceLineTable" profile="CC_Table" size="100% 200px">

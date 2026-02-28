@@ -259,7 +259,7 @@
     <textDisabledColor value="$preset_colorDisabled" />
   </Profile>
 
-  <Profile name="CC_TableHeaderRight" extends="baseReference">
+  <Profile name="CC_TableHeaderRight" extends="baseReference" with="anchorStretchingYRight">
     <imageColor value="0 0 0 0" />
     <textFocusedColor value="$preset_fs25_colorMainHighlight" />
     <textHighlightedColor value="$preset_fs25_colorMainHighlight" />
@@ -292,6 +292,11 @@
 
   <Profile name="CC_RowCellLeft" extends="CC_RowCell" with="anchorStretchingYLeft">
     <textAlignment value="left" />
+  </Profile>
+  <Profile name="CC_RowCellLeftImage" extends="CC_RowCellLeft" with="anchorMiddleLeft">
+    <size value="24px 24px" />
+    <position value="8px 0" />
+    <imageSliceId value="noSlice" />
   </Profile>
   <Profile name="CC_RowCellRight" extends="CC_RowCell" with="anchorStretchingYRight">
     <textAlignment value="right" />

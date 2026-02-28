@@ -27,6 +27,7 @@ function CustomContracts:loadMap()
     CustomContracts:makeIsCustomContractsCheckEnabledPredicate(), "pageSettings")
 
   CreateContractDialog.register()
+  CreateTransportContractDialog.register()
   EditContractDialog.register()
   CreateInvoiceDialog.register()
   AddInvoiceLineDialog.register()

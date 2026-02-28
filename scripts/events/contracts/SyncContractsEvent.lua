@@ -42,6 +42,11 @@ function SyncContractsEvent:writeStream(streamId, connection)
     streamWriteInt32(streamId, contract.startDay)
     streamWriteInt32(streamId, contract.duePeriod)
     streamWriteInt32(streamId, contract.dueDay)
+    streamWriteInt32(streamId, contract.invoiceId or -1)
+    streamWriteString(streamId, contract.templateId or CustomContract.TEMPLATE.FIELD_WORK)
+    streamWriteInt32(streamId, contract.fillTypeIndex or -1)
+    streamWriteInt32(streamId, contract.transportAmount or -1)
+    streamWriteInt32(streamId, contract.destinationId or -1)
   end
 end
 
@@ -64,6 +69,11 @@ function SyncContractsEvent:readStream(streamId, connection)
     local startDay            = streamReadInt32(streamId)
     local duePeriod           = streamReadInt32(streamId)
     local dueDay              = streamReadInt32(streamId)
+    local invoiceId           = streamReadInt32(streamId)
+    local templateId          = streamReadString(streamId)
+    local fillTypeIndex       = streamReadInt32(streamId)
+    local transportAmount     = streamReadInt32(streamId)
+    local destinationId       = streamReadInt32(streamId)
 
     local contract            = CustomContract.new(
       id,
@@ -75,12 +85,16 @@ function SyncContractsEvent:readStream(streamId, connection)
       startPeriod,
       startDay,
       duePeriod,
-      dueDay
+      dueDay,
+      invoiceId,
+      templateId or CustomContract.TEMPLATE.FIELD_WORK
     )
 
-    contract.contractorFarmId =
-        contractorFarmId ~= -1 and contractorFarmId or nil
+    contract.contractorFarmId = contractorFarmId ~= -1 and contractorFarmId or nil
     contract.status           = status
+    if fillTypeIndex and fillTypeIndex >= 0 then contract.fillTypeIndex = fillTypeIndex end
+    if transportAmount and transportAmount >= 0 then contract.transportAmount = transportAmount end
+    if destinationId and destinationId >= 0 then contract.destinationId = destinationId end
 
     self.contracts[id]        = contract
   end

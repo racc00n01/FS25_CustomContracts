@@ -24,19 +24,25 @@ end
 
 function CreateContractEvent:writeStream(streamId, connection)
   streamWriteInt32(streamId, self.farmId)
-  streamWriteInt32(streamId, self.payload.farmlandId)
-  streamWriteInt32(streamId, self.payload.workAreaTypeIndex)
+  streamWriteString(streamId, self.payload.templateId or CustomContract.TEMPLATE.FIELD_WORK)
+  streamWriteInt32(streamId, self.payload.farmlandId or -1)
+  streamWriteInt32(streamId, self.payload.workAreaTypeIndex or 0)
   streamWriteInt32(streamId, self.payload.reward)
-  streamWriteString(streamId, self.payload.description)
+  streamWriteString(streamId, self.payload.description or "")
   streamWriteInt32(streamId, self.payload.startPeriod)
   streamWriteInt32(streamId, self.payload.startDay)
   streamWriteInt32(streamId, self.payload.duePeriod)
   streamWriteInt32(streamId, self.payload.dueDay)
+  streamWriteInt32(streamId, self.payload.invoiceId or -1)
+  streamWriteInt32(streamId, self.payload.fillTypeIndex or -1)
+  streamWriteInt32(streamId, self.payload.transportAmount or -1)
+  streamWriteInt32(streamId, self.payload.destinationId or -1)
 end
 
 function CreateContractEvent:readStream(streamId, connection)
   self.farmId = streamReadInt32(streamId)
   self.payload = {
+    templateId        = streamReadString(streamId),
     farmlandId        = streamReadInt32(streamId),
     workAreaTypeIndex = streamReadInt32(streamId),
     reward            = streamReadInt32(streamId),
@@ -44,7 +50,11 @@ function CreateContractEvent:readStream(streamId, connection)
     startPeriod       = streamReadInt32(streamId),
     startDay          = streamReadInt32(streamId),
     duePeriod         = streamReadInt32(streamId),
-    dueDay            = streamReadInt32(streamId)
+    dueDay            = streamReadInt32(streamId),
+    invoiceId         = streamReadInt32(streamId),
+    fillTypeIndex     = streamReadInt32(streamId),
+    transportAmount   = streamReadInt32(streamId),
+    destinationId     = streamReadInt32(streamId)
   }
 
   self:run(connection)

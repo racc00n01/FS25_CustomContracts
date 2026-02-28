@@ -48,18 +48,31 @@ function MenuCustomContracts.new(i18n, messageCenter)
   self.invoicesInboxRenderer = InvoicesInboxRenderer.new()
   self.invoicesOutboxRenderer = InvoicesOutboxRenderer.new()
 
+  -- Cached farm inventory for GUI and contract creation (refreshed when menu opens).
+  self.cachedInventory = { byFillType = {}, list = {} }
+
   return self
 end
 
 function MenuCustomContracts:displaySelectedContract()
   local index = self.contractsTable.selectedIndex
+  local selection = self.contractDisplaySwitcher:getState()
 
   if index ~= -1 then
-    local selection = self.contractDisplaySwitcher:getState()
-    local contract = self.contractsRenderer.data[selection][index]
+    local contractByFlat = self.contractsRenderer.data and self.contractsRenderer.data[selection] and
+        self.contractsRenderer.data[selection][index]
+    local contractBySection = nil
+    local r = self.contractsRenderer
+    if r and r.sectionContracts and r.selectedSection and r.selectedRow then
+      local secs = r.sectionContracts[selection]
+      if secs and secs[r.selectedSection] then
+        contractBySection = secs[r.selectedSection].contracts[r.selectedRow]
+      end
+    end
+    local contractByFlatInSections = r and r:getContractAtFlatIndex(selection, index)
+    local contract = contractBySection or contractByFlatInSections or contractByFlat
 
     if contract ~= nil then
-      local farmland = g_farmlandManager:getFarmlandById(contract.farmlandId)
       self.contractsInfoContainer:setVisible(true)
       self.noSelectedContractText:setVisible(false)
 
@@ -68,8 +81,8 @@ function MenuCustomContracts:displaySelectedContract()
       if farm ~= nil then
         self.contractId:setText(string.format(g_i18n:getText("cc_contract_id_label"), contract.id))
         self.contractFarmName:setText(string.format(g_i18n:getText("cc_contract_owner_label"), farm.name))
-        self.contractWorkType:setText(g_i18n:getText("cc_workareatype_" ..
-          string.lower(contract:getWorkTypeAreaName(contract.workAreaTypeIndex))))
+        self.contractWorkType:setText(g_i18n:getText("cc_workareatype_" .. string.lower(contract:getWorkTypeAreaName())) or
+          contract:getWorkTypeAreaName())
       else
         self.contractFarmName:setText("-")
         self.contractWorkType:setText("-")
@@ -106,11 +119,7 @@ function MenuCustomContracts:displaySelectedContract()
         contract.description or "-"
       )
 
-      self.contractDescriptionValue:setText(
-        string.format(g_i18n:getText("cc_contract_description"), g_i18n:getText("cc_workareatype_" ..
-            string.lower(contract:getWorkTypeAreaName(contract.workAreaTypeIndex))),
-          contract.farmlandId, farmland.areaInHa)
-      )
+      self.contractDescriptionValue:setText(contract:getDescriptionText())
       self.contractStartDateValue:setText(CustomUtils:formatPeriodDay(contract.startPeriod, contract.startDay))
       self.contractDueDateValue:setText(CustomUtils:formatPeriodDay(contract.duePeriod, contract.dueDay))
     else
@@ -355,12 +364,20 @@ function MenuCustomContracts:onFrameOpen()
   self.subCategoryPaging:setTexts(texts)
   self.subCategoryPaging:setSize(self.subCategoryBox.maxFlowSize + 140 * g_pixelSizeScaledX)
 
+  FocusManager:setFocus(self.contractsTable)
+  self:refreshInventory()
   self:onMoneyChange()
   g_messageCenter:subscribe(MessageType.MONEY_CHANGED, self.onMoneyChange, self)
   g_messageCenter:subscribe(MessageType.CUSTOM_CONTRACTS_UPDATED, self.updateContent, self)
   g_messageCenter:subscribe(MessageType.INVOICES_UPDATED, self.updateContent, self)
   self:updateContent()
   self:setMenuButtonInfoDirty()
+end
+
+--- Refreshes the cached farm inventory snapshot (silos, etc.) for display and contract creation.
+function MenuCustomContracts:refreshInventory()
+  local farmId = g_currentMission:getFarmId()
+  self.cachedInventory = FarmInventoryHelper.retrieveFarmInventory(farmId)
 end
 
 function MenuCustomContracts:onFrameClose()
@@ -515,12 +532,22 @@ function MenuCustomContracts:getSelectedContract()
   end
 
   local selection = self.contractDisplaySwitcher:getState()
-  local list = self.contractsRenderer.data and self.contractsRenderer.data[selection]
-  if list == nil then
-    return nil
+  local r = self.contractsRenderer
+  local contract = nil
+  if r and r.selectedSection and r.selectedRow then
+    local secs = r.sectionContracts and r.sectionContracts[selection]
+    if secs and secs[r.selectedSection] then
+      contract = secs[r.selectedSection].contracts[r.selectedRow]
+    end
   end
-
-  return list[index]
+  if not contract and r then
+    contract = r:getContractAtFlatIndex(selection, index)
+  end
+  if not contract then
+    local list = r and r.data and r.data[selection]
+    contract = list and list[index]
+  end
+  return contract
 end
 
 function MenuCustomContracts:getSelectedInvoice()
@@ -769,7 +796,28 @@ end
 -- Function triggered when clicking on the "Create contract" button
 function MenuCustomContracts:onCreateContract()
   self:queueContractsView(MenuCustomContracts.CONTRACTS_LIST_TYPE.OWNED, nil)
-  CreateContractDialog.show()
+
+  local options = {
+    "FIELDWORK",
+    "TRANSPORT",
+    "FARMJOB",
+    "CUSTOM"
+  }
+  local callback = function(templateId)
+    if templateId == 1 then
+      CreateContractDialog.show()
+    elseif templateId == 2 then
+      self:refreshInventory()
+      CreateTransportContractDialog.show(self.cachedInventory.list)
+    elseif templateId == 3 then
+      InfoDialog.show(g_i18n:getText("cc_dialog_template_coming_soon"))
+    elseif templateId == 4 then
+      InfoDialog.show(g_i18n:getText("cc_dialog_template_coming_soon"))
+    end
+  end
+
+  OptionDialog.show(callback, "What type of contract do you want to create?",
+    "Select contract template", options)
 end
 
 -- Function triggered when clicking on the "Complete contract" button
