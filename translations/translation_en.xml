@@ -129,9 +129,12 @@
     <text name="cc_dialog_transport_amount_label" text="Amount to transport (L)"/>
     <text name="cc_dialog_transport_destination_label" text="Destination"/>
     <text name="cc_dialog_transport_destination_placeholder" text="Select destination (coming soon)"/>
+    <text name="cc_dialog_transport_destination_pick_map" text="Pick on map..."/>
+    <text name="cc_dialog_transport_destination_picked" text="Destination: %.0f, %.0f"/>
     <text name="cc_dialog_transport_reward_label" text="Reward (€)"/>
     <text name="cc_dialog_transport_validation_select_product" text="Please select a product from the list."/>
     <text name="cc_dialog_transport_validation_amount" text="Please enter a valid amount (max. available)."/>
+    <text name="cc_dialog_transport_validation_destination" text="Please pick a destination on the map."/>
 
     <text name="cc_dialog_create_title" text="Create Contract"/>
     <text name="cc_dialog_create_input_field" text="Farmland ID"/>

@@ -74,7 +74,9 @@ function CustomContract.new(id, creatorFarmId, farmlandId, workAreaTypeIndex, re
   -- Transport-specific (only used when templateId == TRANSPORT)
   self.fillTypeIndex     = nil
   self.transportAmount   = nil
-  self.destinationId     = nil
+  self.destinationId    = nil
+  self.destinationX      = nil  -- world X when destinationId == -1 (map position)
+  self.destinationZ      = nil  -- world Z when destinationId == -1 (map position)
 
   return self
 end
@@ -97,6 +99,8 @@ function CustomContract:writeStream(streamId)
   streamWriteInt32(streamId, self.fillTypeIndex or -1)
   streamWriteInt32(streamId, self.transportAmount or -1)
   streamWriteInt32(streamId, self.destinationId or -1)
+  streamWriteFloat32(streamId, self.destinationX or 0)
+  streamWriteFloat32(streamId, self.destinationZ or 0)
 end
 
 function CustomContract.newFromStream(streamId)
@@ -117,6 +121,8 @@ function CustomContract.newFromStream(streamId)
   local fillTypeIndex = streamReadInt32(streamId)
   local transportAmount = streamReadInt32(streamId)
   local destinationId = streamReadInt32(streamId)
+  local destinationX = streamReadFloat32(streamId)
+  local destinationZ = streamReadFloat32(streamId)
 
   local contract = CustomContract.new(
     id,
@@ -137,7 +143,9 @@ function CustomContract.newFromStream(streamId)
   contract.status = status
   if fillTypeIndex and fillTypeIndex >= 0 then contract.fillTypeIndex = fillTypeIndex end
   if transportAmount and transportAmount >= 0 then contract.transportAmount = transportAmount end
-  if destinationId and destinationId >= 0 then contract.destinationId = destinationId end
+  if destinationId ~= nil then contract.destinationId = destinationId end
+  if destinationX and destinationX ~= 0 then contract.destinationX = destinationX end
+  if destinationZ and destinationZ ~= 0 then contract.destinationZ = destinationZ end
 
   return contract
 end

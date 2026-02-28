@@ -54,6 +54,8 @@ function CustomContractManager:saveToXmlFile(xmlFile)
     setXMLInt(xmlFile, key .. "#fillTypeIndex", contract.fillTypeIndex or -1)
     setXMLInt(xmlFile, key .. "#transportAmount", contract.transportAmount or -1)
     setXMLInt(xmlFile, key .. "#destinationId", contract.destinationId or -1)
+    if contract.destinationX then setXMLFloat(xmlFile, key .. "#destinationX", contract.destinationX) end
+    if contract.destinationZ then setXMLFloat(xmlFile, key .. "#destinationZ", contract.destinationZ) end
 
     count = count + 1
   end
@@ -91,6 +93,8 @@ function CustomContractManager:loadFromXmlFile(xmlFile)
     local fillTypeIndex       = getXMLInt(xmlFile, contractKey .. "#fillTypeIndex")
     local transportAmount     = getXMLInt(xmlFile, contractKey .. "#transportAmount")
     local destinationId       = getXMLInt(xmlFile, contractKey .. "#destinationId")
+    local destinationX        = getXMLFloat(xmlFile, contractKey .. "#destinationX")
+    local destinationZ        = getXMLFloat(xmlFile, contractKey .. "#destinationZ")
 
     local contract            = CustomContract.new(
       id,
@@ -111,7 +115,9 @@ function CustomContractManager:loadFromXmlFile(xmlFile)
     contract.status           = status
     if fillTypeIndex and fillTypeIndex >= 0 then contract.fillTypeIndex = fillTypeIndex end
     if transportAmount and transportAmount >= 0 then contract.transportAmount = transportAmount end
-    if destinationId and destinationId >= 0 then contract.destinationId = destinationId end
+    contract.destinationId = destinationId
+    if destinationX then contract.destinationX = destinationX end
+    if destinationZ then contract.destinationZ = destinationZ end
 
     self.contracts[id]        = contract
     self.nextId               = math.max(self.nextId, id + 1)
@@ -286,6 +292,8 @@ function CustomContractManager:handleCreateRequest(farmId, payload)
     contract.fillTypeIndex   = payload.fillTypeIndex
     contract.transportAmount = payload.transportAmount
     contract.destinationId   = payload.destinationId or -1
+    if payload.destinationX then contract.destinationX = payload.destinationX end
+    if payload.destinationZ then contract.destinationZ = payload.destinationZ end
   end
 
   self.contracts[id] = contract

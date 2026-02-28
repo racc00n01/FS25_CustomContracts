@@ -37,6 +37,8 @@ function CreateContractEvent:writeStream(streamId, connection)
   streamWriteInt32(streamId, self.payload.fillTypeIndex or -1)
   streamWriteInt32(streamId, self.payload.transportAmount or -1)
   streamWriteInt32(streamId, self.payload.destinationId or -1)
+  streamWriteFloat32(streamId, self.payload.destinationX or 0)
+  streamWriteFloat32(streamId, self.payload.destinationZ or 0)
 end
 
 function CreateContractEvent:readStream(streamId, connection)
@@ -54,7 +56,9 @@ function CreateContractEvent:readStream(streamId, connection)
     invoiceId         = streamReadInt32(streamId),
     fillTypeIndex     = streamReadInt32(streamId),
     transportAmount   = streamReadInt32(streamId),
-    destinationId     = streamReadInt32(streamId)
+    destinationId     = streamReadInt32(streamId),
+    destinationX      = streamReadFloat32(streamId),
+    destinationZ      = streamReadFloat32(streamId)
   }
 
   self:run(connection)
