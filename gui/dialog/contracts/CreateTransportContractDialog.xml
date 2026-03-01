@@ -38,9 +38,11 @@
 
       <Bitmap profile="CC_MultiTextOptionContainerDark" position="15px -400px">
         <Text text="$l10n_cc_dialog_transport_destination_label" profile="CC_ContractInputLabel" />
-        <MultiTextOption id="destinationSelector" profile="CC_MultiTextOption" onClick="onDestinationChange">
-          <Text profile="fs25_multiTextOptionText" name="text" />
-        </MultiTextOption>
+        <Button profile="CC_PickDestinationMapButton" id="destinationText" text="172a" onClick="onDestinationClick">
+          <ThreePartBitmap profile="fs25_aiCreateJobParameterBg"/>
+          <Bitmap profile="fs25_aiCreateJobParameterIcon"/>
+        </Button>
+        <!-- <Button id="destinationText" profile="fs25_aiCreateJobParameterButton" onClick="onDestinationClick"/> -->
       </Bitmap>
 
       <Bitmap profile="CC_MultiTextOptionContainerLight" position="15px -450px">

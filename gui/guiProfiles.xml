@@ -137,6 +137,11 @@
     <imageColor value="0.02956 0.02956 0.02956 0.2"/>
   </Profile>
 
+  <Profile name="CC_PickDestinationMapButton" extends="fs25_aiCreateJobParameterButton" with="anchorMiddleRight">
+    <size value="244px 40px"/>
+    <position value="-20px 0px"/>
+  </Profile>
+
   <Profile name="CC_ContractInputLabel" extends="fs25_textDefault" with="anchorMiddleLeft">
     <textBold value="true" />
     <position value="20px 0px"/>

@@ -28,6 +28,7 @@ function CustomContracts:loadMap()
 
   CreateContractDialog.register()
   CreateTransportContractDialog.register()
+  PickDestinationMapDialog.register()
   EditContractDialog.register()
   CreateInvoiceDialog.register()
   AddInvoiceLineDialog.register()

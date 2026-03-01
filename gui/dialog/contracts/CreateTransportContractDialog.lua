@@ -90,68 +90,29 @@ function CreateTransportContractDialog:onClose()
   CreateTransportContractDialog:superClass().onClose(self)
 end
 
---- Updates the destination selector text to "Pick on map..." or "Destination: X, Z".
+--- Updates the destination button text to "Pick on map..." or "Destination: X, Z".
 function CreateTransportContractDialog:updateDestinationSelector()
   local text
   if self.pickedDestinationX ~= nil and self.pickedDestinationZ ~= nil then
-    text = string.format(g_i18n:getText("cc_dialog_transport_destination_picked"), self.pickedDestinationX, self.pickedDestinationZ)
+    text = string.format(g_i18n:getText("cc_dialog_transport_destination_picked"), self.pickedDestinationX,
+      self.pickedDestinationZ)
   else
     text = g_i18n:getText("cc_dialog_transport_destination_pick_map")
   end
-  self.destinationOptions = { text }
-  self.destinationSelector:setTexts(self.destinationOptions)
-  self.destinationSelector:setState(1, false)
+  self.destinationText:setText(text)
 end
 
---- Start map position picking: close dialog, open map, use game's startPickPosition; on pick/cancel reopen dialog.
-function CreateTransportContractDialog:onDestinationChange(state)
-  if g_inGameMenu == nil or g_inGameMenu.pageMapOverview == nil then
-    return
-  end
-
-  local mapFrame = g_inGameMenu.pageMapOverview
-  if mapFrame.startPickPosition == nil then
-    return
-  end
-
-  -- Save current dialog state so we can reopen after picking
-  local savedState = {
-    inventoryData   = self.inventoryData,
-    selectedIndex   = self.selectedIndex,
-    amountText      = self.amountInput:getText(),
-    rewardText      = self.rewardInput:getText()
-  }
-
-  -- Dummy parameter object required by InGameMenuMapFrame:startPickPosition(parameter, callback)
-  local dummyParameter = {
-    setValue = function(_, x, z) end
-  }
-
-  local previousDestX = self.pickedDestinationX
-  local previousDestZ = self.pickedDestinationZ
-  local function onPickComplete(success, x, z)
-    if success and x ~= nil and z ~= nil then
-      g_inGameMenu:goToPage(g_inGameMenu.pageMain)
-      CreateTransportContractDialog.show(savedState.inventoryData, {
-        savedState   = savedState,
-        destinationX = x,
-        destinationZ = z
-      })
-    else
-      -- User cancelled: reopen dialog preserving previous destination
-      g_inGameMenu:goToPage(g_inGameMenu.pageMain)
-      CreateTransportContractDialog.show(savedState.inventoryData, {
-        savedState   = savedState,
-        destinationX = previousDestX,
-        destinationZ = previousDestZ
-      })
+--- Open the map-in-dialog picker; callback updates destination and refreshes the button text.
+function CreateTransportContractDialog:onDestinationClick()
+  PickDestinationMapDialog.show(function(success, worldX, worldZ)
+    if success and worldX ~= nil and worldZ ~= nil then
+      print("onDestinationClick", success, worldX, worldZ)
+      self.pickedDestinationX = worldX
+      self.pickedDestinationZ = worldZ
+      self:updateDestinationSelector()
+      g_inputBinding:setShowMouseCursor(true)
     end
-  end
-
-  self:close()
-  g_inGameMenu:goToPage(g_inGameMenu.pageMapOverview)
-  -- Run after frame so map page is active
-  mapFrame:startPickPosition(dummyParameter, onPickComplete)
+  end)
 end
 
 function CreateTransportContractDialog:onEnterPressed()

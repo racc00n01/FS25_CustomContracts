@@ -84,6 +84,7 @@ https://github.com/racc00n01/FS25_ContractsAndInvoices
     <sourceFile filename="gui/dialog/contracts/ContractTemplateDialog.lua"/>
     <sourceFile filename="gui/dialog/contracts/CreateContractDialog.lua"/>
     <sourceFile filename="gui/dialog/contracts/CreateTransportContractDialog.lua"/>
+    <sourceFile filename="gui/dialog/contracts/PickDestinationMapDialog.lua"/>
     <sourceFile filename="gui/dialog/contracts/EditContractDialog.lua"/>
     <sourceFile filename="gui/dialog/invoices/DetailInvoiceDialog.lua"/>
     <sourceFile filename="gui/dialog/invoices/AddInvoiceLineDialog.lua"/>
