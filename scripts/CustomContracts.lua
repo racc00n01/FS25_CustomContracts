@@ -50,7 +50,21 @@ function CustomContracts:loadMap()
 end
 
 function CustomContracts:makeIsCustomContractsCheckEnabledPredicate()
-  return function() return true end
+  -- Only enable the Custom Contracts page for players that are actually in a farm.
+  -- When in spectator mode (no farm or FarmManager.SPECTATOR_FARM_ID), the page
+  -- tab will be hidden from the in‑game menu so it cannot appear half off‑screen.
+  return function()
+    if g_currentMission == nil then
+      return false
+    end
+
+    local farmId = g_currentMission:getFarmId()
+    if farmId == nil or farmId == FarmManager.SPECTATOR_FARM_ID then
+      return false
+    end
+
+    return true
+  end
 end
 
 function CustomContracts:loadFromXmlFile()

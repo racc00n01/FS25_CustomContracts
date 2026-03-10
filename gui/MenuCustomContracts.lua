@@ -456,6 +456,17 @@ end
 function MenuCustomContracts:updateMenuButtons()
   local subCategory = self.subCategoryPaging:getState()
 
+  -- If player is not in a farm (spectator), only allow backing out of the menu.
+  local currentMission = g_currentMission
+  local myFarmId = currentMission and currentMission:getFarmId() or nil
+  local isSpectator = (myFarmId == nil or myFarmId == FarmManager.SPECTATOR_FARM_ID)
+
+  if isSpectator then
+    self.menuButtonInfo[subCategory] = { self.btnBack }
+    self:setMenuButtonInfoDirty()
+    return
+  end
+
   if subCategory == MenuCustomContracts.SUB_CATEGORY.INVOICES then
     local invoice = self:getSelectedInvoice()
     local myFarmId = g_currentMission:getFarmId() or 0
@@ -534,9 +545,34 @@ function MenuCustomContracts:getSelectedInvoice()
   end
 end
 
+--- Returns true if the current player farm owns at least one farmland.
+function MenuCustomContracts:playerHasAnyFields()
+  if g_currentMission == nil or g_farmlandManager == nil then
+    return false
+  end
+
+  local myFarmId = g_currentMission:getFarmId()
+  if myFarmId == nil or myFarmId == FarmManager.SPECTATOR_FARM_ID then
+    return false
+  end
+
+  -- Iterate all farmlands and check owner
+  for _, farmland in pairs(g_farmlandManager.farmlands or {}) do
+    if farmland.ownerFarmId == myFarmId then
+      return true
+    end
+  end
+
+  return false
+end
+
 function MenuCustomContracts:shouldShowButton(button, listType, contract)
   -- Always show these
   if button == self.btnBack or button == self.btnCreateContract then
+    -- Additional rule: do not allow creating contracts when the player has no fields.
+    if button == self.btnCreateContract and not self:playerHasAnyFields() then
+      return false
+    end
     return true
   end
 
