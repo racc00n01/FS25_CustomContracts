@@ -24,7 +24,7 @@ function CustomContracts:loadMap()
   g_gui:loadGui(CustomContracts.dir .. "gui/MenuCustomContracts.xml", "menuCustomContracts", menuCustomContracts, true)
 
   CustomContracts.addIngameMenuPage(menuCustomContracts, "menuCustomContracts", { 0, 0, 1024, 1024 },
-    CustomContracts:makeIsCustomContractsCheckEnabledPredicate(), "pageSettings")
+    CustomContracts:makeIsCustomContractsCheckEnabledPredicate(), 2)
 
   CreateContractDialog.register()
   CreateTransportContractDialog.register()
@@ -52,7 +52,21 @@ function CustomContracts:loadMap()
 end
 
 function CustomContracts:makeIsCustomContractsCheckEnabledPredicate()
-  return function() return true end
+  -- Only enable the Custom Contracts page for players that are actually in a farm.
+  -- When in spectator mode (no farm or FarmManager.SPECTATOR_FARM_ID), the page
+  -- tab will be hidden from the in‑game menu so it cannot appear half off‑screen.
+  return function()
+    if g_currentMission == nil then
+      return false
+    end
+
+    local farmId = g_currentMission:getFarmId()
+    if farmId == nil or farmId == FarmManager.SPECTATOR_FARM_ID then
+      return false
+    end
+
+    return true
+  end
 end
 
 function CustomContracts:loadFromXmlFile()
@@ -105,12 +119,20 @@ function CustomContracts.addIngameMenuPage(frame, pageName, uvs, predicateFunc, 
     g_inGameMenu.controlIDs[v] = nil
   end
 
-  for i = 1, #g_inGameMenu.pagingElement.elements do
-    local child = g_inGameMenu.pagingElement.elements[i]
-    if child == g_inGameMenu[insertAfter] then
-      targetPosition = i + 1;
-      break
+  if type(insertAfter) == "number" then
+    targetPosition = math.max(1, insertAfter)
+  else
+    for i = 1, #g_inGameMenu.pagingElement.elements do
+      local child = g_inGameMenu.pagingElement.elements[i]
+      if child == g_inGameMenu[insertAfter] then
+        targetPosition = i + 1
+        break
+      end
     end
+  end
+
+  if targetPosition < 1 then
+    targetPosition = 1
   end
 
   g_inGameMenu[pageName] = frame

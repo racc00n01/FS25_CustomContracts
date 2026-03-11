@@ -155,8 +155,10 @@ function EditContractDialog:onConfirm(sender)
     dueDay            = dueV.day
   }
 
+  local farmId = g_currentMission:getFarmId()
+
   g_client:getServerConnection():sendEvent(
-    EditContractEvent.new(updated, self.editContract.id)
+    EditContractEvent.new(self.editContract.id, updated, farmId)
   )
 
   self:close()
