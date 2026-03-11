@@ -545,35 +545,20 @@ function MenuCustomContracts:getSelectedInvoice()
   end
 end
 
---- Returns true if the current player farm owns at least one farmland.
-function MenuCustomContracts:playerHasAnyFields()
-  if g_currentMission == nil or g_farmlandManager == nil then
-    return false
-  end
-
-  local myFarmId = g_currentMission:getFarmId()
-  if myFarmId == nil or myFarmId == FarmManager.SPECTATOR_FARM_ID then
-    return false
-  end
-
-  -- Iterate all farmlands and check owner
-  for _, farmland in pairs(g_farmlandManager.farmlands or {}) do
-    if farmland.ownerFarmId == myFarmId then
-      return true
-    end
-  end
-
-  return false
-end
-
 function MenuCustomContracts:shouldShowButton(button, listType, contract)
   -- Always show these
-  if button == self.btnBack or button == self.btnCreateContract then
-    -- Additional rule: do not allow creating contracts when the player has no fields.
-    if button == self.btnCreateContract and not self:playerHasAnyFields() then
+  local myFarmId = g_currentMission:getFarmId()
+
+  if button == self.btnBack then
+    return true
+  end
+
+  if button == self.btnCreateContract then
+    if g_farmlandManager:getNumOwnedFarmlandIdsByFarmId(myFarmId) > 0 then
+      return true
+    else
       return false
     end
-    return true
   end
 
   -- No selected contract => only back + create
@@ -581,7 +566,6 @@ function MenuCustomContracts:shouldShowButton(button, listType, contract)
     return false
   end
 
-  local myFarmId = g_currentMission:getFarmId() or 0
   local isOwner = (contract.creatorFarmId == myFarmId)
   local isContractor = (contract.contractorFarmId == myFarmId)
 

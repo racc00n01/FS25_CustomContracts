@@ -24,7 +24,7 @@ function CustomContracts:loadMap()
   g_gui:loadGui(CustomContracts.dir .. "gui/MenuCustomContracts.xml", "menuCustomContracts", menuCustomContracts, true)
 
   CustomContracts.addIngameMenuPage(menuCustomContracts, "menuCustomContracts", { 0, 0, 1024, 1024 },
-    CustomContracts:makeIsCustomContractsCheckEnabledPredicate(), "pageSettings")
+    CustomContracts:makeIsCustomContractsCheckEnabledPredicate(), 2)
 
   CreateContractDialog.register()
   EditContractDialog.register()
@@ -117,12 +117,20 @@ function CustomContracts.addIngameMenuPage(frame, pageName, uvs, predicateFunc, 
     g_inGameMenu.controlIDs[v] = nil
   end
 
-  for i = 1, #g_inGameMenu.pagingElement.elements do
-    local child = g_inGameMenu.pagingElement.elements[i]
-    if child == g_inGameMenu[insertAfter] then
-      targetPosition = i + 1;
-      break
+  if type(insertAfter) == "number" then
+    targetPosition = math.max(1, insertAfter)
+  else
+    for i = 1, #g_inGameMenu.pagingElement.elements do
+      local child = g_inGameMenu.pagingElement.elements[i]
+      if child == g_inGameMenu[insertAfter] then
+        targetPosition = i + 1
+        break
+      end
     end
+  end
+
+  if targetPosition < 1 then
+    targetPosition = 1
   end
 
   g_inGameMenu[pageName] = frame
