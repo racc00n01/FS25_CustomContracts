@@ -45,8 +45,12 @@ function MenuCustomContracts.new(i18n, messageCenter)
 
   -- Intialize renderers
   self.contractsRenderer = ContractsRenderer.new()
+  self.contractDetailsRenderer = ContractsDetailsRenderer.new()
   self.invoicesInboxRenderer = InvoicesInboxRenderer.new()
   self.invoicesOutboxRenderer = InvoicesOutboxRenderer.new()
+
+
+  self.aiTargetMapHotspot = AITargetHotspot.new()
 
   -- Cached farm inventory for GUI and contract creation (refreshed when menu opens).
   self.cachedInventory = { byFillType = {}, list = {} }
@@ -76,11 +80,46 @@ function MenuCustomContracts:displaySelectedContract()
       self.contractsInfoContainer:setVisible(true)
       self.noSelectedContractText:setVisible(false)
 
+      -- Ensure ingame map is set before using the preview
+      local hudMap = g_currentMission.hud and g_currentMission.hud:getIngameMap() or nil
+      if hudMap ~= nil then
+        self.contractMap:setIngameMap(hudMap)
+        self.contractMap.drawHotspots = true
+
+        -- Center map depending on contract template
+        if contract.templateId == CustomContract.TEMPLATE.TRANSPORT then
+          g_currentMission:addMapHotspot(self.aiTargetMapHotspot)
+
+          local destX = contract.destinationX
+          local destZ = contract.destinationZ
+          if destX ~= nil and destZ ~= nil then
+            self.contractMap:setCenterToWorldPosition(destX, destZ)
+            self.aiTargetMapHotspot:setWorldPosition(destX, destZ)
+          end
+        else
+          local farmland = g_farmlandManager:getFarmlandById(contract.farmlandId)
+          if farmland ~= nil and farmland.xWorldPos ~= nil and farmland.zWorldPos ~= nil then
+            self.contractMap:setCenterToWorldPosition(farmland.xWorldPos, farmland.zWorldPos)
+          end
+        end
+
+        -- Clip the HUD ingame map to the preview rect
+        if self.contractMap.ingameMap ~= nil then
+          local posStartX = self.contractMap.absPosition[1]
+          local posStartY = self.contractMap.absPosition[2]
+          local posEndX = posStartX + self.contractMap.absSize[1]
+          local posEndY = posStartY + self.contractMap.absSize[2]
+          self.contractMap.ingameMap:setMapClipArea(posStartX, posStartY, posEndX, posEndY)
+          self.contractMap.ingameMap.clipHotspots = true
+        end
+      end
+
       --Contract info
       local farm = g_farmManager:getFarmById(contract.creatorFarmId)
       if farm ~= nil then
-        self.contractId:setText(string.format(g_i18n:getText("cc_contract_id_label"), contract.id))
-        self.contractFarmName:setText(string.format(g_i18n:getText("cc_contract_owner_label"), farm.name))
+        -- self.contractId:setText(string.format(g_i18n:getText("cc_contract_id_label"), contract.id))
+        self.contractFarmImage:setImageSlice(nil, farm:getIconSliceId())
+        self.contractFarmName:setText(farm.name)
         self.contractWorkType:setText(g_i18n:getText("cc_workareatype_" .. string.lower(contract:getWorkTypeAreaName())) or
           contract:getWorkTypeAreaName())
       else
@@ -92,36 +131,40 @@ function MenuCustomContracts:displaySelectedContract()
         g_i18n:formatMoney(contract.reward, 0, true, true)
       )
 
-      local statusText
-      local statusTextLabel
-
-      if contract.contractorFarmId ~= nil then
-        local contractorFarm = g_farmManager:getFarmById(contract.contractorFarmId)
-
-        if contractorFarm ~= nil and contract.status ~= CustomContract.STATUS.EXPIRED and contract.status ~= CustomContract.STATUS.CANCELLED and contract.status ~= CustomContract.STATUS.COMPLETED and contract.status ~= CustomContract.STATUS.INVOICED and contract.status ~= CustomContract.STATUS.COMPLETED_AWAITING_INVOICE then
-          statusTextLabel = g_i18n:getText("cc_contract_status_label")
-          statusText = contractorFarm.name
-        else
-          statusTextLabel = g_i18n:getText("cc_contract_status_label_default")
-          statusText = g_i18n:getText("cc_status_" .. string.lower(contract.status))
-              or contract.status
-        end
-      else
-        statusTextLabel = string.format(g_i18n:getText("cc_contract_status_label_default"))
-        statusText = g_i18n:getText("cc_status_" .. string.lower(contract.status))
-            or contract.status
+      -- Populate contract details SmoothList
+      if self.contractDetailsRenderer ~= nil and self.contractDetailsList ~= nil then
+        self.contractDetailsRenderer:setFromContract(contract)
+        self.contractDetailsList:reloadData()
       end
 
-      self.contractStatusValue:setText(statusText)
-      self.contractStatusLabel:setText(statusTextLabel)
+      -- local statusText
+      -- local statusTextLabel
 
-      self.contractNotesValue:setText(
-        contract.description or "-"
-      )
+      -- if contract.contractorFarmId ~= nil then
+      --   local contractorFarm = g_farmManager:getFarmById(contract.contractorFarmId)
+
+      --   if contractorFarm ~= nil and contract.status ~= CustomContract.STATUS.EXPIRED and contract.status ~= CustomContract.STATUS.CANCELLED and contract.status ~= CustomContract.STATUS.COMPLETED and contract.status ~= CustomContract.STATUS.INVOICED and contract.status ~= CustomContract.STATUS.COMPLETED_AWAITING_INVOICE then
+      --     statusTextLabel = g_i18n:getText("cc_contract_status_label")
+      --     statusText = contractorFarm.name
+      --   else
+      --     statusTextLabel = g_i18n:getText("cc_contract_status_label_default")
+      --     statusText = g_i18n:getText("cc_status_" .. string.lower(contract.status))
+      --         or contract.status
+      --   end
+      -- else
+      --   statusTextLabel = string.format(g_i18n:getText("cc_contract_status_label_default"))
+      --   statusText = g_i18n:getText("cc_status_" .. string.lower(contract.status))
+      --       or contract.status
+      -- end
+
+      -- self.contractStatusValue:setText(statusText)
+      -- self.contractStatusLabel:setText(statusTextLabel)
+
+      -- self.contractNotesValue:setText(
+      --   contract.description or "-"
+      -- )
 
       self.contractDescriptionValue:setText(contract:getDescriptionText())
-      self.contractStartDateValue:setText(CustomUtils:formatPeriodDay(contract.startPeriod, contract.startDay))
-      self.contractDueDateValue:setText(CustomUtils:formatPeriodDay(contract.duePeriod, contract.dueDay))
     else
       self.contractsInfoContainer:setVisible(false)
       self.noSelectedContractText:setVisible(true)
@@ -132,16 +175,24 @@ end
 function MenuCustomContracts:onGuiSetupFinished()
   MenuCustomContracts:superClass().onGuiSetupFinished(self)
 
+  -- Contracts list (left) uses ContractsRenderer
   self.contractsTable:setDataSource(self.contractsRenderer)
   self.contractsTable:setDelegate(self.contractsRenderer)
 
+  -- Contract details SmoothList inside CC_ContractContractBox
+  if self.contractDetailsList ~= nil then
+    self.contractDetailsList:setDataSource(self.contractDetailsRenderer)
+    self.contractDetailsList:setDelegate(self.contractDetailsRenderer)
+  end
+
+  -- Invoice inbox/outbox tables
   self.inboxInvoicesTable:setDataSource(self.invoicesInboxRenderer)
   self.inboxInvoicesTable:setDelegate(self.invoicesInboxRenderer)
 
   self.outboxInvoicesTable:setDataSource(self.invoicesOutboxRenderer)
   self.outboxInvoicesTable:setDelegate(self.invoicesOutboxRenderer)
 
-  self.contractsRenderer.indexChangedCallback = function(index)
+  self.contractsRenderer.indexChangedCallback = function(section, index)
     self:displaySelectedContract()
     self:updateMenuButtons()
   end
@@ -355,6 +406,10 @@ function MenuCustomContracts:getMenuButtonInfo()
 end
 
 function MenuCustomContracts:onFrameOpen()
+  self.contractMap:setIngameMap(g_currentMission.hud:getIngameMap())
+  self.contractMap.drawHotspots = true
+
+
   local texts = {}
   for k, tab in pairs(self.subCategoryTabs) do
     tab:setVisible(true)

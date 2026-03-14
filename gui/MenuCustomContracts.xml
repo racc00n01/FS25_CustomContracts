@@ -62,34 +62,43 @@
         </GuiElement>
 
         <Text id="noSelectedContractText" profile="CC_HeaderLeft" text="$l10n_cc_contract_empty" position="460px -230px" width="500px" />
-        <GuiElement id="contractsInfoContainer" width="1087px" position="460px -40px">
+        <GuiElement id="contractsInfoContainer" width="1087px" position="460px -5px">
+          <ThreePartBitmap profile="fs25_contractsContentSeparator"/>
+          <GuiElement profile="CC_ContractFarmerBox">
+            <Bitmap profile="fs25_contractsFarmerImageGradient"/>
+            <Bitmap profile="fs25_contractsFarmerImage" id="contractFarmImage"/>
+            <Text profile="fs25_contractsFarmerName" id="contractFarmName"/>
+          </GuiElement>
 
-          <Text profile="CC_ContractTagline" id="contractId" position="0px -10px"/>
-          <Text profile="CC_ContractTitle" id="contractWorkType" position="0px -30px"/>
-          <Text profile="CC_ContractOwner" id="contractFarmName" position="0px -70px"/>
-          <Text profile="CC_ContractTaglineRight" id="contractStatusLabel" position="0px -20px"/>
-          <Text profile="CC_ContractStatus" id="contractStatusValue" position="0px -60px"/>
+          <GuiElement profile="CC_ContractContractBox">
+            <Text profile="fs25_contractsContractTitle" id="contractWorkType"/>
+            <Text profile="fs25_contractsContractInfoTitle" text="$l10n_ui_contractsInfo"/>
+            <Text profile="fs25_contractsContractInfo" id="contractDescriptionValue"/>
 
-          <Text profile="CC_ContractH6" text="$l10n_cc_contract_start_date_label" position="300px -30px"/>
-          <Text profile="CC_ContractTagline" id="contractStartDateValue" position="300px -50px"/>
+            <!-- Contract details SmoothList (Farmland, Start, End, Status) -->
+            <SmoothList profile="fs25_contractsDetailsList" id="contractDetailsList">
+              <ListItem profile="fs25_contractsDetailsListItem">
+                <Text profile="fs25_contractsDetailsListTitle" name="title"/>
+                <Text profile="fs25_contractsDetailsListInfo" name="info"/>
+              </ListItem>
+            </SmoothList>
 
-          <Text profile="CC_ContractH6" text="$l10n_cc_contract_due_date_label" position="500px -30px"/>
-          <Text profile="CC_ContractTagline" id="contractDueDateValue" position="500px -50px"/>
+            <Text profile="CC_ContractContractReward" id="rewardTitle" text="$l10n_contract_reward:"/>
+            <ThreePartBitmap profile="CC_ContractContractRewardSeparator"/>
+            <Text profile="CC_ContractContractRewardValue" id="contractRewardValue"/>
+          </GuiElement>
 
-          <ThreePartBitmap profile="fs25_lineSeparatorTop" position="0px -120px"/>
+          <GuiElement profile="CC_ContractMapBox" id="mapBox">
+            <Text profile="fs25_contractsContentTitle" text="$l10n_contract_position:" position="0px -30px"/>
+            <InGameMapPreview profile="CC_ContractMap" id="contractMap" onDrawPostIngameMapHotspots="onDrawPostIngameMapHotspots"/>
+          </GuiElement>
 
-          <Text profile="CC_ContractH6" position="0px -150px" text="$l10n_cc_contract_info_title"/>
-          <Text profile="CC_ContractBody" position="0px -180px" id="contractDescriptionValue"/>
+          <!-- <Text profile="CC_ContractTaglineRight" id="contractStatusLabel" position="0px -20px"/>
+          <Text profile="CC_ContractStatus" id="contractStatusValue" position="0px -60px"/> -->
 
 
-          <Text profile="CC_ContractH6Right" position="-150px -150px" with="anchorTopRight" text="$l10n_cc_contract_notes_title"/>
-          <Text profile="CC_ContractBodyRight" position="-150px -180px" with="anchorTopRight" id="contractNotesValue"/>
-
-          <Text profile="CC_ContractBody" width="800px" position="0px -560px" text="$l10n_cc_contract_disclaimer"/>
-
-          <ThreePartBitmap profile="fs25_lineSeparatorTop" position="0px -600px"/>
-          <Text profile="CC_ContractFooter" position="0px -620px" text="$l10n_cc_contract_total_reward"/>
-          <Text profile="CC_ContractFooterRight" position="0px -620px" id="contractRewardValue"/>
+          <!-- <Text profile="CC_ContractH6" position="0px -150px" text="$l10n_cc_contract_notes_title"/>
+          <Text profile="CC_ContractBody" position="0px -180px" id="contractNotesValue"/> -->
         </GuiElement>
 
       </GuiElement>
@@ -141,4 +150,30 @@
       </GuiElement>
     </GuiElement>
   </GuiElement>
+
+
+  <GUIProfiles>
+    <Profile name="CC_ContractFarmerBox" extends="fs25_contractsFarmerBox">
+      <size value="400px 294px"/>
+    </Profile>
+    <Profile name="CC_ContractContractBox" extends="fs25_contractsContractBox">
+      <width value="400px"/>
+      <position value="0px -294px"/>
+    </Profile>
+    <Profile name="CC_ContractContractReward" extends="fs25_contractsContractReward">
+      <position value="0px -338px"/>
+    </Profile>
+    <Profile name="CC_ContractContractRewardSeparator" extends="fs25_contractsContractRewardSeparator">
+      <position value="0px -370px"/>
+    </Profile>
+    <Profile name="CC_ContractContractRewardValue" extends="fs25_contractsContractRewardValue">
+      <position value="0px -368px"/>
+    </Profile>
+    <Profile name="CC_ContractMapBox" extends="fs25_contractsMapBox">
+      <size value="550px 434px"/>
+    </Profile>
+    <Profile name="CC_ContractMap" extends="fs25_contractsIngameMap">
+      <size value="520px 368px"/>
+    </Profile>
+  </GUIProfiles>
 </GUI>
