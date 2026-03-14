@@ -50,33 +50,35 @@ CustomContract.STATUS = {
   INVOICED                   = "INVOICED"
 }
 
--- Intizialise function when creating a new CustomContract.
+-- Initialize function when creating a new CustomContract.
 function CustomContract.new(id, creatorFarmId, farmlandId, workAreaTypeIndex, reward, description, startPeriod, startDay,
                             duePeriod,
                             dueDay, invoiceId, templateId)
-  local self             = setmetatable({}, CustomContract_mt)
+  local self              = setmetatable({}, CustomContract_mt)
 
-  self.id                = id
-  self.creatorFarmId     = creatorFarmId
-  self.contractorFarmId  = nil
-  self.farmlandId        = farmlandId
-  self.workAreaTypeIndex = workAreaTypeIndex
-  self.reward            = reward
-  self.status            = CustomContract.STATUS.OPEN
-  self.description       = description or ""
-  self.startPeriod       = startPeriod or -1
-  self.startDay          = startDay or -1
-  self.duePeriod         = duePeriod or -1
-  self.dueDay            = dueDay or -1
-  self.invoiceId         = invoiceId or -1
-  self.templateId        = templateId or CustomContract.TEMPLATE.FIELD_WORK
+  self.id                 = id
+  self.creatorFarmId      = creatorFarmId
+  self.contractorFarmId   = nil
+  self.farmlandId         = farmlandId
+  self.workAreaTypeIndex  = workAreaTypeIndex
+  self.reward             = reward
+  self.status             = CustomContract.STATUS.OPEN
+  self.description        = description or ""
+  self.startPeriod        = startPeriod or -1
+  self.startDay           = startDay or -1
+  self.duePeriod          = duePeriod or -1
+  self.dueDay             = dueDay or -1
+  self.invoiceId          = invoiceId or -1
+  self.templateId         = templateId or CustomContract.TEMPLATE.FIELD_WORK
 
   -- Transport-specific (only used when templateId == TRANSPORT)
-  self.fillTypeIndex     = nil
-  self.transportAmount   = nil
-  self.destinationId    = nil
-  self.destinationX      = nil  -- world X when destinationId == -1 (map position)
-  self.destinationZ      = nil  -- world Z when destinationId == -1 (map position)
+  self.fillTypeIndex      = nil
+  self.transportAmount    = nil
+  self.destinationId      = nil
+  self.destinationX       = nil -- world X when destinationId == -1 (map position)
+  self.destinationZ       = nil -- world Z when destinationId == -1 (map position)
+
+  self.completionProgress = 0
 
   return self
 end
@@ -101,6 +103,7 @@ function CustomContract:writeStream(streamId)
   streamWriteInt32(streamId, self.destinationId or -1)
   streamWriteFloat32(streamId, self.destinationX or 0)
   streamWriteFloat32(streamId, self.destinationZ or 0)
+  streamWriteFloat32(streamId, self.completionProgress or 0)
 end
 
 function CustomContract.newFromStream(streamId)
@@ -123,6 +126,7 @@ function CustomContract.newFromStream(streamId)
   local destinationId = streamReadInt32(streamId)
   local destinationX = streamReadFloat32(streamId)
   local destinationZ = streamReadFloat32(streamId)
+  local completionProgress = streamReadFloat32(streamId)
 
   local contract = CustomContract.new(
     id,
@@ -141,6 +145,8 @@ function CustomContract.newFromStream(streamId)
 
   contract.contractorFarmId = contractorFarmId ~= -1 and contractorFarmId or nil
   contract.status = status
+  contract.completionProgress = completionProgress
+
   if fillTypeIndex and fillTypeIndex >= 0 then contract.fillTypeIndex = fillTypeIndex end
   if transportAmount and transportAmount >= 0 then contract.transportAmount = transportAmount end
   if destinationId ~= nil then contract.destinationId = destinationId end
@@ -153,44 +159,57 @@ end
 -- Function to retrieve WorkAreaType name from index (or template display name for non-field-work).
 function CustomContract:getWorkTypeAreaName()
   if self.templateId == CustomContract.TEMPLATE.TRANSPORT then
-    return g_i18n:getText("cc_dialog_template_transport") or "Transport"
+    return g_i18n:getText("cc_dialog_template_transport")
   end
+
   if self.templateId == CustomContract.TEMPLATE.FARM_JOB then
-    return g_i18n:getText("cc_dialog_template_farm_job") or "Farm job"
+    return g_i18n:getText("cc_dialog_template_farm_job")
   end
+
   if self.templateId == CustomContract.TEMPLATE.CUSTOM then
-    return g_i18n:getText("cc_dialog_template_custom") or "Custom"
+    return g_i18n:getText("cc_dialog_template_custom")
   end
+
   local wt = self.workAreaTypeIndex and CustomContract.WORKAREATYPES[self.workAreaTypeIndex]
-  return (wt and wt.name) or "Other"
+
+  return (wt and wt.name)
 end
 
 --- Returns a short label for list display (e.g. "Farmland 12" or "Transport").
 function CustomContract:getListLabel()
   if self.templateId == CustomContract.TEMPLATE.TRANSPORT then
-    return g_i18n:getText("cc_dialog_template_transport") or "Transport"
+    return g_i18n:getText("cc_dialog_template_transport")
   end
+
   if self.templateId == CustomContract.TEMPLATE.FARM_JOB then
-    return g_i18n:getText("cc_dialog_template_farm_job") or "Farm job"
+    return g_i18n:getText("cc_dialog_template_farm_job")
   end
+
   if self.templateId == CustomContract.TEMPLATE.CUSTOM then
-    return g_i18n:getText("cc_dialog_template_custom") or "Custom"
+    return g_i18n:getText("cc_dialog_template_custom")
   end
-  return string.format(g_i18n:getText("cc_contract_list_field_label"), self.farmlandId or 0)
+
+  return string.format(g_i18n:getText("cc_contract_list_field_label"), self.farmlandId)
 end
 
 --- Returns description text for contract details (field work vs transport).
 function CustomContract:getDescriptionText()
   if self.templateId == CustomContract.TEMPLATE.TRANSPORT then
     local productName = "?"
+
     if self.fillTypeIndex and g_fillTypeManager then
       local ft = g_fillTypeManager:getFillTypeByIndex(self.fillTypeIndex)
       productName = (ft and (ft.title or ft.name)) or tostring(self.fillTypeIndex)
     end
-    return string.format(g_i18n:getText("cc_contract_description_transport") or "Transport %d L %s", self.transportAmount or 0, productName)
+
+    return string.format(g_i18n:getText("cc_contract_description_transport"),
+      self.transportAmount, productName)
   end
+
   local farmland = (g_farmlandManager and self.farmlandId) and g_farmlandManager:getFarmlandById(self.farmlandId)
-  local areaHa = (farmland and farmland.areaInHa) or 0
+  local areaHa = (farmland and farmland.areaInHa)
   local workKey = "cc_workareatype_" .. string.lower(self:getWorkTypeAreaName())
-  return string.format(g_i18n:getText("cc_contract_description"), g_i18n:getText(workKey) or self:getWorkTypeAreaName(), self.farmlandId or 0, areaHa)
+
+  return string.format(g_i18n:getText("cc_contract_description"), g_i18n:getText(workKey) or self:getWorkTypeAreaName(),
+    self.farmlandId, areaHa)
 end

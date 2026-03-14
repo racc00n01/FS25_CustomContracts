@@ -49,6 +49,33 @@ function CustomContracts:loadMap()
   g_messageCenter:publish(MessageType.INVOICES_UPDATED)
 
   self:loadFromXmlFile()
+  self.progressUpdateAccum = 0
+end
+
+local PROGRESS_UPDATE_INTERVAL = 2
+
+function CustomContracts:update(dt)
+  if not g_currentMission or not g_currentMission.CustomContracts or not g_currentMission.CustomContracts.ContractManager then
+    return
+  end
+
+  local mgr = g_currentMission.CustomContracts.ContractManager
+
+  if g_client then
+    mgr:updateProgressBars()
+  end
+
+  self.progressUpdateAccum = (self.progressUpdateAccum or 0) + dt
+  if self.progressUpdateAccum < PROGRESS_UPDATE_INTERVAL then
+    return
+  end
+
+  self.progressUpdateAccum = 0
+  for _, contract in pairs(mgr.contracts) do
+    if contract.status == CustomContract.STATUS.ACCEPTED and contract.templateId == CustomContract.TEMPLATE.FIELD_WORK then
+      mgr:contractProgressFieldCollector(contract.id)
+    end
+  end
 end
 
 function CustomContracts:makeIsCustomContractsCheckEnabledPredicate()
@@ -72,14 +99,14 @@ end
 function CustomContracts:loadFromXmlFile()
   if (not g_currentMission:getIsServer()) then return end
 
-  local savegameFolderPath = g_currentMission.missionInfo.savegameDirectory;
+  local savegameFolderPath = g_currentMission.missionInfo.savegameDirectory
   if savegameFolderPath == nil then
     savegameFolderPath = ('%ssavegame%d'):format(getUserProfileAppPath(), g_currentMission.missionInfo.savegameIndex)
   end
   savegameFolderPath = savegameFolderPath .. "/"
 
   if fileExists(savegameFolderPath .. CustomContracts.SaveKey .. ".xml") then
-    local xmlFile = loadXMLFile(CustomContracts.SaveKey, savegameFolderPath .. CustomContracts.SaveKey .. ".xml");
+    local xmlFile = loadXMLFile(CustomContracts.SaveKey, savegameFolderPath .. CustomContracts.SaveKey .. ".xml")
     g_currentMission.CustomContracts.ContractManager:loadFromXmlFile(xmlFile)
     g_currentMission.CustomContracts.InvoiceManager:loadFromXmlFile(xmlFile)
 
@@ -90,7 +117,7 @@ end
 function CustomContracts:saveToXmlFile()
   if (not g_currentMission:getIsServer()) then return end
 
-  local savegameFolderPath = g_currentMission.missionInfo.savegameDirectory;
+  local savegameFolderPath = g_currentMission.missionInfo.savegameDirectory
   if savegameFolderPath == nil then
     savegameFolderPath = ('%ssavegame%d'):format(getUserProfileAppPath(), g_currentMission.missionInfo.savegameIndex)
   end
