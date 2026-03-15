@@ -93,6 +93,15 @@
             <InGameMapPreview profile="CC_ContractMap" id="contractMap" onDrawPostIngameMapHotspots="onDrawPostIngameMapHotspots"/>
           </GuiElement>
 
+          <GuiElement profile="CC_ContractProgressBox" id="progressBox">
+            <Text profile="fs25_contractsContentTitle" text="$l10n_contract_progress:"/>
+            <Text profile="fs25_contractsContentExtraText" id="extraProgressText"/>
+            <Text profile="fs25_contractsContentValue" id="progressText"/>
+            <ThreePartBitmap profile="CC_ContractProgressBg" id="progressBarBg">
+              <ThreePartBitmap profile="CC_ContractProgress" id="progressBar"/>
+            </ThreePartBitmap>
+          </GuiElement>
+
           <!-- <Text profile="CC_ContractTaglineRight" id="contractStatusLabel" position="0px -20px"/>
           <Text profile="CC_ContractStatus" id="contractStatusValue" position="0px -60px"/> -->
 
@@ -174,6 +183,15 @@
     </Profile>
     <Profile name="CC_ContractMap" extends="fs25_contractsIngameMap">
       <size value="520px 368px"/>
+    </Profile>
+    <Profile name="CC_ContractProgressBox" extends="fs25_contractsProgressBox">
+      <size value="550px 250px"/>
+    </Profile>
+    <Profile name="CC_ContractProgressBg" extends="fs25_contractsProgressBarBg">
+      <size value="520px 33px"/>
+    </Profile>
+    <Profile name="CC_ContractProgress" extends="fs25_contractsProgressBar">
+      <size value="512px 25px"/>
     </Profile>
   </GUIProfiles>
 </GUI>

@@ -595,7 +595,8 @@ function CustomContractManager:updateProgressBars()
 
       if bar == nil then
         bar = hud:addSideNotificationProgressBar(title,
-          contract:getListLabel(),
+          string.format(g_i18n:getText("cc_contract_notification_label"), contract:getWorkTypeAreaName(),
+            contract.farmlandId),
           (contract.completionProgress or 0) / 100)
         if bar then
           self.progressBars[id] = bar

@@ -56,6 +56,7 @@
     <text name="cc_contract_status_label" text="Accepted by:"/>
     <text name="cc_contract_status_label_default" text="Current status:"/>
     <text name="cc_contract_list_field_label" text="Farmland %d"/>
+    <text name="cc_contract_notification_label" text="%s (Field %d)"/>
     <text name="cc_contract_description" text="%s on Farmland %d (%.2f ha)"/>
     <text name="cc_contract_empty" text="No contract selected"/>
     <text name="cc_contract_start_date_label" text="Start:"/>

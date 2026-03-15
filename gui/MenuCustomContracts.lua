@@ -137,6 +137,15 @@ function MenuCustomContracts:displaySelectedContract()
         self.contractDetailsList:reloadData()
       end
 
+      -- Progress
+      self.progressText:setText(string.format("%.0f%%", contract.completionProgress))
+
+      -- Devide be a hunder, because UI works with 0-1
+      local value = contract.completionProgress / 100
+      local fullWidth = self.progressBarBg.size[1] - self.progressBar.margin[1] * 2
+      value = math.max(value, self.progressBar.startSize[1] * 2 / fullWidth)
+      self.progressBar:setSize(fullWidth * math.min(value, 1), nil)
+
       -- local statusText
       -- local statusTextLabel
 
