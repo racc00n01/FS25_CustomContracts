@@ -137,6 +137,11 @@
     <imageColor value="0.02956 0.02956 0.02956 0.2"/>
   </Profile>
 
+  <Profile name="CC_PickDestinationMapButton" extends="fs25_aiCreateJobParameterButton" with="anchorMiddleRight">
+    <size value="244px 40px"/>
+    <position value="-20px 0px"/>
+  </Profile>
+
   <Profile name="CC_ContractInputLabel" extends="fs25_textDefault" with="anchorMiddleLeft">
     <textBold value="true" />
     <position value="20px 0px"/>
@@ -246,6 +251,13 @@
     <imageColor value="$preset_fs25_colorGrey_20"/>
   </Profile>
 
+  <!-- Optional icon in the contract details value column (e.g. transport fill type); hidden when unused -->
+  <Profile name="CC_ContractDetailsInfoIcon" extends="baseReference" with="anchorMiddleRight">
+    <size value="24px 24px"/>
+    <position value="-28px 0px"/>
+    <imageSliceId value="noSlice"/>
+  </Profile>
+
 
   <Profile name="CC_TableHeader" extends="baseReference">
     <imageColor value="0 0 0 0" />
@@ -259,7 +271,7 @@
     <textDisabledColor value="$preset_colorDisabled" />
   </Profile>
 
-  <Profile name="CC_TableHeaderRight" extends="baseReference">
+  <Profile name="CC_TableHeaderRight" extends="baseReference" with="anchorStretchingYRight">
     <imageColor value="0 0 0 0" />
     <textFocusedColor value="$preset_fs25_colorMainHighlight" />
     <textHighlightedColor value="$preset_fs25_colorMainHighlight" />
@@ -292,6 +304,11 @@
 
   <Profile name="CC_RowCellLeft" extends="CC_RowCell" with="anchorStretchingYLeft">
     <textAlignment value="left" />
+  </Profile>
+  <Profile name="CC_RowCellLeftImage" extends="CC_RowCellLeft" with="anchorMiddleLeft">
+    <size value="24px 24px" />
+    <position value="8px 0" />
+    <imageSliceId value="noSlice" />
   </Profile>
   <Profile name="CC_RowCellRight" extends="CC_RowCell" with="anchorStretchingYRight">
     <textAlignment value="right" />

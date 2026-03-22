@@ -30,7 +30,7 @@
 
         <GuiElement profile="fs25_statisticsHeaderBox" position="0px -280px">
           <Button profile="CC_TableHeader" position="20px 0px" size="200px 32px" text="$l10n_cc_dialog_detail_invoice_line_title_label" handleFocus="false" />
-          <Button profile="CC_TableHeaderRight" position="0.325 0px" size="160px 32px" text="$l10n_cc_dialog_detail_invoice_line_amount_label" handleFocus="false" />
+          <Button profile="CC_TableHeaderRight" position="-20px 0px" size="160px 32px" text="$l10n_cc_dialog_detail_invoice_line_amount_label" handleFocus="false" />
           <ThreePartBitmap profile="fs25_lineSeparatorBottomSoft" position="0px -2dp" />
         </GuiElement>
         <SmoothList id="invoiceLineTable" profile="CC_Table" size="100% 200px" position="0px -320px">

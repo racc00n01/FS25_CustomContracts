@@ -4,6 +4,8 @@
     <text name="cc_money_type_invoices" text="Facturen"/>
     <text name="finance_invoices" text="Facturen"/>
 
+    <text name="cc_map_btn" text="Contract aanmaken"/>
+
     <text name="cc_workareatype_cultivate" text="Cultiveren"/>
     <text name="cc_workareatype_plow" text="Ploegen"/>
     <text name="cc_workareatype_seed" text="Zaaien"/>
@@ -21,6 +23,9 @@
     <text name="cc_workareatype_baling" text="Balen persen"/>
     <text name="cc_workareatype_bale_wrapping" text="Balen wikkelen"/>
     <text name="cc_workareatype_spraying" text="Spuiten"/>
+    <text name="cc_workareatype_transport" text="Transport"/>
+    <text name="cc_workareatype_farm_job" text="Boerderijklus"/>
+    <text name="cc_workareatype_custom" text="Aangepast"/>
 
     <text name="cc_month_january" text="Januari"/>
     <text name="cc_month_february" text="Februari"/>
@@ -52,6 +57,14 @@
     <text name="cc_contract_status_label_default" text="Huidige status:"/>
     <text name="cc_contract_list_field_label" text="Land %d"/>
     <text name="cc_contract_description" text="%s op Land %d (%.2f ha)"/>
+    <text name="cc_contract_description_transport" text="Transport %d L %s"/>
+    <text name="cc_contract_description_transport_pickup" text="Goederen laden bij: %s"/>
+    <text name="cc_transport_pickup_loose_pallets" text="Losse pallets (op de kaart)"/>
+    <text name="cc_transport_pickup_bales" text="Balen (op de kaart)"/>
+    <text name="cc_transport_pickup_global_pallet" text="Transportpallet / mobiele tank"/>
+    <text name="cc_transport_pickup_unknown" text="Controleer silo&apos;s, productie en losse pallets op deze boerderij"/>
+    <text name="cc_transport_pickup_unnamed_placeable" text="Opslag"/>
+    <text name="cc_transport_pickup_factory" text="Productiegebouw"/>
     <text name="cc_contract_empty" text="Geen contract geselecteerd"/>
     <text name="cc_contract_start_date_label" text="Start:"/>
     <text name="cc_contract_due_date_label" text="Vervaldatum:"/>
@@ -73,6 +86,13 @@
     <text name="cc_contract_info_title" text="Algemene informatie"/>
     <text name="cc_contract_notes_title" text="Notities"/>
     <text name="cc_contract_disclaimer" text="Door dit contract te accepteren, ga je akkoord met het uitvoeren van de beschreven werkzaamheden. Betaling vindt plaats na voltooiing via een factuur."/>
+
+    <text name="cc_contract_detail_farmland" text="Land"/>
+    <text name="cc_contract_detail_farmland_size_label" text="Grootte:"/>
+    <text name="cc_contract_detail_farmland_size" text="%.2f ha"/>
+    <text name="cc_contract_detail_transport_amount_label" text="Hoeveelheid:"/>
+    <text name="cc_contract_detail_transport_amount" text="%d L"/>
+    <text name="cc_contract_detail_transport_filltype_label" text="Vultype:"/>
 
     <text name="cc_btn_create_contract" text="Contract aanmaken"/>
     <text name="cc_btn_accept_contract" text="Contract accepteren"/>
@@ -109,6 +129,30 @@
     <text name="cc_dialog_edit_btn_cancel" text="Annuleren"/>
     <text name="cc_dialog_edit_btn_edit" text="Bewerken"/>
 
+    <text name="cc_dialog_template_title" text="Contracttype kiezen"/>
+    <text name="cc_dialog_template_subtitle" text="Kies een sjabloon voor het nieuwe contract."/>
+    <text name="cc_dialog_template_field_work" text="Veldwerk"/>
+    <text name="cc_dialog_template_transport" text="Transport"/>
+    <text name="cc_dialog_template_farm_job" text="Boerderijklus"/>
+    <text name="cc_dialog_template_custom" text="Aangepast"/>
+    <text name="cc_dialog_template_coming_soon" text="Dit contracttype is nog niet beschikbaar."/>
+
+    <text name="cc_dialog_transport_title" text="Transportcontract aanmaken"/>
+    <text name="cc_dialog_transport_inventory_label" text="Jouw inventaris (selecteer product om te vervoeren)"/>
+    <text name="cc_dialog_transport_inventory_product" text="Product"/>
+    <text name="cc_dialog_transport_inventory_amount" text="Hoeveelheid"/>
+    <text name="cc_dialog_transport_amount_label" text="Te vervoeren hoeveelheid (L)"/>
+    <text name="cc_dialog_transport_destination_label" text="Bestemming"/>
+    <text name="cc_dialog_transport_destination_placeholder" text="Bestemming kiezen (binnenkort)"/>
+    <text name="cc_dialog_transport_destination_pick_map" text="Op kaart kiezen..."/>
+    <text name="cc_dialog_transport_destination_picked" text="< %.0f, %.0f >"/>
+    <text name="cc_dialog_transport_reward_label" text="Vergoeding (€)"/>
+    <text name="cc_dialog_transport_validation_select_product" text="Selecteer een product uit de lijst."/>
+    <text name="cc_dialog_transport_validation_amount" text="Voer een geldige hoeveelheid in (max. beschikbaar)."/>
+    <text name="cc_dialog_transport_validation_destination" text="Kies een bestemming op de kaart."/>
+    <text name="cc_dialog_pick_destination_title" text="Bestemming kiezen"/>
+    <text name="cc_dialog_pick_destination_hint" text="Klik op de kaart om de transportbestemming te kiezen."/>
+
     <text name="cc_dialog_create_title" text="Contract aanmaken"/>
     <text name="cc_dialog_create_input_field" text="Land-ID"/>
     <text name="cc_dialog_create_input_worktype" text="Werksoort"/>
@@ -134,6 +178,7 @@
 
     <text name="cc_dialog_invoice_create_auto_title" text="Factuur voor contract %d"/>
     <text name="cc_dialog_invoice_create_auto_line_title" text="Contractvergoeding (Contract #%d)"/>
+    <text name="cc_dialog_invoice_create_auto_line_title_transport" text="Transportcontract #%d"/>
 
     <text name="cc_dialog_invoice_add_invoice_line_title" text="Factuurregel toevoegen"/>
     <text name="cc_dialog_invoice_add_invoice_line_description_label" text="Beschrijving"/>

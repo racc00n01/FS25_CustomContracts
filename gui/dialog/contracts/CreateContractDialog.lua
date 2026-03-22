@@ -148,6 +148,7 @@ function CreateContractDialog:onConfirm(sender)
   end
 
   local contract = {
+    templateId        = CustomContract.TEMPLATE.FIELD_WORK,
     farmlandId        = self.farmlandId,
     workAreaTypeIndex = self.workAreaTypeIndex,
     reward            = self.reward,

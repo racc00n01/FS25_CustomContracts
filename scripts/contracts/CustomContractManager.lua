@@ -50,6 +50,12 @@ function CustomContractManager:saveToXmlFile(xmlFile)
     setXMLInt(xmlFile, key .. "#duePeriod", contract.duePeriod or -1)
     setXMLInt(xmlFile, key .. "#dueDay", contract.dueDay or -1)
     setXMLInt(xmlFile, key .. "#invoiceId", contract.invoiceId or -1)
+    setXMLString(xmlFile, key .. "#templateId", contract.templateId or CustomContract.TEMPLATE.FIELD_WORK)
+    setXMLInt(xmlFile, key .. "#fillTypeIndex", contract.fillTypeIndex or -1)
+    setXMLInt(xmlFile, key .. "#transportAmount", contract.transportAmount or -1)
+    setXMLInt(xmlFile, key .. "#destinationId", contract.destinationId or -1)
+    if contract.destinationX then setXMLFloat(xmlFile, key .. "#destinationX", contract.destinationX) end
+    if contract.destinationZ then setXMLFloat(xmlFile, key .. "#destinationZ", contract.destinationZ) end
 
     count = count + 1
   end
@@ -83,6 +89,12 @@ function CustomContractManager:loadFromXmlFile(xmlFile)
     local duePeriod           = getXMLInt(xmlFile, contractKey .. "#duePeriod")
     local dueDay              = getXMLInt(xmlFile, contractKey .. "#dueDay")
     local invoiceId           = getXMLInt(xmlFile, contractKey .. "#invoiceId")
+    local templateId          = getXMLString(xmlFile, contractKey .. "#templateId")
+    local fillTypeIndex       = getXMLInt(xmlFile, contractKey .. "#fillTypeIndex")
+    local transportAmount     = getXMLInt(xmlFile, contractKey .. "#transportAmount")
+    local destinationId       = getXMLInt(xmlFile, contractKey .. "#destinationId")
+    local destinationX        = getXMLFloat(xmlFile, contractKey .. "#destinationX")
+    local destinationZ        = getXMLFloat(xmlFile, contractKey .. "#destinationZ")
 
     local contract            = CustomContract.new(
       id,
@@ -95,11 +107,17 @@ function CustomContractManager:loadFromXmlFile(xmlFile)
       startDay,
       duePeriod,
       dueDay,
-      invoiceId
+      invoiceId,
+      templateId or CustomContract.TEMPLATE.FIELD_WORK
     )
 
     contract.contractorFarmId = contractorFarmId ~= -1 and contractorFarmId or nil
     contract.status           = status
+    if fillTypeIndex and fillTypeIndex >= 0 then contract.fillTypeIndex = fillTypeIndex end
+    if transportAmount and transportAmount >= 0 then contract.transportAmount = transportAmount end
+    contract.destinationId = destinationId
+    if destinationX then contract.destinationX = destinationX end
+    if destinationZ then contract.destinationZ = destinationZ end
 
     self.contracts[id]        = contract
     self.nextId               = math.max(self.nextId, id + 1)
@@ -247,19 +265,36 @@ function CustomContractManager:handleCreateRequest(farmId, payload)
   local id           = self.nextId
   self.nextId        = self.nextId + 1
 
+  local templateId   = payload.templateId or CustomContract.TEMPLATE.FIELD_WORK
+  local farmlandId   = payload.farmlandId or -1
+  local workAreaTypeIndex = payload.workAreaTypeIndex or 0
+  if templateId == CustomContract.TEMPLATE.TRANSPORT then
+    farmlandId = -1
+    workAreaTypeIndex = 0
+  end
+
   local contract     = CustomContract.new(
     id,
     farmId,
-    payload.farmlandId,
-    payload.workAreaTypeIndex,
+    farmlandId,
+    workAreaTypeIndex,
     payload.reward,
     payload.description,
     payload.startPeriod,
     payload.startDay,
     payload.duePeriod,
     payload.dueDay,
-    payload.invoiceId
+    payload.invoiceId or -1,
+    templateId
   )
+
+  if templateId == CustomContract.TEMPLATE.TRANSPORT then
+    contract.fillTypeIndex   = payload.fillTypeIndex
+    contract.transportAmount = payload.transportAmount
+    contract.destinationId   = payload.destinationId or -1
+    if payload.destinationX then contract.destinationX = payload.destinationX end
+    if payload.destinationZ then contract.destinationZ = payload.destinationZ end
+  end
 
   self.contracts[id] = contract
   self:syncContracts()
@@ -296,12 +331,18 @@ function CustomContractManager:handleCompleteRequest(farmId, contractId, connect
 
   contract.status = CustomContract.STATUS.COMPLETED_AWAITING_INVOICE
 
+  local lineTitle
+  if contract.templateId == CustomContract.TEMPLATE.TRANSPORT then
+    lineTitle = string.format(g_i18n:getText("cc_dialog_invoice_create_auto_line_title_transport") or "Transport contract #%d", contract.id)
+  else
+    lineTitle = string.format(g_i18n:getText("cc_dialog_invoice_create_auto_line_title"), contract.id)
+  end
   local draft = {
     receiverFarmId = contract.creatorFarmId,
     title = string.format(g_i18n:getText("cc_contract_id_label"), contract.id),
     description = contract.description or "",
     lines = {
-      { title = string.format(g_i18n:getText("cc_dialog_invoice_create_auto_line_title"), contract.id), amount = contract.reward }
+      { title = lineTitle, amount = contract.reward }
     },
     total = contract.reward,
     dueAt = contract.duePeriod,
@@ -387,9 +428,27 @@ function CustomContractManager:handleEditRequest(farmId, contractId, data)
     return
   end
 
-  -- apply edits
-  contract.farmlandId        = data.farmlandId
-  contract.workAreaTypeIndex = data.workAreaTypeIndex
+  if contract.templateId == CustomContract.TEMPLATE.FIELD_WORK then
+    contract.farmlandId        = data.farmlandId
+    contract.workAreaTypeIndex = data.workAreaTypeIndex
+  elseif contract.templateId == CustomContract.TEMPLATE.TRANSPORT then
+    if data.fillTypeIndex ~= nil and data.fillTypeIndex >= 0 then
+      contract.fillTypeIndex = data.fillTypeIndex
+    end
+    if data.transportAmount ~= nil and data.transportAmount > 0 then
+      contract.transportAmount = data.transportAmount
+    end
+    if data.destinationId ~= nil then
+      contract.destinationId = data.destinationId
+    end
+    if data.destinationX ~= nil then
+      contract.destinationX = data.destinationX
+    end
+    if data.destinationZ ~= nil then
+      contract.destinationZ = data.destinationZ
+    end
+  end
+
   contract.reward            = data.reward
   contract.description       = data.description
   contract.startPeriod       = data.startPeriod

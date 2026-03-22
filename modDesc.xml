@@ -2,7 +2,7 @@
 <modDesc descVersion="106">
   <author>Racc00n</author>
 
-  <version>1.0.0.0</version>
+  <version>1.0.0.1</version>
 
   <iconFilename>icon_customContracts.dds</iconFilename>
 
@@ -59,6 +59,7 @@ https://github.com/racc00n01/FS25_ContractsAndInvoices
     <sourceFile filename="scripts/CustomContracts.lua"/>
     <sourceFile filename="scripts/contracts/CustomContractManager.lua"/>
     <sourceFile filename="scripts/invoices/InvoiceManager.lua"/>
+    <sourceFile filename="scripts/inventory/FarmInventoryHelper.lua"/>
     <sourceFile filename="scripts/events/contracts/CreateContractEvent.lua"/>
     <sourceFile filename="scripts/events/contracts/AcceptContractEvent.lua"/>
     <sourceFile filename="scripts/events/contracts/CancelContractEvent.lua"/>
@@ -76,12 +77,17 @@ https://github.com/racc00n01/FS25_ContractsAndInvoices
     <sourceFile filename="scripts/events/invoices/OpenCreateInvoiceDialogEvent.lua"/>
     <sourceFile filename="scripts/events/invoices/EditInvoiceEvent.lua"/>
     <sourceFile filename="gui/renderer/ContractsRenderer.lua"/>
-    <sourceFile filename="gui/renderer/ContractsRenderer.lua"/>
+    <sourceFile filename="gui/renderer/InventoryListRenderer.lua"/>
     <sourceFile filename="gui/renderer/InvoicesInboxRenderer.lua"/>
     <sourceFile filename="gui/renderer/InvoicesOutboxRenderer.lua"/>
+    <sourceFile filename="gui/renderer/ContractsDetailsRenderer.lua"/>
     <sourceFile filename="gui/MenuCustomContracts.lua"/>
+    <sourceFile filename="gui/dialog/contracts/ContractTemplateDialog.lua"/>
     <sourceFile filename="gui/dialog/contracts/CreateContractDialog.lua"/>
-    <sourceFile filename="gui/dialog/contracts/EditContractDialog.lua"/>
+    <sourceFile filename="gui/dialog/contracts/CreateTransportContractDialog.lua"/>
+    <sourceFile filename="gui/dialog/contracts/PickDestinationMapDialog.lua"/>
+    <sourceFile filename="gui/dialog/contracts/EditFieldWorkContractDialog.lua"/>
+    <sourceFile filename="gui/dialog/contracts/EditTransportContractDialog.lua"/>
     <sourceFile filename="gui/dialog/invoices/DetailInvoiceDialog.lua"/>
     <sourceFile filename="gui/dialog/invoices/AddInvoiceLineDialog.lua"/>
     <sourceFile filename="gui/dialog/invoices/EditInvoiceDialog.lua"/>
