@@ -307,10 +307,10 @@ function CustomContracts.onClickCreateContract(frame)
   local cachedInventory = FarmInventoryHelper.retrieveFarmInventory(farmId)
 
   local options = {
-    "FIELDWORK",
-    "TRANSPORT",
-    "FARMJOB",
-    "CUSTOM"
+    g_i18n:getText("cc_dialog_template_field_work"),
+    g_i18n:getText("cc_dialog_template_transport"),
+    g_i18n:getText("cc_dialog_template_farmjob"),
+    g_i18n:getText("cc_dialog_template_custom"),
   }
   local callback = function(templateId)
     if templateId == 1 then
@@ -325,8 +325,8 @@ function CustomContracts.onClickCreateContract(frame)
     end
   end
 
-  OptionDialog.show(callback, "What type of contract do you want to create?",
-    "Select contract template", options)
+  OptionDialog.show(callback, g_i18n:getText("cc_dialog_template_title"),
+    g_i18n:getText("cc_dialog_template_subtitle"), options)
 end
 
 -- function CustomContracts.canFarmAccessOtherId(self, superFunc, farmId, otherFarmId, ...)

@@ -4,6 +4,8 @@
     <text name="cc_money_type_invoices" text="Factures"/>
     <text name="finance_invoices" text="Factures"/>
 
+    <text name="cc_map_btn" text="Créer un contrat"/>
+
     <text name="cc_workareatype_cultivate" text="Cultiver"/>
     <text name="cc_workareatype_plow" text="Labourer"/>
     <text name="cc_workareatype_seed" text="Semer"/>
@@ -21,6 +23,9 @@
     <text name="cc_workareatype_baling" text="Pressage"/>
     <text name="cc_workareatype_bale_wrapping" text="Enrubannage"/>
     <text name="cc_workareatype_spraying" text="Pulvérisation"/>
+    <text name="cc_workareatype_transport" text="Transport"/>
+    <text name="cc_workareatype_farm_job" text="Tâche à la ferme"/>
+    <text name="cc_workareatype_custom" text="Personnalisé"/>
 
     <text name="cc_month_january" text="Janvier"/>
     <text name="cc_month_february" text="Février"/>
@@ -82,6 +87,13 @@
     <text name="cc_contract_notes_title" text="Notes"/>
     <text name="cc_contract_disclaimer" text="En acceptant ce contrat, vous acceptez d’effectuer le travail indiqué comme décrit. Le paiement est effectué une fois le travail terminé, via une facture."/>
 
+    <text name="cc_contract_detail_farmland" text="Terrain"/>
+    <text name="cc_contract_detail_farmland_size_label" text="Superficie :"/>
+    <text name="cc_contract_detail_farmland_size" text="%.2f ha"/>
+    <text name="cc_contract_detail_transport_amount_label" text="Quantité :"/>
+    <text name="cc_contract_detail_transport_amount" text="%d L"/>
+    <text name="cc_contract_detail_transport_filltype_label" text="Type de remplissage :"/>
+
     <text name="cc_btn_create_contract" text="Créer un contrat"/>
     <text name="cc_btn_accept_contract" text="Accepter le contrat"/>
     <text name="cc_btn_complete_contract" text="Terminer le contrat"/>
@@ -117,6 +129,30 @@
     <text name="cc_dialog_edit_btn_cancel" text="Annuler"/>
     <text name="cc_dialog_edit_btn_edit" text="Modifier"/>
 
+    <text name="cc_dialog_template_title" text="Choisir le type de contrat"/>
+    <text name="cc_dialog_template_subtitle" text="Choisissez un modèle pour le nouveau contrat."/>
+    <text name="cc_dialog_template_field_work" text="Travail aux champs"/>
+    <text name="cc_dialog_template_transport" text="Transport"/>
+    <text name="cc_dialog_template_farm_job" text="Tâche à la ferme"/>
+    <text name="cc_dialog_template_custom" text="Personnalisé"/>
+    <text name="cc_dialog_template_coming_soon" text="Ce type de contrat n’est pas encore disponible."/>
+
+    <text name="cc_dialog_transport_title" text="Créer un contrat de transport"/>
+    <text name="cc_dialog_transport_inventory_label" text="Votre inventaire (sélectionnez le produit à transporter)"/>
+    <text name="cc_dialog_transport_inventory_product" text="Produit"/>
+    <text name="cc_dialog_transport_inventory_amount" text="Quantité"/>
+    <text name="cc_dialog_transport_amount_label" text="Quantité à transporter (L)"/>
+    <text name="cc_dialog_transport_destination_label" text="Destination"/>
+    <text name="cc_dialog_transport_destination_placeholder" text="Choisir la destination (bientôt)"/>
+    <text name="cc_dialog_transport_destination_pick_map" text="Choisir sur la carte..."/>
+    <text name="cc_dialog_transport_destination_picked" text="< %.0f, %.0f >"/>
+    <text name="cc_dialog_transport_reward_label" text="Récompense (€)"/>
+    <text name="cc_dialog_transport_validation_select_product" text="Veuillez sélectionner un produit dans la liste."/>
+    <text name="cc_dialog_transport_validation_amount" text="Veuillez saisir une quantité valide (max. disponible)."/>
+    <text name="cc_dialog_transport_validation_destination" text="Veuillez choisir une destination sur la carte."/>
+    <text name="cc_dialog_pick_destination_title" text="Choisir la destination"/>
+    <text name="cc_dialog_pick_destination_hint" text="Cliquez sur la carte pour choisir la destination du transport."/>
+
     <text name="cc_dialog_create_title" text="Créer un contrat"/>
     <text name="cc_dialog_create_input_field" text="ID du terrain"/>
     <text name="cc_dialog_create_input_worktype" text="Type de travail"/>
@@ -142,6 +178,7 @@
 
     <text name="cc_dialog_invoice_create_auto_title" text="Facture pour le contrat %d"/>
     <text name="cc_dialog_invoice_create_auto_line_title" text="Récompense du contrat (Contrat n°%d)"/>
+    <text name="cc_dialog_invoice_create_auto_line_title_transport" text="Contrat de transport n°%d"/>
 
     <text name="cc_dialog_invoice_add_invoice_line_title" text="Ajouter une ligne de facture"/>
     <text name="cc_dialog_invoice_add_invoice_line_description_label" text="Description"/>

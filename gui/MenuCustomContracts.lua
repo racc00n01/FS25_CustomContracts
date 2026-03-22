@@ -1039,10 +1039,10 @@ function MenuCustomContracts:onCreateContract()
   self:queueContractsView(MenuCustomContracts.CONTRACTS_LIST_TYPE.OWNED, nil)
 
   local options = {
-    "FIELDWORK",
-    "TRANSPORT",
-    "FARMJOB",
-    "CUSTOM"
+    g_i18n:getText("cc_dialog_template_field_work"),
+    g_i18n:getText("cc_dialog_template_transport"),
+    g_i18n:getText("cc_dialog_template_farmjob"),
+    g_i18n:getText("cc_dialog_template_custom"),
   }
   local callback = function(templateId)
     if templateId == 1 then
@@ -1057,8 +1057,8 @@ function MenuCustomContracts:onCreateContract()
     end
   end
 
-  OptionDialog.show(callback, "What type of contract do you want to create?",
-    "Select contract template", options)
+  OptionDialog.show(callback, g_i18n:getText("cc_dialog_template_title"),
+    g_i18n:getText("cc_dialog_template_subtitle"), options)
 end
 
 -- Function triggered when clicking on the "Complete contract" button
