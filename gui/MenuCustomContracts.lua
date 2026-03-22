@@ -58,6 +58,20 @@ function MenuCustomContracts.new(i18n, messageCenter)
   return self
 end
 
+--- Transport preview uses addMapHotspot; the hotspot is global to the HUD ingame map, so it must be removed
+--- when switching away, closing the menu, or the preview is cleared — otherwise it stays on the normal map.
+function MenuCustomContracts:clearContractMapTransportHotspot()
+  g_currentMission:removeMapHotspot(self.aiTargetMapHotspot)
+end
+
+function MenuCustomContracts:clearContractMapPreviewClip()
+  local hudMap = g_currentMission.hud and g_currentMission.hud:getIngameMap() or nil
+  if hudMap ~= nil then
+    hudMap.clipHotspots = false
+    hudMap:setMapClipArea(nil, nil, nil, nil)
+  end
+end
+
 function MenuCustomContracts:displaySelectedContract()
   local index = self.contractsTable.selectedIndex
   local selection = self.contractDisplaySwitcher:getState()
@@ -79,6 +93,8 @@ function MenuCustomContracts:displaySelectedContract()
     if contract ~= nil then
       self.contractsInfoContainer:setVisible(true)
       self.noSelectedContractText:setVisible(false)
+
+      self:clearContractMapTransportHotspot()
 
       -- Ensure ingame map is set before using the preview
       local hudMap = g_currentMission.hud and g_currentMission.hud:getIngameMap() or nil
@@ -166,9 +182,14 @@ function MenuCustomContracts:displaySelectedContract()
 
       self.contractDescriptionValue:setText(contract:getDescriptionText())
     else
+      self:clearContractMapTransportHotspot()
+      self:clearContractMapPreviewClip()
       self.contractsInfoContainer:setVisible(false)
       self.noSelectedContractText:setVisible(true)
     end
+  else
+    self:clearContractMapTransportHotspot()
+    self:clearContractMapPreviewClip()
   end
 end
 
@@ -436,6 +457,8 @@ function MenuCustomContracts:refreshInventory()
 end
 
 function MenuCustomContracts:onFrameClose()
+  self:clearContractMapTransportHotspot()
+  self:clearContractMapPreviewClip()
   MenuCustomContracts:superClass().onFrameClose(self)
   g_messageCenter:unsubscribeAll(self)
 end
