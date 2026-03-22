@@ -253,6 +253,82 @@ function CustomContracts.getIsAccessibleAtWorldPosition(self, superFunc, farmId,
   return false, landOwner, landValid
 end
 
+-- From FieldRename mod
+local orginalOnLoadMapFinished = InGameMenuMapFrame.onLoadMapFinished
+InGameMenuMapFrame.onLoadMapFinished = function(self)
+  orginalOnLoadMapFinished(self)
+
+  CustomContracts.mapFrame = self
+
+  table.insert(self.contextActions, {
+    title = g_i18n:getText("cc_map_btn"),
+    callback = function(frame)
+      CustomContracts.onClickCreateContract(frame)
+      return self
+    end,
+    isActive = false
+  })
+  RENAME_ACTION_INDEX = #self.contextActions
+end
+
+-- From FieldRename mod
+local originalSetMapInputContext = InGameMenuMapFrame.setMapInputContext
+InGameMenuMapFrame.setMapInputContext = function(self, canEnter, canReset, canSellVehicle, canVisit, canSetMarker,
+                                                 removeMarker, canBuy, canSell, canManage)
+  -- Call original
+  originalSetMapInputContext(self, canEnter, canReset, canSellVehicle, canVisit, canSetMarker, removeMarker, canBuy,
+    canSell, canManage)
+
+  -- Enable rename when we can sell (i.e., player owns the farmland)
+  -- canSell is true when the player owns the farmland and has farmManager permission
+  if RENAME_ACTION_INDEX and self.contextActions and self.contextActions[RENAME_ACTION_INDEX] then
+    self.contextActions[RENAME_ACTION_INDEX].isActive = canSell
+  end
+end
+
+-- Function to prepare and open the CreateContractDialog
+function CustomContracts.onClickCreateContract(frame)
+  if frame == nil then
+    return
+  end
+
+  local farmland = frame.selectedFarmland
+  if farmland == nil then
+    return
+  end
+
+  local fieldId = farmland.id
+
+  -- Store the selected fieldId in the client session so we can retrieve it when opening the createContractDialog
+  CustomContracts.uiState = CustomContracts.uiState or {}
+  CustomContracts.uiState.prefilledFieldId = fieldId
+
+  local farmId = g_currentMission:getFarmId()
+  local cachedInventory = FarmInventoryHelper.retrieveFarmInventory(farmId)
+
+  local options = {
+    "FIELDWORK",
+    "TRANSPORT",
+    "FARMJOB",
+    "CUSTOM"
+  }
+  local callback = function(templateId)
+    if templateId == 1 then
+      CreateContractDialog.show()
+    elseif templateId == 2 then
+      cachedInventory = FarmInventoryHelper.retrieveFarmInventory(farmId)
+      CreateTransportContractDialog.show(cachedInventory.list)
+    elseif templateId == 3 then
+      InfoDialog.show(g_i18n:getText("cc_dialog_template_coming_soon"))
+    elseif templateId == 4 then
+      InfoDialog.show(g_i18n:getText("cc_dialog_template_coming_soon"))
+    end
+  end
+
+  OptionDialog.show(callback, "What type of contract do you want to create?",
+    "Select contract template", options)
+end
+
 -- function CustomContracts.canFarmAccessOtherId(self, superFunc, farmId, otherFarmId, ...)
 --   -- base game first
 --   if superFunc(self, farmId, otherFarmId, ...) then

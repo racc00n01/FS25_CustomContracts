@@ -4,6 +4,8 @@
     <text name="cc_money_type_invoices" text="Invoices"/>
     <text name="finance_invoices" text="Invoices"/>
 
+    <text name="cc_map_btn" text="Create contract"/>
+
     <text name="cc_workareatype_cultivate" text="Cultivate"/>
     <text name="cc_workareatype_plow" text="Plow"/>
     <text name="cc_workareatype_seed" text="Seed"/>
