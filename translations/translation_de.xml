@@ -52,6 +52,14 @@
     <text name="cc_contract_status_label_default" text="Aktueller Status:"/>
     <text name="cc_contract_list_field_label" text="Farmland %d"/>
     <text name="cc_contract_description" text="%s auf Farmland %d (%.2f ha)"/>
+    <text name="cc_contract_description_transport" text="Transport %d L %s"/>
+    <text name="cc_contract_description_transport_pickup" text="Waren laden bei: %s"/>
+    <text name="cc_transport_pickup_loose_pallets" text="Lose Paletten (auf der Karte)"/>
+    <text name="cc_transport_pickup_bales" text="Ballen (auf der Karte)"/>
+    <text name="cc_transport_pickup_global_pallet" text="Transportpalette / mobiler Tank"/>
+    <text name="cc_transport_pickup_unknown" text="Silos, Produktionsgebäude und lose Paletten auf diesem Hof prüfen"/>
+    <text name="cc_transport_pickup_unnamed_placeable" text="Lager"/>
+    <text name="cc_transport_pickup_factory" text="Produktionsgebäude"/>
     <text name="cc_contract_empty" text="Kein Vertrag ausgewählt"/>
     <text name="cc_contract_start_date_label" text="Start:"/>
     <text name="cc_contract_due_date_label" text="Fällig:"/>

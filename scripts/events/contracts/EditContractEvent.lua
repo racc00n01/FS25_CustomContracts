@@ -30,6 +30,12 @@ function EditContractEvent.new(contractId, contractData, farmId)
   self.duePeriod         = contractData.duePeriod
   self.dueDay            = contractData.dueDay
 
+  self.fillTypeIndex     = contractData.fillTypeIndex
+  self.transportAmount   = contractData.transportAmount
+  self.destinationId     = contractData.destinationId
+  self.destinationX      = contractData.destinationX
+  self.destinationZ      = contractData.destinationZ
+
   return self
 end
 
@@ -46,6 +52,12 @@ function EditContractEvent:writeStream(streamId, connection)
   streamWriteInt32(streamId, self.startDay)
   streamWriteInt32(streamId, self.duePeriod)
   streamWriteInt32(streamId, self.dueDay)
+
+  streamWriteInt32(streamId, self.fillTypeIndex or -1)
+  streamWriteInt32(streamId, self.transportAmount or -1)
+  streamWriteInt32(streamId, self.destinationId or -1)
+  streamWriteFloat32(streamId, self.destinationX or 0)
+  streamWriteFloat32(streamId, self.destinationZ or 0)
 end
 
 function EditContractEvent:readStream(streamId, connection)
@@ -61,6 +73,12 @@ function EditContractEvent:readStream(streamId, connection)
   self.startDay          = streamReadInt32(streamId)
   self.duePeriod         = streamReadInt32(streamId)
   self.dueDay            = streamReadInt32(streamId)
+
+  self.fillTypeIndex     = streamReadInt32(streamId)
+  self.transportAmount   = streamReadInt32(streamId)
+  self.destinationId     = streamReadInt32(streamId)
+  self.destinationX      = streamReadFloat32(streamId)
+  self.destinationZ      = streamReadFloat32(streamId)
 
   self:run(connection)
 end
@@ -78,7 +96,12 @@ function EditContractEvent:run(connection)
           startPeriod       = self.startPeriod,
           startDay          = self.startDay,
           duePeriod         = self.duePeriod,
-          dueDay            = self.dueDay
+          dueDay            = self.dueDay,
+          fillTypeIndex     = self.fillTypeIndex,
+          transportAmount   = self.transportAmount,
+          destinationId     = self.destinationId,
+          destinationX      = self.destinationX,
+          destinationZ      = self.destinationZ
         },
         self.farmId
       )
@@ -94,6 +117,11 @@ function EditContractEvent:run(connection)
     startPeriod       = self.startPeriod,
     startDay          = self.startDay,
     duePeriod         = self.duePeriod,
-    dueDay            = self.dueDay
+    dueDay            = self.dueDay,
+    fillTypeIndex     = self.fillTypeIndex,
+    transportAmount   = self.transportAmount,
+    destinationId     = self.destinationId,
+    destinationX      = self.destinationX,
+    destinationZ      = self.destinationZ
   })
 end

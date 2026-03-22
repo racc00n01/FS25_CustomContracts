@@ -428,11 +428,27 @@ function CustomContractManager:handleEditRequest(farmId, contractId, data)
     return
   end
 
-  -- apply edits (only field-work fields for FIELD_WORK; transport keeps its own fields)
   if contract.templateId == CustomContract.TEMPLATE.FIELD_WORK then
     contract.farmlandId        = data.farmlandId
     contract.workAreaTypeIndex = data.workAreaTypeIndex
+  elseif contract.templateId == CustomContract.TEMPLATE.TRANSPORT then
+    if data.fillTypeIndex ~= nil and data.fillTypeIndex >= 0 then
+      contract.fillTypeIndex = data.fillTypeIndex
+    end
+    if data.transportAmount ~= nil and data.transportAmount > 0 then
+      contract.transportAmount = data.transportAmount
+    end
+    if data.destinationId ~= nil then
+      contract.destinationId = data.destinationId
+    end
+    if data.destinationX ~= nil then
+      contract.destinationX = data.destinationX
+    end
+    if data.destinationZ ~= nil then
+      contract.destinationZ = data.destinationZ
+    end
   end
+
   contract.reward            = data.reward
   contract.description       = data.description
   contract.startPeriod       = data.startPeriod

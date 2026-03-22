@@ -26,6 +26,14 @@
     <text name="cc_workareatype_custom" text="Custom"/>
 
     <text name="cc_contract_description_transport" text="Transport %d L %s"/>
+    <text name="cc_contract_description_transport_pickup" text="Load goods at: %s"/>
+
+    <text name="cc_transport_pickup_loose_pallets" text="Loose pallets (on the map)"/>
+    <text name="cc_transport_pickup_bales" text="Bales (on the map)"/>
+    <text name="cc_transport_pickup_global_pallet" text="Transport pallet / mobile tank"/>
+    <text name="cc_transport_pickup_unknown" text="Check silos, production buildings, and loose pallets on this farm"/>
+    <text name="cc_transport_pickup_unnamed_placeable" text="Storage"/>
+    <text name="cc_transport_pickup_factory" text="Production building"/>
 
     <text name="cc_month_january" text="January"/>
     <text name="cc_month_february" text="February"/>

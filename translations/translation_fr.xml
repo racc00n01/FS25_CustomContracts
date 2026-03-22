@@ -52,6 +52,14 @@
     <text name="cc_contract_status_label_default" text="Statut actuel :"/>
     <text name="cc_contract_list_field_label" text="Terrain %d"/>
     <text name="cc_contract_description" text="%s sur le terrain %d (%.2f ha)"/>
+    <text name="cc_contract_description_transport" text="Transport %d L %s"/>
+    <text name="cc_contract_description_transport_pickup" text="Charger les marchandises à : %s"/>
+    <text name="cc_transport_pickup_loose_pallets" text="Palettes en vrac (sur la carte)"/>
+    <text name="cc_transport_pickup_bales" text="Balles (sur la carte)"/>
+    <text name="cc_transport_pickup_global_pallet" text="Palette de transport / citerne mobile"/>
+    <text name="cc_transport_pickup_unknown" text="Vérifiez silos, bâtiments de production et palettes sur cette ferme"/>
+    <text name="cc_transport_pickup_unnamed_placeable" text="Stockage"/>
+    <text name="cc_transport_pickup_factory" text="Bâtiment de production"/>
     <text name="cc_contract_empty" text="Aucun contrat sélectionné"/>
     <text name="cc_contract_start_date_label" text="Début :"/>
     <text name="cc_contract_due_date_label" text="Échéance :"/>

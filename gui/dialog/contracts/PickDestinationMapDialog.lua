@@ -2,6 +2,9 @@
 -- Dialog that shows the ingame map in a window. User clicks on the map to pick
 -- a destination (world X, Z). Uses InGameMapPreview and the same ingame map as the HUD.
 --
+-- Map cursor preview uses AITargetHotspot here only. On open we strip contract-menu
+-- hotspots from the shared ingame map; on close we call displaySelectedContract() to restore.
+--
 
 PickDestinationMapDialog = {}
 local PickDestinationMapDialog_mt = Class(PickDestinationMapDialog, MessageDialog)
@@ -25,6 +28,10 @@ function PickDestinationMapDialog.show(callback)
   if dialog.mapPreview then
     dialog.mapPreview.drawHotspots = true
     dialog.mapPreview:setIngameMap(g_currentMission.hud:getIngameMap())
+  end
+  local cc = g_currentMission.CustomContracts
+  if cc ~= nil and cc.CustomContractsMenu ~= nil and cc.CustomContractsMenu.clearContractMapPreviewHotspots ~= nil then
+    cc.CustomContractsMenu:clearContractMapPreviewHotspots()
   end
   g_gui:showDialog("pickDestinationMapDialog")
 end
@@ -55,6 +62,12 @@ function PickDestinationMapDialog:onOpen()
   self.mapPreview:setIngameMap(g_currentMission.hud:getIngameMap())
 
   self.mapPreview.drawHotspots = true
+
+  -- Contract menu hotspots are on the same global ingame map; hide them here so only the pick cursor shows.
+  local cc = g_currentMission.CustomContracts
+  if cc ~= nil and cc.CustomContractsMenu ~= nil and cc.CustomContractsMenu.clearContractMapPreviewHotspots ~= nil then
+    cc.CustomContractsMenu:clearContractMapPreviewHotspots()
+  end
 
   self.aiTargetMapHotspot = AITargetHotspot.new()
 
@@ -91,6 +104,11 @@ function PickDestinationMapDialog:onClose()
   self.hotspotLocked = false
   -- self.aiTargetMapHotspot:delete()
   g_inputBinding:setShowMouseCursor(true)
+
+  local cc = g_currentMission.CustomContracts
+  if cc ~= nil and cc.CustomContractsMenu ~= nil and cc.CustomContractsMenu.displaySelectedContract ~= nil then
+    cc.CustomContractsMenu:displaySelectedContract()
+  end
 end
 
 function PickDestinationMapDialog:closeWithResult(success, worldX, worldZ)
@@ -100,11 +118,6 @@ function PickDestinationMapDialog:closeWithResult(success, worldX, worldZ)
   g_inputBinding:setShowMouseCursor(true)
   self:close()
 end
-
--- function PickDestinationMapDialog:update(dt)
---   print("update", self.mapPreview.ingameMap:getLocalPointerTarget())
---   -- self.aiTargetMapHotspot:setWorldPosition(self.mapPreview:getLocalPointerTarget())
--- end
 
 --- Convert screen position to world X,Z. Uses the layout's actual map rect (getMapPosition/getMapSize)
 -- so the conversion matches how hotspots are drawn; avoids offset when the map is letterboxed.
@@ -223,7 +236,6 @@ function PickDestinationMapDialog:mouseEvent(posX, posY, isDown, isUp, button, e
 end
 
 function PickDestinationMapDialog:onSubmit()
-  print("onSubmit", self.pickedWorldX, self.pickedWorldZ)
   self:closeWithResult(true, self.pickedWorldX, self.pickedWorldZ)
 end
 

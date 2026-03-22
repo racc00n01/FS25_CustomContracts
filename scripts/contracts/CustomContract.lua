@@ -74,9 +74,9 @@ function CustomContract.new(id, creatorFarmId, farmlandId, workAreaTypeIndex, re
   -- Transport-specific (only used when templateId == TRANSPORT)
   self.fillTypeIndex     = nil
   self.transportAmount   = nil
-  self.destinationId    = nil
-  self.destinationX      = nil  -- world X when destinationId == -1 (map position)
-  self.destinationZ      = nil  -- world Z when destinationId == -1 (map position)
+  self.destinationId     = nil
+  self.destinationX      = nil -- world X when destinationId == -1 (map position)
+  self.destinationZ      = nil -- world Z when destinationId == -1 (map position)
 
   return self
 end
@@ -187,10 +187,18 @@ function CustomContract:getDescriptionText()
       local ft = g_fillTypeManager:getFillTypeByIndex(self.fillTypeIndex)
       productName = (ft and (ft.title or ft.name)) or tostring(self.fillTypeIndex)
     end
-    return string.format(g_i18n:getText("cc_contract_description_transport") or "Transport %d L %s", self.transportAmount or 0, productName)
+    local line1 = string.format(g_i18n:getText("cc_contract_description_transport") or "Transport %d L %s",
+      self.transportAmount or 0,
+      productName)
+    local d = self.description
+    if d ~= nil and d ~= "" and d ~= "-" then
+      return line1 .. "\n" .. string.format(g_i18n:getText("cc_contract_description_transport_pickup"), d)
+    end
+    return line1
   end
   local farmland = (g_farmlandManager and self.farmlandId) and g_farmlandManager:getFarmlandById(self.farmlandId)
   local areaHa = (farmland and farmland.areaInHa) or 0
   local workKey = "cc_workareatype_" .. string.lower(self:getWorkTypeAreaName())
-  return string.format(g_i18n:getText("cc_contract_description"), g_i18n:getText(workKey) or self:getWorkTypeAreaName(), self.farmlandId or 0, areaHa)
+  return string.format(g_i18n:getText("cc_contract_description"), g_i18n:getText(workKey) or self:getWorkTypeAreaName(),
+    self.farmlandId or 0, areaHa)
 end
