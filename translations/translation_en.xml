@@ -147,7 +147,7 @@
     <text name="cc_dialog_transport_destination_label" text="Destination"/>
     <text name="cc_dialog_transport_destination_placeholder" text="Select destination (coming soon)"/>
     <text name="cc_dialog_transport_destination_pick_map" text="Pick on map..."/>
-    <text name="cc_dialog_transport_destination_picked" text="< %.0f, %.0f >"/>
+    <text name="cc_dialog_transport_destination_picked" text="&lt; %.0f, %.0f &gt;"/>
     <text name="cc_dialog_transport_reward_label" text="Reward (€)"/>
     <text name="cc_dialog_transport_validation_select_product" text="Please select a product from the list."/>
     <text name="cc_dialog_transport_validation_amount" text="Please enter a valid amount (max. available)."/>

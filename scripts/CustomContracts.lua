@@ -309,15 +309,23 @@ function CustomContracts.onClickCreateContract(frame)
   local options = {
     g_i18n:getText("cc_dialog_template_field_work"),
     g_i18n:getText("cc_dialog_template_transport"),
-    g_i18n:getText("cc_dialog_template_farmjob"),
-    g_i18n:getText("cc_dialog_template_custom"),
+    -- g_i18n:getText("cc_dialog_template_farmjob"),
+    -- g_i18n:getText("cc_dialog_template_custom"),
   }
   local callback = function(templateId)
     if templateId == 1 then
-      CreateContractDialog.show()
+      if g_farmlandManager:getNumOwnedFarmlandIdsByFarmId(g_currentMission:getFarmId()) > 0 then
+        CreateContractDialog.show()
+      else
+        InfoDialog.show(g_i18n:getText("cc_dialog_template_no_farmland"))
+      end
     elseif templateId == 2 then
       cachedInventory = FarmInventoryHelper.retrieveFarmInventory(farmId)
-      CreateTransportContractDialog.show(cachedInventory.list)
+      if cachedInventory.list ~= nil and #cachedInventory.list > 0 then
+        CreateTransportContractDialog.show(cachedInventory.list)
+      else
+        InfoDialog.show(g_i18n:getText("cc_dialog_template_no_inventory"))
+      end
     elseif templateId == 3 then
       InfoDialog.show(g_i18n:getText("cc_dialog_template_coming_soon"))
     elseif templateId == 4 then
