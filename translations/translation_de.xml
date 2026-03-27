@@ -135,6 +135,7 @@
     <text name="cc_dialog_template_transport" text="Transport"/>
     <text name="cc_dialog_template_farm_job" text="Hofauftrag"/>
     <text name="cc_dialog_template_custom" text="Benutzerdefiniert"/>
+    <text name="cc_dialog_template_no_farmland" text="Kein Farmland verfügbar, um einen Vertrag zu erstellen."/>
     <text name="cc_dialog_template_coming_soon" text="Dieser Vertragstyp ist noch nicht verfügbar."/>
 
     <text name="cc_dialog_transport_title" text="Transportvertrag erstellen"/>
@@ -171,6 +172,8 @@
     <text name="cc_btn_detail_invoice" text="Rechnungsdetails"/>
     <text name="cc_btn_send_invoice" text="Rechnung senden"/>
     <text name="cc_btn_delete_invoice" text="Rechnung löschen"/>
+    <text name="cc_dialog_create_invoice_no_other_farms" text="Keine anderen Höfe zum Rechnungsstellen verfügbar."/>
+    <text name="cc_dialog_template_no_inventory" text="Kein Inventar verfügbar, um einen Transportvertrag zu erstellen."/>
 
     <text name="cc_invoice_status_label" text="Status:"/>
     <text name="cc_dialog_invoice_pay_yes_no" text="Rechnung %s bezahlen und €%s überweisen?"/>

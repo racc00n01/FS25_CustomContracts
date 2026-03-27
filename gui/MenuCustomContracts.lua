@@ -797,22 +797,12 @@ function MenuCustomContracts:shouldShowButton(button, listType, contract)
   -- Always show these
   local myFarmId = g_currentMission:getFarmId()
 
-  if button == self.btnBack then
-    return true
-  end
+  if button == self.btnBack then return true end
 
-  if button == self.btnCreateContract then
-    if g_farmlandManager:getNumOwnedFarmlandIdsByFarmId(myFarmId) > 0 then
-      return true
-    else
-      return false
-    end
-  end
+  if button == self.btnCreateContract then return true end
 
   -- No selected contract => only back + create
-  if contract == nil then
-    return false
-  end
+  if contract == nil then return false end
 
   local isOwner = (contract.creatorFarmId == myFarmId)
   local isContractor = (contract.contractorFarmId == myFarmId)
@@ -950,6 +940,22 @@ end
 
 -- Function triggered when clicking on the "Create invoice" button
 function MenuCustomContracts:onCreateInvoice()
+  local myFarmId = g_currentMission:getFarmId()
+  local hasOtherFarm = false
+
+  for _, farm in ipairs(g_farmManager.farms) do
+    local farmId = farm.farmId
+    if farmId ~= FarmManager.SPECTATOR_FARM_ID and farm.showInFarmScreen and farmId ~= myFarmId then
+      hasOtherFarm = true
+      break
+    end
+  end
+
+  if not hasOtherFarm then
+    InfoDialog.show(g_i18n:getText("cc_dialog_create_invoice_no_other_farms"))
+    return
+  end
+
   CreateInvoiceDialog.show()
 end
 
@@ -1065,8 +1071,8 @@ function MenuCustomContracts:onCreateContract()
     end
   end
 
-  OptionDialog.show(callback, g_i18n:getText("cc_dialog_template_title"),
-    g_i18n:getText("cc_dialog_template_subtitle"), options)
+  OptionDialog.show(callback, g_i18n:getText("cc_dialog_template_subtitle"),
+    g_i18n:getText("cc_dialog_template_title"), options)
 end
 
 -- Function triggered when clicking on the "Complete contract" button

@@ -10,6 +10,81 @@ CustomContracts.dir = g_currentModDirectory
 CustomContracts.modName = g_currentModName
 CustomContracts.SaveKey = "CustomContracts"
 
+local function fixInGameMenu(frame, pageName, uvs, position, predicateFunc)
+  local inGameMenu = g_gui.screenControllers[InGameMenu]
+  position = position or #inGameMenu.pagingElement.pages + 1
+
+  for k, v in pairs({ pageName }) do
+    inGameMenu.controlIDs[v] = nil
+  end
+
+  for i = 1, #inGameMenu.pagingElement.elements do
+    local child = inGameMenu.pagingElement.elements[i]
+    if child == inGameMenu.pageAnimals then
+      position = i
+      break
+    end
+  end
+
+  inGameMenu[pageName] = frame
+  inGameMenu.pagingElement:addElement(inGameMenu[pageName])
+
+  inGameMenu:exposeControlsAsFields(pageName)
+
+  for i = 1, #inGameMenu.pagingElement.elements do
+    local child = inGameMenu.pagingElement.elements[i]
+    if child == inGameMenu[pageName] then
+      table.remove(inGameMenu.pagingElement.elements, i)
+      table.insert(inGameMenu.pagingElement.elements, position, child)
+      break
+    end
+  end
+
+  for i = 1, #inGameMenu.pagingElement.pages do
+    local child = inGameMenu.pagingElement.pages[i]
+    if child.element == inGameMenu[pageName] then
+      table.remove(inGameMenu.pagingElement.pages, i)
+      table.insert(inGameMenu.pagingElement.pages, position, child)
+      break
+    end
+  end
+
+  inGameMenu.pagingElement:updateAbsolutePosition()
+  inGameMenu.pagingElement:updatePageMapping()
+
+  inGameMenu:registerPage(inGameMenu[pageName], position, predicateFunc)
+  inGameMenu:addPageTab(inGameMenu[pageName], CustomContracts.dir .. "images/menuIcon.dds", GuiUtils.getUVs(uvs))
+
+  for i = 1, #inGameMenu.pageFrames do
+    local child = inGameMenu.pageFrames[i]
+    if child == inGameMenu[pageName] then
+      table.remove(inGameMenu.pageFrames, i)
+      table.insert(inGameMenu.pageFrames, position, child)
+      break
+    end
+  end
+
+  inGameMenu:rebuildTabList()
+end
+
+local function makeIsCustomContractsCheckEnabledPredicate()
+  -- Only enable the Custom Contracts page for players that are actually in a farm.
+  -- When in spectator mode (no farm or FarmManager.SPECTATOR_FARM_ID), the page
+  -- tab will be hidden from the in‑game menu so it cannot appear half off‑screen.
+  return function()
+    if g_currentMission == nil then
+      return false
+    end
+
+    local farmId = g_currentMission:getFarmId()
+    if farmId == nil or farmId == FarmManager.SPECTATOR_FARM_ID then
+      return false
+    end
+
+    return true
+  end
+end
+
 function CustomContracts:loadMap()
   g_currentMission.CustomContracts = self
 
@@ -19,12 +94,11 @@ function CustomContracts:loadMap()
 
   g_gui:loadProfiles(CustomContracts.dir .. "gui/guiProfiles.xml")
 
-  -- Register menu page
   local menuCustomContracts = MenuCustomContracts.new(g_i18n)
-  g_gui:loadGui(CustomContracts.dir .. "gui/MenuCustomContracts.xml", "menuCustomContracts", menuCustomContracts, true)
+  g_gui:loadGui(CustomContracts.dir .. "gui/MenuCustomContracts.xml", "MenuCustomContracts", menuCustomContracts, true)
 
-  CustomContracts.addIngameMenuPage(menuCustomContracts, "menuCustomContracts", { 0, 0, 1024, 1024 },
-    CustomContracts:makeIsCustomContractsCheckEnabledPredicate(), 2)
+  fixInGameMenu(menuCustomContracts, "menuCustomContracts", { 0, 0, 1024, 1024 }, 4,
+    makeIsCustomContractsCheckEnabledPredicate())
 
   CreateContractDialog.register()
   CreateTransportContractDialog.register()
@@ -50,24 +124,6 @@ function CustomContracts:loadMap()
   g_messageCenter:publish(MessageType.INVOICES_UPDATED)
 
   self:loadFromXmlFile()
-end
-
-function CustomContracts:makeIsCustomContractsCheckEnabledPredicate()
-  -- Only enable the Custom Contracts page for players that are actually in a farm.
-  -- When in spectator mode (no farm or FarmManager.SPECTATOR_FARM_ID), the page
-  -- tab will be hidden from the in‑game menu so it cannot appear half off‑screen.
-  return function()
-    if g_currentMission == nil then
-      return false
-    end
-
-    local farmId = g_currentMission:getFarmId()
-    if farmId == nil or farmId == FarmManager.SPECTATOR_FARM_ID then
-      return false
-    end
-
-    return true
-  end
 end
 
 function CustomContracts:loadFromXmlFile()
@@ -109,74 +165,6 @@ end
 
 function CustomContracts:sendInitialClientState(connection, user, farm)
   connection:sendEvent(InitialClientStateEvent:new())
-end
-
--- from Courseplay
-function CustomContracts.addIngameMenuPage(frame, pageName, uvs, predicateFunc, insertAfter)
-  local targetPosition = 0
-
-  -- remove all to avoid warnings
-  for k, v in pairs({ pageName }) do
-    g_inGameMenu.controlIDs[v] = nil
-  end
-
-  if type(insertAfter) == "number" then
-    targetPosition = math.max(1, insertAfter)
-  else
-    for i = 1, #g_inGameMenu.pagingElement.elements do
-      local child = g_inGameMenu.pagingElement.elements[i]
-      if child == g_inGameMenu[insertAfter] then
-        targetPosition = i + 1
-        break
-      end
-    end
-  end
-
-  if targetPosition < 1 then
-    targetPosition = 1
-  end
-
-  g_inGameMenu[pageName] = frame
-  g_inGameMenu.pagingElement:addElement(g_inGameMenu[pageName])
-
-  g_inGameMenu:exposeControlsAsFields(pageName)
-
-  for i = 1, #g_inGameMenu.pagingElement.elements do
-    local child = g_inGameMenu.pagingElement.elements[i]
-    if child == g_inGameMenu[pageName] then
-      table.remove(g_inGameMenu.pagingElement.elements, i)
-      table.insert(g_inGameMenu.pagingElement.elements, targetPosition, child)
-      break
-    end
-  end
-
-  for i = 1, #g_inGameMenu.pagingElement.pages do
-    local child = g_inGameMenu.pagingElement.pages[i]
-    if child.element == g_inGameMenu[pageName] then
-      table.remove(g_inGameMenu.pagingElement.pages, i)
-      table.insert(g_inGameMenu.pagingElement.pages, targetPosition, child)
-      break
-    end
-  end
-
-  g_inGameMenu.pagingElement:updateAbsolutePosition()
-  g_inGameMenu.pagingElement:updatePageMapping()
-
-  g_inGameMenu:registerPage(g_inGameMenu[pageName], nil, predicateFunc)
-
-  local iconFileName = Utils.getFilename('images/menuIcon.dds', CustomContracts.dir)
-  g_inGameMenu:addPageTab(g_inGameMenu[pageName], iconFileName, GuiUtils.getUVs(uvs))
-
-  for i = 1, #g_inGameMenu.pageFrames do
-    local child = g_inGameMenu.pageFrames[i]
-    if child == g_inGameMenu[pageName] then
-      table.remove(g_inGameMenu.pageFrames, i)
-      table.insert(g_inGameMenu.pageFrames, targetPosition, child)
-      break
-    end
-  end
-
-  g_inGameMenu:rebuildTabList()
 end
 
 function CustomContracts:registerMenu()
