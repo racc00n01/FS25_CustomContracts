@@ -135,6 +135,7 @@
     <text name="cc_dialog_template_transport" text="Transport"/>
     <text name="cc_dialog_template_farm_job" text="Boerderijklus"/>
     <text name="cc_dialog_template_custom" text="Aangepast"/>
+    <text name="cc_dialog_template_no_farmland" text="Geen land beschikbaar om een contract aan te maken."/>
     <text name="cc_dialog_template_coming_soon" text="Dit contracttype is nog niet beschikbaar."/>
 
     <text name="cc_dialog_transport_title" text="Transportcontract aanmaken"/>
@@ -145,7 +146,7 @@
     <text name="cc_dialog_transport_destination_label" text="Bestemming"/>
     <text name="cc_dialog_transport_destination_placeholder" text="Bestemming kiezen (binnenkort)"/>
     <text name="cc_dialog_transport_destination_pick_map" text="Op kaart kiezen..."/>
-    <text name="cc_dialog_transport_destination_picked" text="< %.0f, %.0f >"/>
+    <text name="cc_dialog_transport_destination_picked" text="&lt; %.0f, %.0f &gt;"/>
     <text name="cc_dialog_transport_reward_label" text="Vergoeding (€)"/>
     <text name="cc_dialog_transport_validation_select_product" text="Selecteer een product uit de lijst."/>
     <text name="cc_dialog_transport_validation_amount" text="Voer een geldige hoeveelheid in (max. beschikbaar)."/>
@@ -171,6 +172,8 @@
     <text name="cc_btn_detail_invoice" text="Factuurdetails"/>
     <text name="cc_btn_send_invoice" text="Factuur verzenden"/>
     <text name="cc_btn_delete_invoice" text="Factuur verwijderen"/>
+    <text name="cc_dialog_create_invoice_no_other_farms" text="Geen andere boerderijen beschikbaar om te factureren."/>
+    <text name="cc_dialog_template_no_inventory" text="Geen voorraad beschikbaar om een transportcontract aan te maken."/>
 
     <text name="cc_invoice_status_label" text="Status:"/>
     <text name="cc_dialog_invoice_pay_yes_no" text="Factuur %s betalen en €%s overmaken?"/>

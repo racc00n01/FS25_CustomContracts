@@ -135,6 +135,7 @@
     <text name="cc_dialog_template_transport" text="Transport"/>
     <text name="cc_dialog_template_farm_job" text="Tâche à la ferme"/>
     <text name="cc_dialog_template_custom" text="Personnalisé"/>
+    <text name="cc_dialog_template_no_farmland" text="Aucun terrain disponible pour créer un contrat."/>
     <text name="cc_dialog_template_coming_soon" text="Ce type de contrat n’est pas encore disponible."/>
 
     <text name="cc_dialog_transport_title" text="Créer un contrat de transport"/>
@@ -145,7 +146,7 @@
     <text name="cc_dialog_transport_destination_label" text="Destination"/>
     <text name="cc_dialog_transport_destination_placeholder" text="Choisir la destination (bientôt)"/>
     <text name="cc_dialog_transport_destination_pick_map" text="Choisir sur la carte..."/>
-    <text name="cc_dialog_transport_destination_picked" text="< %.0f, %.0f >"/>
+    <text name="cc_dialog_transport_destination_picked" text="&lt; %.0f, %.0f &gt;"/>
     <text name="cc_dialog_transport_reward_label" text="Récompense (€)"/>
     <text name="cc_dialog_transport_validation_select_product" text="Veuillez sélectionner un produit dans la liste."/>
     <text name="cc_dialog_transport_validation_amount" text="Veuillez saisir une quantité valide (max. disponible)."/>
@@ -171,6 +172,8 @@
     <text name="cc_btn_detail_invoice" text="Détails de la facture"/>
     <text name="cc_btn_send_invoice" text="Envoyer la facture"/>
     <text name="cc_btn_delete_invoice" text="Supprimer la facture"/>
+    <text name="cc_dialog_create_invoice_no_other_farms" text="Aucune autre ferme disponible pour facturer."/>
+    <text name="cc_dialog_template_no_inventory" text="Aucun stock disponible pour créer un contrat de transport."/>
 
     <text name="cc_invoice_status_label" text="Statut :"/>
     <text name="cc_dialog_invoice_pay_yes_no" text="Payer la facture %s et payer €%s ?"/>

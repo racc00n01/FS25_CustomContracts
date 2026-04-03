@@ -104,6 +104,8 @@
     <text name="cc_btn_reopen_contract" text="Reopen contract"/>
     <text name="cc_btn_edit_contract" text="Edit contract"/>
 
+    <text name="cc_dialog_template_no_farmland" text="No farmland available to create a contract."/>
+
     <text name="cc_dialog_create_yes_no" text="Complete contract for Farmland %d and receive €%s?"/>
     <text name="cc_dialog_create_yes_no_btn" text="Complete Contract"/>
     <text name="cc_dialog_accept_yes_no" text="Accept contract for Farmland %d (%s) for €%s?"/>
@@ -147,7 +149,7 @@
     <text name="cc_dialog_transport_destination_label" text="Destination"/>
     <text name="cc_dialog_transport_destination_placeholder" text="Select destination (coming soon)"/>
     <text name="cc_dialog_transport_destination_pick_map" text="Pick on map..."/>
-    <text name="cc_dialog_transport_destination_picked" text="< %.0f, %.0f >"/>
+    <text name="cc_dialog_transport_destination_picked" text="&lt; %.0f, %.0f &gt;"/>
     <text name="cc_dialog_transport_reward_label" text="Reward (€)"/>
     <text name="cc_dialog_transport_validation_select_product" text="Please select a product from the list."/>
     <text name="cc_dialog_transport_validation_amount" text="Please enter a valid amount (max. available)."/>
@@ -173,6 +175,8 @@
     <text name="cc_btn_detail_invoice" text="Detail invoice"/>
     <text name="cc_btn_send_invoice" text="Send invoice"/>
     <text name="cc_btn_delete_invoice" text="Delete invoice"/>
+    <text name="cc_dialog_create_invoice_no_other_farms" text="No other farms available to invoice."/>
+    <text name="cc_dialog_template_no_inventory" text="No inventory available to create a transport contract."/>
 
     <text name="cc_invoice_status_label" text="Status:"/>
     <text name="cc_dialog_invoice_pay_yes_no" text="Pay invoice %s and pay €%s?"/>

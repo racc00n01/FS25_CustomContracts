@@ -72,20 +72,19 @@ function AddInvoiceLineDialog:onOk()
   local amountText = self.linePriceInput:getText() or ""
   local amount = parsePrice(amountText)
 
-  if self.invoiceDraft.lines == nil then
-    self.invoiceDraft.lines = {}
-
-    table.insert(self.invoiceDraft.lines, {
-      title = title,
-      amount = amount
-    })
-  else
-    table.insert(self.invoiceDraft.lines, {
-      title = title,
-      amount = amount
-    })
+  if title == "" or amount == nil then
+    InfoDialog.show(g_i18n:getText("cc_dialog_create_validation_fields"))
+    return
   end
 
+  if self.invoiceDraft.lines == nil then
+    self.invoiceDraft.lines = {}
+  end
+
+  table.insert(self.invoiceDraft.lines, {
+    title = title,
+    amount = amount
+  })
 
   self:close()
 
