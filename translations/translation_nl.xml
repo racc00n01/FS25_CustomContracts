@@ -228,5 +228,19 @@
 
     <text name="cc_dialog_edit_invoice_title" text="Factuur bewerken"/>
     <text name="cc_dialog_edit_invoice_send_btn" text="Verzenden"/>
+
+    <text name="cc_notifications_title" text="Meldingen"/>
+    <text name="cc_header_notifications" text="Meldingen"/>
+
+    <text name="cc_contract_accepted_notification" text="Contract #%d is geaccepteerd door %s"/>
+    <text name="cc_contract_completed_notification" text="Contract #%d is voltooid door %s"/>
+    <text name="cc_contract_cancelled_notification" text="Contract #%d is geannuleerd door %s"/>
+    <text name="cc_contract_deleted_notification" text="Contract #%d is verwijderd door %s"/>
+
+    <text name="cc_invoice_paid_notification" text="Factuur #%d is betaald door %s"/>
+
+    <text name="cc_notification_table_id" text="ID"/>
+    <text name="cc_notification_table_message" text="Bericht"/>
+    <text name="cc_notification_table_date" text="Datum"/>
   </texts>
 </l10n>

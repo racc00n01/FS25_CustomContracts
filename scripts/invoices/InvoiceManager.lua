@@ -278,6 +278,14 @@ function InvoiceManager:handlePayRequest(farmId, invoiceId)
   -- Update paid amount to with the total amount for now, since we don't have partial payments yet
   invoice.paid = invoice.total -- TODO: Add more logic when adding partial payments
 
+  -- Notify the contractor of the contract
+  local creatorFarm = g_farmManager:getFarmById(invoice.creatorFarmId)
+  local farmName = creatorFarm.name or "Unknown"
+  g_currentMission.CustomContracts.NotificationManager:addNotification(
+    string.format(g_i18n:getText("cc_invoice_paid_notification"), invoice.id, farmName),
+    Notification.TYPE.INFO,
+    invoice.creatorFarmId)
+
   -- Update all clients
   self:syncInvoices()
 end

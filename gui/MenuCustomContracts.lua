@@ -11,6 +11,7 @@ MenuCustomContracts._mt = Class(MenuCustomContracts, TabbedMenuFrameElement)
 MenuCustomContracts.SUB_CATEGORY = {
   CONTRACTS = 1,
   INVOICES = 2,
+  NOTIFICATIONS = 3,
 }
 
 MenuCustomContracts.CONTRACTS_LIST_TYPE = {
@@ -24,6 +25,7 @@ MenuCustomContracts.CONTRACTS_STATE_TEXTS = { "cc_new", "cc_active", "cc_owned",
 MenuCustomContracts.HEADER_TITLES = {
   [MenuCustomContracts.SUB_CATEGORY.CONTRACTS] = "cc_header_contracts",
   [MenuCustomContracts.SUB_CATEGORY.INVOICES] = "cc_header_invoices",
+  [MenuCustomContracts.SUB_CATEGORY.NOTIFICATIONS] = "cc_header_notifications",
 }
 
 CustomContract.STATUS = {
@@ -107,7 +109,7 @@ function MenuCustomContracts.new(i18n, messageCenter)
   self.contractDetailsRenderer = ContractsDetailsRenderer.new()
   self.invoicesInboxRenderer = InvoicesInboxRenderer.new()
   self.invoicesOutboxRenderer = InvoicesOutboxRenderer.new()
-
+  self.notificationsRenderer = NotificationsRenderer.new()
 
   -- Contract map: AbstractFieldMissionHotspot = blinking red circle (base field-mission style).
   -- PickDestinationMapDialog keeps AITargetHotspot for choosing a transport destination only.
@@ -349,6 +351,10 @@ function MenuCustomContracts:onGuiSetupFinished()
     self.contractDetailsList:setDelegate(self.contractDetailsRenderer)
   end
 
+  -- Notifications table
+  self.notificationsTable:setDataSource(self.notificationsRenderer)
+  self.notificationsTable:setDelegate(self.notificationsRenderer)
+
   -- Invoice inbox/outbox tables
   self.inboxInvoicesTable:setDataSource(self.invoicesInboxRenderer)
   self.inboxInvoicesTable:setDelegate(self.invoicesInboxRenderer)
@@ -558,6 +564,10 @@ function MenuCustomContracts:initialize()
     self.btnCreateInvoice,
   }
 
+  self.menuButtonInfo[MenuCustomContracts.SUB_CATEGORY.NOTIFICATIONS] = {
+    self.btnBack
+  }
+
   self.currentContractsListType =
       self.contractDisplaySwitcher:getState()
       or MenuCustomContracts.CONTRACTS_LIST_TYPE.NEW
@@ -589,6 +599,7 @@ function MenuCustomContracts:onFrameOpen()
   g_messageCenter:subscribe(MessageType.MONEY_CHANGED, self.onMoneyChange, self)
   g_messageCenter:subscribe(MessageType.CUSTOM_CONTRACTS_UPDATED, self.updateContent, self)
   g_messageCenter:subscribe(MessageType.INVOICES_UPDATED, self.updateContent, self)
+  g_messageCenter:subscribe(MessageType.NOTIFICATIONS_UPDATED, self.updateContent, self)
   self:updateContent()
   self:setMenuButtonInfoDirty()
 end
@@ -608,12 +619,17 @@ end
 
 function MenuCustomContracts:onClickContracts()
   self.subCategoryPaging:setState(MenuCustomContracts.SUB_CATEGORY.CONTRACTS, true)
-
   self:setMenuButtonInfoDirty()
 end
 
 function MenuCustomContracts:onClickInvoices()
   self.subCategoryPaging:setState(MenuCustomContracts.SUB_CATEGORY.INVOICES, true)
+  self:updateMenuButtons()
+  self:setMenuButtonInfoDirty()
+end
+
+function MenuCustomContracts:onClickNotifications()
+  self.subCategoryPaging:setState(MenuCustomContracts.SUB_CATEGORY.NOTIFICATIONS, true)
   self:updateMenuButtons()
   self:setMenuButtonInfoDirty()
 end
@@ -648,6 +664,7 @@ function MenuCustomContracts:updateContent()
     v:setVisible(k == state)
   end
 
+  -- Contracts page
   if state == MenuCustomContracts.SUB_CATEGORY.CONTRACTS then
     local contractManager = g_currentMission.CustomContracts.ContractManager
     local newContracts = contractManager:getNewContractsForCurrentFarm()
@@ -675,7 +692,7 @@ function MenuCustomContracts:updateContent()
     end
   end
 
-  -- INVOICES page
+  -- Invoices page
   if state == MenuCustomContracts.SUB_CATEGORY.INVOICES then
     local invoiceManager = g_currentMission.CustomContracts.InvoiceManager
 
@@ -686,6 +703,13 @@ function MenuCustomContracts:updateContent()
     local outboxInvoices = invoiceManager:getOutboundInvoicesByCurrentFarm()
     self.invoicesOutboxRenderer:setData(outboxInvoices)
     self.outboxInvoicesTable:reloadData()
+  end
+
+  -- Notifications page
+  if state == MenuCustomContracts.SUB_CATEGORY.NOTIFICATIONS then
+    local notifications = g_currentMission.CustomContracts.NotificationManager:getNotificationsByCurrentFarm()
+    self.notificationsRenderer:setData(notifications)
+    self.notificationsTable:reloadData()
   end
 
   self:updateMenuButtons()
@@ -753,6 +777,11 @@ function MenuCustomContracts:updateMenuButtons()
 
     self.menuButtonInfo[MenuCustomContracts.SUB_CATEGORY.CONTRACTS] = filtered
     self:setMenuButtonInfoDirty()
+    return
+  end
+
+  if subCategory == MenuCustomContracts.SUB_CATEGORY.NOTIFICATIONS then
+    self.menuButtonInfo[subCategory] = { self.btnBack }
     return
   end
 end

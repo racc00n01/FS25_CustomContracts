@@ -90,6 +90,7 @@ function CustomContracts:loadMap()
 
   MessageType.CUSTOM_CONTRACTS_UPDATED = nextMessageTypeId()
   MessageType.INVOICES_UPDATED = nextMessageTypeId()
+  MessageType.NOTIFICATIONS_UPDATED = nextMessageTypeId()
   MessageType.PLAYER_CONNECTED = nextMessageTypeId()
 
   g_gui:loadProfiles(CustomContracts.dir .. "gui/guiProfiles.xml")
@@ -114,6 +115,7 @@ function CustomContracts:loadMap()
 
   self.ContractManager = CustomContractManager:new()
   self.InvoiceManager = InvoiceManager:new()
+  self.NotificationManager = NotificationManager:new()
   self.CustomContractsMenu = menuCustomContracts
 
   self.lastPeriod = g_currentMission.environment.currentPeriod - 1
@@ -122,6 +124,7 @@ function CustomContracts:loadMap()
 
   g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
   g_messageCenter:publish(MessageType.INVOICES_UPDATED)
+  g_messageCenter:publish(MessageType.NOTIFICATIONS_UPDATED)
 
   self:loadFromXmlFile()
 end
@@ -139,6 +142,7 @@ function CustomContracts:loadFromXmlFile()
     local xmlFile = loadXMLFile(CustomContracts.SaveKey, savegameFolderPath .. CustomContracts.SaveKey .. ".xml");
     g_currentMission.CustomContracts.ContractManager:loadFromXmlFile(xmlFile)
     g_currentMission.CustomContracts.InvoiceManager:loadFromXmlFile(xmlFile)
+    g_currentMission.CustomContracts.NotificationManager:loadFromXmlFile(xmlFile)
 
     delete(xmlFile)
   end
@@ -158,6 +162,7 @@ function CustomContracts:saveToXmlFile()
 
   g_currentMission.CustomContracts.ContractManager:saveToXmlFile(xmlFile)
   g_currentMission.CustomContracts.InvoiceManager:saveToXmlFile(xmlFile)
+  g_currentMission.CustomContracts.NotificationManager:saveToXmlFile(xmlFile)
 
   saveXMLFile(xmlFile)
   delete(xmlFile)
@@ -186,11 +191,13 @@ end
 function CustomContracts:playerFarmChanged()
   g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
   g_messageCenter:publish(MessageType.INVOICES_UPDATED)
+  g_messageCenter:publish(MessageType.NOTIFICATIONS_UPDATED)
 end
 
 function CustomContracts:hourChanged()
   g_currentMission.CustomContracts.ContractManager:syncContracts()
   g_currentMission.CustomContracts.InvoiceManager:syncInvoices()
+  g_currentMission.CustomContracts.NotificationManager:syncNotifications()
 
   local period = g_currentMission.environment.currentPeriod
   if period ~= g_currentMission.CustomContracts.currentPeriod then

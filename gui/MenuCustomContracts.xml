@@ -19,6 +19,9 @@
       <Button profile="fs25_subCategorySelectorTabbedTab" id="subCategoryTabs[2]" text="$l10n_cc_header_invoices" onClick="onClickInvoices">
         <ThreePartBitmap profile="fs25_subCategorySelectorTabbedTabBg" name="background"/>
       </Button>
+      <Button profile="fs25_subCategorySelectorTabbedTab" id="subCategoryTabs[3]" text="$l10n_cc_header_notifications" onClick="onClickNotifications">
+        <ThreePartBitmap profile="fs25_subCategorySelectorTabbedTabBg" name="background"/>
+      </Button>
     </BoxLayout>
 
     <ThreePartBitmap profile="fs25_lineSeparatorTopHighlighted" position="0px -57px"/>
@@ -148,6 +151,23 @@
           <Slider profile="fs25_listSlider" dataElementId="outboxInvoicesTable"/>
         </ThreePartBitmap>
       </GuiElement>
+    </GuiElement>
+    <GuiElement profile="fs25_subCategorySelectorTabbedContainer" id="subCategoryPages[3]">
+
+      <GuiElement profile="fs25_statisticsHeaderBox" position="0px -10px" size="100% 32px">
+        <Button profile="CC_TableHeader" position="50px 0px" size="150px 32px" text="$l10n_cc_notification_table_id" handleFocus="false" />
+        <Button profile="CC_TableHeader" position="2000px 0px" size="520px 32px" text="$l10n_cc_notification_table_message" handleFocus="false" />
+        <Button profile="CC_TableHeader" position="720px 0px" size="140px 32px" text="$l10n_cc_notification_table_date" handleFocus="false" />
+        <ThreePartBitmap profile="fs25_lineSeparatorBottom" position="0px -2dp" />
+      </GuiElement>
+
+      <SmoothList id="notificationsTable" profile="CC_Table" size="100% 450px" position="20px -50px">
+        <ListItem profile="CC_Row">
+          <Text profile="CC_RowCellLeft" position="20px 0px" name="id"/>
+          <Text profile="CC_RowCellLeft" position="170px 0px" name="message"/>
+          <Text profile="CC_RowCellLeft" position="690px 0px" name="date"/>
+        </ListItem>
+      </SmoothList>
     </GuiElement>
   </GuiElement>
 
