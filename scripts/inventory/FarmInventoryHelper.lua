@@ -196,3 +196,245 @@ function FarmInventoryHelper.buildInventoryList(byFillType)
   table.sort(list, function(a, b) return a.title < b.title end)
   return list
 end
+
+--- Localized display name for a placeable (silo, etc.), or nil.
+function FarmInventoryHelper.getPlaceableDisplayName(placeable)
+  if placeable == nil then
+    return nil
+  end
+  if placeable.getName ~= nil then
+    local n = placeable:getName()
+    if n ~= nil and tostring(n) ~= "" then
+      return tostring(n)
+    end
+  end
+  if placeable.name ~= nil and tostring(placeable.name) ~= "" then
+    return tostring(placeable.name)
+  end
+  return g_i18n:getText("cc_transport_pickup_unnamed_placeable")
+end
+
+--- Localized display name for a production point.
+function FarmInventoryHelper.getProductionPointDisplayName(productionPoint)
+  if productionPoint == nil then
+    return nil
+  end
+  if productionPoint.getName ~= nil then
+    local n = productionPoint:getName()
+    if n ~= nil and tostring(n) ~= "" then
+      return tostring(n)
+    end
+  end
+  if productionPoint.name ~= nil and tostring(productionPoint.name) ~= "" then
+    return tostring(productionPoint.name)
+  end
+  return g_i18n:getText("cc_transport_pickup_factory")
+end
+
+--- Human-readable hint where the contractor can load this fill type on the farm (silos, production, pallets, …).
+function FarmInventoryHelper.buildTransportPickupDescription(farmId, fillTypeIndex)
+  if farmId == nil or fillTypeIndex == nil then
+    return "-"
+  end
+
+  local parts = {}
+  local seen = {}
+
+  local function addPart(s)
+    if s == nil or s == "" then
+      return
+    end
+    if not seen[s] then
+      seen[s] = true
+      table.insert(parts, s)
+    end
+  end
+
+  local placeableSystem = g_currentMission.placeableSystem
+  local placeables = placeableSystem and placeableSystem.placeables
+  if placeables ~= nil then
+    for i = 1, #placeables do
+      local placeable = placeables[i]
+      if placeable.spec_silo ~= nil and placeable.ownerFarmId == farmId then
+        local loadingStation = placeable.spec_silo.loadingStation
+        if loadingStation ~= nil and loadingStation.getAllFillLevels ~= nil then
+          local fillLevels = loadingStation:getAllFillLevels(farmId)
+          if fillLevels ~= nil and fillLevels[fillTypeIndex] ~= nil and fillLevels[fillTypeIndex] > 0 then
+            addPart(FarmInventoryHelper.getPlaceableDisplayName(placeable))
+          end
+        end
+      end
+    end
+  end
+
+  local mission = g_currentMission
+  if mission ~= nil and mission.productionChainManager ~= nil and mission.productionChainManager.productionPoints ~= nil then
+    for _, productionPoint in pairs(mission.productionChainManager.productionPoints) do
+      if productionPoint.ownerFarmId == farmId and productionPoint.storage ~= nil then
+        local fillLevel = productionPoint.storage:getFillLevel(fillTypeIndex)
+        if fillLevel ~= nil and fillLevel > 0 then
+          addPart(FarmInventoryHelper.getProductionPointDisplayName(productionPoint))
+        end
+      end
+    end
+  end
+
+  local pallets = FarmInventoryHelper.retrievePallets(farmId)
+  if pallets[fillTypeIndex] ~= nil and pallets[fillTypeIndex] > 0 then
+    addPart(g_i18n:getText("cc_transport_pickup_loose_pallets"))
+  end
+
+  local bales = FarmInventoryHelper.retrieveBales(farmId)
+  if bales[fillTypeIndex] ~= nil and bales[fillTypeIndex] > 0 then
+    addPart(g_i18n:getText("cc_transport_pickup_bales"))
+  end
+
+  local gtp = FarmInventoryHelper.retrieveGlobalTransportPallets(farmId)
+  if gtp[fillTypeIndex] ~= nil and gtp[fillTypeIndex] > 0 then
+    addPart(g_i18n:getText("cc_transport_pickup_global_pallet"))
+  end
+
+  if #parts == 0 then
+    return g_i18n:getText("cc_transport_pickup_unknown")
+  end
+
+  local s = table.concat(parts, ", ")
+  if #s > 450 then
+    s = string.sub(s, 1, 447) .. "..."
+  end
+  return s
+end
+
+--- World X/Z for a placeable (silo, etc.), or nil if unknown.
+function FarmInventoryHelper.getWorldXZFromPlaceable(placeable)
+  if placeable == nil then
+    return nil, nil
+  end
+  local node = placeable.rootNode
+  if node == nil and placeable.components ~= nil and placeable.components[1] ~= nil then
+    node = placeable.components[1].node
+  end
+  if node ~= nil then
+    local x, _, z = getWorldTranslation(node)
+    return x, z
+  end
+  return nil, nil
+end
+
+--- World X/Z for a production point, or nil if unknown.
+function FarmInventoryHelper.getWorldXZFromProductionPoint(productionPoint)
+  if productionPoint == nil then
+    return nil, nil
+  end
+  for _, key in ipairs({ "rootNode", "interactionRootNode", "markerNode" }) do
+    local node = productionPoint[key]
+    if node ~= nil then
+      local x, _, z = getWorldTranslation(node)
+      return x, z
+    end
+  end
+  local own = productionPoint.owningPlaceable or productionPoint.placeable
+  if own ~= nil then
+    return FarmInventoryHelper.getWorldXZFromPlaceable(own)
+  end
+  if productionPoint.getOwner ~= nil then
+    local o = productionPoint:getOwner()
+    if o ~= nil then
+      return FarmInventoryHelper.getWorldXZFromPlaceable(o)
+    end
+  end
+  return nil, nil
+end
+
+--- First resolved pickup location for transport (same priority as buildTransportPickupDescription).
+--- Returns worldX, worldZ or nil, nil when no position can be determined.
+function FarmInventoryHelper.getPrimaryPickupWorldXZ(farmId, fillTypeIndex)
+  if farmId == nil or fillTypeIndex == nil then
+    return nil, nil
+  end
+
+  local placeableSystem = g_currentMission.placeableSystem
+  local placeables = placeableSystem and placeableSystem.placeables
+  if placeables ~= nil then
+    for i = 1, #placeables do
+      local placeable = placeables[i]
+      if placeable.spec_silo ~= nil and placeable.ownerFarmId == farmId then
+        local loadingStation = placeable.spec_silo.loadingStation
+        if loadingStation ~= nil and loadingStation.getAllFillLevels ~= nil then
+          local fillLevels = loadingStation:getAllFillLevels(farmId)
+          if fillLevels ~= nil and fillLevels[fillTypeIndex] ~= nil and fillLevels[fillTypeIndex] > 0 then
+            local x, z = FarmInventoryHelper.getWorldXZFromPlaceable(placeable)
+            if x ~= nil and z ~= nil then
+              return x, z
+            end
+          end
+        end
+      end
+    end
+  end
+
+  local mission = g_currentMission
+  if mission ~= nil and mission.productionChainManager ~= nil and mission.productionChainManager.productionPoints ~= nil then
+    for _, productionPoint in pairs(mission.productionChainManager.productionPoints) do
+      if productionPoint.ownerFarmId == farmId and productionPoint.storage ~= nil then
+        local fillLevel = productionPoint.storage:getFillLevel(fillTypeIndex)
+        if fillLevel ~= nil and fillLevel > 0 then
+          local x, z = FarmInventoryHelper.getWorldXZFromProductionPoint(productionPoint)
+          if x ~= nil and z ~= nil then
+            return x, z
+          end
+        end
+      end
+    end
+  end
+
+  local vehicleSystem = g_currentMission.vehicleSystem
+  local vehicles = vehicleSystem and vehicleSystem.vehicles
+  if vehicles ~= nil then
+    for _, vehicle in pairs(vehicles) do
+      if vehicle.isPallet and (vehicle.ownerFarmId == farmId or vehicle.ownerFarmId == 0) then
+        local fti
+        if vehicle.spec_fillUnit ~= nil and vehicle.spec_fillUnit.fillUnits ~= nil and #vehicle.spec_fillUnit.fillUnits > 0 then
+          fti = vehicle.spec_fillUnit.fillUnits[1].fillType
+        elseif vehicle.fillTypeIndex ~= nil then
+          fti = vehicle.fillTypeIndex
+        end
+        if fti == fillTypeIndex and vehicle.rootNode ~= nil then
+          local x, _, z = getWorldTranslation(vehicle.rootNode)
+          return x, z
+        end
+      end
+    end
+  end
+
+  if mission ~= nil and mission.itemSystem ~= nil and mission.itemSystem.itemsToSave ~= nil and Bale ~= nil then
+    for _, item in pairs(mission.itemSystem.itemsToSave) do
+      local bale = item and item.item
+      if bale ~= nil and bale.isa ~= nil and bale:isa(Bale) and bale.ownerFarmId == farmId then
+        if bale.fillType == fillTypeIndex and (bale.fillLevel or 0) > 0 then
+          local node = bale.node or bale.rootNode
+          if node ~= nil then
+            local x, _, z = getWorldTranslation(node)
+            return x, z
+          end
+        end
+      end
+    end
+  end
+
+  if vehicles ~= nil then
+    for _, vehicle in ipairs(vehicles) do
+      if vehicle.ownerFarmId == farmId
+          and (vehicle.typeName == "GlobalTransportPallet" or vehicle.typeName == "GlobalTransportPalletLiquids")
+          and vehicle.spec_fillUnit ~= nil and vehicle.spec_fillUnit.fillUnits ~= nil and #vehicle.spec_fillUnit.fillUnits > 0 then
+        local fu = vehicle.spec_fillUnit.fillUnits[1]
+        if fu.fillType == fillTypeIndex and (fu.fillLevel or 0) > 0 and vehicle.rootNode ~= nil then
+          local x, _, z = getWorldTranslation(vehicle.rootNode)
+          return x, z
+        end
+      end
+    end
+  end
+
+  return nil, nil
+end

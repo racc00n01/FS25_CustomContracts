@@ -36,6 +36,65 @@ CustomContract.STATUS = {
   INVOICED                   = "INVOICED"
 }
 
+--- Base-game field mission map circle (see AbstractFieldMissionHotspot: red overlay + IngameMap.alpha blink).
+local function createAbstractFieldMissionCircleHotspot()
+  if AbstractFieldMissionHotspot == nil then
+    return nil
+  end
+  local ok, h = pcall(function()
+    return AbstractFieldMissionHotspot.new()
+  end)
+  return ok and h or nil
+end
+
+local function createMissionMapHotspot()
+  if MissionHotspot == nil then
+    return nil
+  end
+  local ok, h = pcall(function()
+    return MissionHotspot.new()
+  end)
+  return ok and h or nil
+end
+
+--- Rough world radius (meters) from farmland size; capped so the circle stays a hint, not the whole field.
+local function worldRadiusFromFarmlandHa(areaHa)
+  if areaHa == nil or areaHa <= 0 then
+    return 50
+  end
+  local areaSqm = areaHa * 10000
+  local r = math.sqrt(areaSqm / math.pi)
+  return math.max(25, math.min(r, 20))
+end
+
+--- Field-work preview: prefer AbstractFieldMissionHotspot:setField(field) when the API exposes a field for this farmland.
+local function setupFieldWorkCircleHotspot(hotspot, contract, farmland)
+  if hotspot == nil or farmland == nil or contract == nil then
+    return
+  end
+  g_currentMission:addMapHotspot(hotspot)
+  local usedSetField = false
+  if g_fieldManager ~= nil and contract.farmlandId ~= nil and hotspot.setField ~= nil then
+    local field = nil
+    if g_fieldManager.getFieldByFarmlandId ~= nil then
+      field = g_fieldManager:getFieldByFarmlandId(contract.farmlandId)
+    elseif g_fieldManager.getFieldByFarmland ~= nil then
+      field = g_fieldManager:getFieldByFarmland(contract.farmlandId)
+    end
+    if field ~= nil then
+      usedSetField = pcall(function()
+        hotspot:setField(field)
+      end)
+    end
+  end
+  if not usedSetField then
+    hotspot:setWorldPosition(farmland.xWorldPos, farmland.zWorldPos)
+  end
+  if hotspot.setWorldRadius ~= nil then
+    hotspot:setWorldRadius(worldRadiusFromFarmlandHa(farmland.areaInHa))
+  end
+end
+
 function MenuCustomContracts.new(i18n, messageCenter)
   local self = MenuCustomContracts:superClass().new(nil, MenuCustomContracts._mt)
   self.name = "MenuCustomContracts"
@@ -50,12 +109,50 @@ function MenuCustomContracts.new(i18n, messageCenter)
   self.invoicesOutboxRenderer = InvoicesOutboxRenderer.new()
 
 
-  self.aiTargetMapHotspot = AITargetHotspot.new()
+  -- Contract map: AbstractFieldMissionHotspot = blinking red circle (base field-mission style).
+  -- PickDestinationMapDialog keeps AITargetHotspot for choosing a transport destination only.
+  self.fieldWorkFieldCircleHotspot = createAbstractFieldMissionCircleHotspot()
+  self.transportPickupFieldCircleHotspot = createAbstractFieldMissionCircleHotspot()
+  self.transportDropoffFieldCircleHotspot = createAbstractFieldMissionCircleHotspot()
+  -- Transport: base-game ! markers (TransportMission:createHotspot) in addition to red circles.
+  self.transportPickupMissionHotspot = createMissionMapHotspot()
+  self.transportDropoffMissionHotspot = createMissionMapHotspot()
 
   -- Cached farm inventory for GUI and contract creation (refreshed when menu opens).
   self.cachedInventory = { byFillType = {}, list = {} }
 
   return self
+end
+
+--- Map hotspots are global on the HUD ingame map; remove when switching contract, closing menu, or clearing preview.
+function MenuCustomContracts:clearContractMapPreviewHotspots()
+  if self.fieldWorkFieldCircleHotspot ~= nil then
+    g_currentMission:removeMapHotspot(self.fieldWorkFieldCircleHotspot)
+  end
+  if self.transportPickupFieldCircleHotspot ~= nil then
+    g_currentMission:removeMapHotspot(self.transportPickupFieldCircleHotspot)
+  end
+  if self.transportDropoffFieldCircleHotspot ~= nil then
+    g_currentMission:removeMapHotspot(self.transportDropoffFieldCircleHotspot)
+  end
+  if self.transportPickupMissionHotspot ~= nil then
+    g_currentMission:removeMapHotspot(self.transportPickupMissionHotspot)
+  end
+  if self.transportDropoffMissionHotspot ~= nil then
+    g_currentMission:removeMapHotspot(self.transportDropoffMissionHotspot)
+  end
+end
+
+function MenuCustomContracts:clearContractMapTransportHotspot()
+  self:clearContractMapPreviewHotspots()
+end
+
+function MenuCustomContracts:clearContractMapPreviewClip()
+  local hudMap = g_currentMission.hud and g_currentMission.hud:getIngameMap() or nil
+  if hudMap ~= nil then
+    hudMap.clipHotspots = false
+    hudMap:setMapClipArea(nil, nil, nil, nil)
+  end
 end
 
 function MenuCustomContracts:displaySelectedContract()
@@ -80,6 +177,8 @@ function MenuCustomContracts:displaySelectedContract()
       self.contractsInfoContainer:setVisible(true)
       self.noSelectedContractText:setVisible(false)
 
+      self:clearContractMapPreviewHotspots()
+
       -- Ensure ingame map is set before using the preview
       local hudMap = g_currentMission.hud and g_currentMission.hud:getIngameMap() or nil
       if hudMap ~= nil then
@@ -88,17 +187,77 @@ function MenuCustomContracts:displaySelectedContract()
 
         -- Center map depending on contract template
         if contract.templateId == CustomContract.TEMPLATE.TRANSPORT then
-          g_currentMission:addMapHotspot(self.aiTargetMapHotspot)
-
           local destX = contract.destinationX
           local destZ = contract.destinationZ
-          if destX ~= nil and destZ ~= nil then
-            self.contractMap:setCenterToWorldPosition(destX, destZ)
-            self.aiTargetMapHotspot:setWorldPosition(destX, destZ)
+          local pickupX, pickupZ = nil, nil
+          if FarmInventoryHelper ~= nil and contract.creatorFarmId ~= nil and contract.fillTypeIndex ~= nil then
+            pickupX, pickupZ = FarmInventoryHelper.getPrimaryPickupWorldXZ(contract.creatorFarmId, contract
+              .fillTypeIndex)
+          end
+          local transportCircleR = math.min(50, 85)
+          if self.transportPickupFieldCircleHotspot ~= nil and pickupX ~= nil and pickupZ ~= nil then
+            g_currentMission:addMapHotspot(self.transportPickupFieldCircleHotspot)
+            self.transportPickupFieldCircleHotspot:setWorldPosition(pickupX, pickupZ)
+            if self.transportPickupFieldCircleHotspot.setWorldRadius ~= nil then
+              self.transportPickupFieldCircleHotspot:setWorldRadius(transportCircleR)
+            end
+          end
+          if self.transportDropoffFieldCircleHotspot ~= nil and destX ~= nil and destZ ~= nil then
+            g_currentMission:addMapHotspot(self.transportDropoffFieldCircleHotspot)
+            self.transportDropoffFieldCircleHotspot:setWorldPosition(destX, destZ)
+            if self.transportDropoffFieldCircleHotspot.setWorldRadius ~= nil then
+              self.transportDropoffFieldCircleHotspot:setWorldRadius(transportCircleR)
+            end
+          end
+          if self.transportPickupMissionHotspot ~= nil and pickupX ~= nil and pickupZ ~= nil then
+            g_currentMission:addMapHotspot(self.transportPickupMissionHotspot)
+            self.transportPickupMissionHotspot:setWorldPosition(pickupX, pickupZ)
+          end
+          if self.transportDropoffMissionHotspot ~= nil and destX ~= nil and destZ ~= nil then
+            g_currentMission:addMapHotspot(self.transportDropoffMissionHotspot)
+            self.transportDropoffMissionHotspot:setWorldPosition(destX, destZ)
+          end
+          local hasBoth = pickupX ~= nil and pickupZ ~= nil and destX ~= nil and destZ ~= nil
+          if hasBoth and self.contractMap.fitToBoundary ~= nil then
+            local minX = math.min(pickupX, destX)
+            local maxX = math.max(pickupX, destX)
+            local minZ = math.min(pickupZ, destZ)
+            local maxZ = math.max(pickupZ, destZ)
+            local pad = transportCircleR + 30
+            minX, maxX = minX - pad, maxX + pad
+            minZ, maxZ = minZ - pad, maxZ + pad
+            if maxX - minX < 40 then
+              local m = (minX + maxX) * 0.5
+              minX, maxX = m - 20, m + 20
+            end
+            if maxZ - minZ < 40 then
+              local m = (minZ + maxZ) * 0.5
+              minZ, maxZ = m - 20, m + 20
+            end
+            local fitOk = pcall(function()
+              self.contractMap:fitToBoundary(minX, maxX, minZ, maxZ, 0.12)
+            end)
+            if not fitOk then
+              self.contractMap:setCenterToWorldPosition((minX + maxX) * 0.5, (minZ + maxZ) * 0.5)
+            end
+          else
+            local centerX, centerZ = destX, destZ
+            if hasBoth then
+              centerX = (pickupX + destX) * 0.5
+              centerZ = (pickupZ + destZ) * 0.5
+            elseif pickupX ~= nil and pickupZ ~= nil and (destX == nil or destZ == nil) then
+              centerX, centerZ = pickupX, pickupZ
+            end
+            if centerX ~= nil and centerZ ~= nil then
+              self.contractMap:setCenterToWorldPosition(centerX, centerZ)
+            end
           end
         else
           local farmland = g_farmlandManager:getFarmlandById(contract.farmlandId)
           if farmland ~= nil and farmland.xWorldPos ~= nil and farmland.zWorldPos ~= nil then
+            if contract.templateId == CustomContract.TEMPLATE.FIELD_WORK then
+              setupFieldWorkCircleHotspot(self.fieldWorkFieldCircleHotspot, contract, farmland)
+            end
             self.contractMap:setCenterToWorldPosition(farmland.xWorldPos, farmland.zWorldPos)
           end
         end
@@ -175,9 +334,14 @@ function MenuCustomContracts:displaySelectedContract()
 
       self.contractDescriptionValue:setText(contract:getDescriptionText())
     else
+      self:clearContractMapPreviewHotspots()
+      self:clearContractMapPreviewClip()
       self.contractsInfoContainer:setVisible(false)
       self.noSelectedContractText:setVisible(true)
     end
+  else
+    self:clearContractMapPreviewHotspots()
+    self:clearContractMapPreviewClip()
   end
 end
 
@@ -445,6 +609,8 @@ function MenuCustomContracts:refreshInventory()
 end
 
 function MenuCustomContracts:onFrameClose()
+  self:clearContractMapTransportHotspot()
+  self:clearContractMapPreviewClip()
   MenuCustomContracts:superClass().onFrameClose(self)
   g_messageCenter:unsubscribeAll(self)
 end
@@ -640,22 +806,12 @@ function MenuCustomContracts:shouldShowButton(button, listType, contract)
   -- Always show these
   local myFarmId = g_currentMission:getFarmId()
 
-  if button == self.btnBack then
-    return true
-  end
+  if button == self.btnBack then return true end
 
-  if button == self.btnCreateContract then
-    if g_farmlandManager:getNumOwnedFarmlandIdsByFarmId(myFarmId) > 0 then
-      return true
-    else
-      return false
-    end
-  end
+  if button == self.btnCreateContract then return true end
 
   -- No selected contract => only back + create
-  if contract == nil then
-    return false
-  end
+  if contract == nil then return false end
 
   local isOwner = (contract.creatorFarmId == myFarmId)
   local isContractor = (contract.contractorFarmId == myFarmId)
@@ -793,6 +949,22 @@ end
 
 -- Function triggered when clicking on the "Create invoice" button
 function MenuCustomContracts:onCreateInvoice()
+  local myFarmId = g_currentMission:getFarmId()
+  local hasOtherFarm = false
+
+  for _, farm in ipairs(g_farmManager.farms) do
+    local farmId = farm.farmId
+    if farmId ~= FarmManager.SPECTATOR_FARM_ID and farm.showInFarmScreen and farmId ~= myFarmId then
+      hasOtherFarm = true
+      break
+    end
+  end
+
+  if not hasOtherFarm then
+    InfoDialog.show(g_i18n:getText("cc_dialog_create_invoice_no_other_farms"))
+    return
+  end
+
   CreateInvoiceDialog.show()
 end
 
@@ -882,17 +1054,25 @@ function MenuCustomContracts:onCreateContract()
   self:queueContractsView(MenuCustomContracts.CONTRACTS_LIST_TYPE.OWNED, nil)
 
   local options = {
-    "FIELDWORK",
-    "TRANSPORT",
-    "FARMJOB",
-    "CUSTOM"
+    g_i18n:getText("cc_dialog_template_field_work"),
+    g_i18n:getText("cc_dialog_template_transport"),
+    -- g_i18n:getText("cc_dialog_template_farmjob"),
+    -- g_i18n:getText("cc_dialog_template_custom"),
   }
   local callback = function(templateId)
     if templateId == 1 then
-      CreateContractDialog.show()
+      if g_farmlandManager:getNumOwnedFarmlandIdsByFarmId(g_currentMission:getFarmId()) > 0 then
+        CreateContractDialog.show()
+      else
+        InfoDialog.show(g_i18n:getText("cc_dialog_template_no_farmland"))
+      end
     elseif templateId == 2 then
       self:refreshInventory()
-      CreateTransportContractDialog.show(self.cachedInventory.list)
+      if self.cachedInventory.list ~= nil and #self.cachedInventory.list > 0 then
+        CreateTransportContractDialog.show(self.cachedInventory.list)
+      else
+        InfoDialog.show(g_i18n:getText("cc_dialog_template_no_inventory"))
+      end
     elseif templateId == 3 then
       InfoDialog.show(g_i18n:getText("cc_dialog_template_coming_soon"))
     elseif templateId == 4 then
@@ -900,8 +1080,8 @@ function MenuCustomContracts:onCreateContract()
     end
   end
 
-  OptionDialog.show(callback, "What type of contract do you want to create?",
-    "Select contract template", options)
+  OptionDialog.show(callback, g_i18n:getText("cc_dialog_template_subtitle"),
+    g_i18n:getText("cc_dialog_template_title"), options)
 end
 
 -- Function triggered when clicking on the "Complete contract" button
@@ -1042,9 +1222,26 @@ end
 function MenuCustomContracts:onEditContract()
   local index = self.contractsTable.selectedIndex
   local selection = self.contractDisplaySwitcher:getState()
-  local contract = self.contractsRenderer.data[selection][index]
+  local contractByFlat = self.contractsRenderer.data and self.contractsRenderer.data[selection] and
+      self.contractsRenderer.data[selection][index]
+  local contractBySection = nil
+  local r = self.contractsRenderer
+  if r and r.sectionContracts and r.selectedSection and r.selectedRow then
+    local secs = r.sectionContracts[selection]
+    if secs and secs[r.selectedSection] then
+      contractBySection = secs[r.selectedSection].contracts[r.selectedRow]
+    end
+  end
+  local contractByFlatInSections = r and r:getContractAtFlatIndex(selection, index)
+  local contract = contractBySection or contractByFlatInSections or contractByFlat
 
-  if contract == nil then return end
+  if contract == nil then
+    return
+  end
 
-  EditContractDialog.show(contract)
+  if contract.templateId == CustomContract.TEMPLATE.TRANSPORT then
+    EditTransportContractDialog.show(contract)
+  else
+    EditFieldWorkContractDialog.show(contract)
+  end
 end

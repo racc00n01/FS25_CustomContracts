@@ -251,6 +251,13 @@
     <imageColor value="$preset_fs25_colorGrey_20"/>
   </Profile>
 
+  <!-- Optional icon in the contract details value column (e.g. transport fill type); hidden when unused -->
+  <Profile name="CC_ContractDetailsInfoIcon" extends="baseReference" with="anchorMiddleRight">
+    <size value="24px 24px"/>
+    <position value="-28px 0px"/>
+    <imageSliceId value="noSlice"/>
+  </Profile>
+
 
   <Profile name="CC_TableHeader" extends="baseReference">
     <imageColor value="0 0 0 0" />

@@ -145,6 +145,29 @@ function CustomUtils:findDateIndex(values, period, day)
   return nil
 end
 
+--- Binds month/day options to `dialog[valuesFieldName]` and selects period/day (edit dialogs).
+function CustomUtils:setupMonthOptionOnDialog(dialog, multiTextOption, valuesFieldName, period, day)
+  local texts, values = CustomUtils:buildMonthOptionData()
+  dialog[valuesFieldName] = values
+  multiTextOption:setTexts(texts)
+  local idx = CustomUtils:findDateIndex(values, period, day) or 1
+  multiTextOption:setState(idx, false)
+  return idx
+end
+
+--- MultiTextOption row index (1..n) for the WORKAREATYPES table, given stored workAreaTypeIndex (wt.index).
+function CustomUtils:findWorkAreaTypeRowIndex(workAreaTypeIndex)
+  if workAreaTypeIndex == nil or CustomContract.WORKAREATYPES == nil then
+    return 1
+  end
+  for i, wt in ipairs(CustomContract.WORKAREATYPES) do
+    if wt.index == workAreaTypeIndex then
+      return i
+    end
+  end
+  return 1
+end
+
 function CustomUtils.sendEventToFarm(targetFarmId, event)
   if g_server == nil or g_currentMission == nil then
     return false

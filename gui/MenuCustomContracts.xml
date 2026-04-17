@@ -76,7 +76,7 @@
             <Text profile="fs25_contractsContractInfo" id="contractDescriptionValue"/>
 
             <!-- Contract details SmoothList (Farmland, Start, End, Status) -->
-            <SmoothList profile="fs25_contractsDetailsList" id="contractDetailsList">
+            <SmoothList profile="CC_ContractDetailsList" id="contractDetailsList">
               <ListItem profile="fs25_contractsDetailsListItem">
                 <Text profile="fs25_contractsDetailsListTitle" name="title"/>
                 <Text profile="fs25_contractsDetailsListInfo" name="info"/>
@@ -192,6 +192,12 @@
     </Profile>
     <Profile name="CC_ContractProgress" extends="fs25_contractsProgressBar">
       <size value="512px 25px"/>
+    </Profile>
+    <Profile name="CC_ContractDetailsList" extends="fs25_contractsDetailsList">
+      <position value="0px -150px"/>
+    </Profile>
+    <Profile name="CC_ContractDetailsInfoIcon" with="anchorTopRight">
+      <position value="0px 0px"/>
     </Profile>
   </GUIProfiles>
 </GUI>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<modDesc descVersion="106">
+<modDesc descVersion="107">
   <author>Racc00n</author>
 
-  <version>1.0.0.0</version>
+  <version>1.0.0.1</version>
 
   <iconFilename>icon_customContracts.dds</iconFilename>
 
@@ -17,14 +17,14 @@
   </title>
 
   <description>
-    <en><![CDATA[Contracts and Invoices enables advanced player-to-player contracting on multiplayer servers. Whether helping a neighbor or running a full farming business, players can create, accept, and manage contracts to perform field work for other farms and get paid for the job.
+    <en><![CDATA[Contracts and Invoices enables advanced player-to-player contracting on multiplayer servers. Whether helping a neighbor or running a full farming business, players can create, accept, and manage contracts to perform tasks for other farms and get paid for the job.
 
 The mod includes a complete invoice system that allows farms to send, pay, and delete invoices. After completing a contract, contractors can generate an invoice directly from the job and send it to the hiring farm for payment, creating a realistic and structured workflow. Field access is handled automatically, when a contract is accepted, the contractor farm receives permission to work the specific field tied to that contract.
 
 https://github.com/racc00n01/FS25_ContractsAndInvoices
 ]]>    </en>
 
-    <nl><![CDATA[Contracten en Facturen maakt geavanceerd speler-tot-speler contractwerk mogelijk op multiplayer-servers. Of je nu een buur helpt of een loonbedrijf runt, spelers kunnen contracten aanmaken, accepteren en beheren om veldwerk voor andere boerderijen uit te voeren en daarvoor betaald te worden.
+    <nl><![CDATA[Contracten en Facturen maakt geavanceerd speler-tot-speler contractwerk mogelijk op multiplayer-servers. Of je nu een buur helpt of een loonbedrijf runt, spelers kunnen contracten aanmaken, accepteren en beheren om taken voor andere boerderijen uit te voeren en daarvoor betaald te worden.
 
 De mod bevat een volledig factuursysteem waarmee boerderijen facturen kunnen verzenden, betalen en verwijderen. Na het voltooien van een contract kan de uitvoerende partij direct vanuit de opdracht een factuur aanmaken en naar de opdrachtgevende boerderij sturen voor betaling, wat zorgt voor een realistische en gestructureerde workflow. Veldtoegang wordt automatisch geregeld, zodra een contract wordt geaccepteerd, krijgt de uitvoerende boerderij toegang tot het betreffende veld om het werk uit te voeren.
 
@@ -82,11 +82,11 @@ https://github.com/racc00n01/FS25_ContractsAndInvoices
     <sourceFile filename="gui/renderer/InvoicesOutboxRenderer.lua"/>
     <sourceFile filename="gui/renderer/ContractsDetailsRenderer.lua"/>
     <sourceFile filename="gui/MenuCustomContracts.lua"/>
-    <sourceFile filename="gui/dialog/contracts/ContractTemplateDialog.lua"/>
     <sourceFile filename="gui/dialog/contracts/CreateContractDialog.lua"/>
     <sourceFile filename="gui/dialog/contracts/CreateTransportContractDialog.lua"/>
     <sourceFile filename="gui/dialog/contracts/PickDestinationMapDialog.lua"/>
-    <sourceFile filename="gui/dialog/contracts/EditContractDialog.lua"/>
+    <sourceFile filename="gui/dialog/contracts/EditFieldWorkContractDialog.lua"/>
+    <sourceFile filename="gui/dialog/contracts/EditTransportContractDialog.lua"/>
     <sourceFile filename="gui/dialog/invoices/DetailInvoiceDialog.lua"/>
     <sourceFile filename="gui/dialog/invoices/AddInvoiceLineDialog.lua"/>
     <sourceFile filename="gui/dialog/invoices/EditInvoiceDialog.lua"/>

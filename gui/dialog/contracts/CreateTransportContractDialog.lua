@@ -106,7 +106,6 @@ end
 function CreateTransportContractDialog:onDestinationClick()
   PickDestinationMapDialog.show(function(success, worldX, worldZ)
     if success and worldX ~= nil and worldZ ~= nil then
-      print("onDestinationClick", success, worldX, worldZ)
       self.pickedDestinationX = worldX
       self.pickedDestinationZ = worldZ
       self:updateDestinationSelector()
@@ -158,6 +157,9 @@ function CreateTransportContractDialog:onConfirm()
     dueDay = 1
   end
 
+  local farmId = g_currentMission:getFarmId()
+  local pickupDesc = FarmInventoryHelper.buildTransportPickupDescription(farmId, self.selectedItem.fillTypeIndex)
+
   local contract = {
     templateId        = CustomContract.TEMPLATE.TRANSPORT,
     farmlandId        = -1,
@@ -168,7 +170,7 @@ function CreateTransportContractDialog:onConfirm()
     destinationX      = self.pickedDestinationX,
     destinationZ      = self.pickedDestinationZ,
     reward            = reward,
-    description       = "-",
+    description       = pickupDesc,
     startPeriod       = curPeriod,
     startDay          = curDay,
     duePeriod         = duePeriod,

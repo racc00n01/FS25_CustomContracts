@@ -49,6 +49,31 @@ function ContractsDetailsRenderer:setFromContract(contract)
     title = i18n:getText("cc_contract_status_label_default"),
     info  = (i18n:getText("cc_status_" .. string.lower(contract.status or "")) or contract.status or "-")
   })
+
+  -- Farmland size
+  if contract.templateId == CustomContract.TEMPLATE.FIELD_WORK then
+    local farmland = g_farmlandManager:getFarmlandById(contract.farmlandId)
+    if farmland ~= nil then
+      table.insert(self.rows, {
+        title = i18n:getText("cc_contract_detail_farmland_size_label"),
+        info  = string.format(i18n:getText("cc_contract_detail_farmland_size"), farmland.areaInHa)
+      })
+    end
+  end
+
+  -- Transport details
+  if contract.templateId == CustomContract.TEMPLATE.TRANSPORT then
+    table.insert(self.rows, {
+      title = i18n:getText("cc_contract_detail_transport_amount_label"),
+      info  = string.format(i18n:getText("cc_contract_detail_transport_amount"), contract.transportAmount)
+    })
+
+    local fillType = g_fillTypeManager:getFillTypeByIndex(contract.fillTypeIndex)
+    table.insert(self.rows, {
+      title = i18n:getText("cc_contract_detail_transport_filltype_label"),
+      info  = (fillType and (fillType.title or fillType.name)) or "-",
+    })
+  end
 end
 
 function ContractsDetailsRenderer:getNumberOfSections(list)

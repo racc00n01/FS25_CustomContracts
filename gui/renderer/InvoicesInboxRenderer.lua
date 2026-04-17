@@ -38,12 +38,16 @@ function InvoicesInboxRenderer:populateCellForItemInSection(list, section, index
   local invoice = self.data[index]
 
   local fromFarm = g_farmManager:getFarmById(invoice.creatorFarmId)
-  local toFarm = g_farmManager:getFarmById(invoice.receiverFarmId)
   local farmId = g_currentMission:getFarmId()
+
+  if fromFarm == nil then
+    cell:getAttribute("from"):setText("-")
+  else
+    cell:getAttribute("from"):setText(fromFarm.name)
+  end
 
   cell:getAttribute("id"):setText(invoice.number)
   cell:getAttribute("status"):setText(invoice:getStatus(farmId))
-  cell:getAttribute("from"):setText(fromFarm.name)
   cell:getAttribute("amount"):setText(g_i18n:formatMoney(invoice.total, 0, true, true))
 end
 

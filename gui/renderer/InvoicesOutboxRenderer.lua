@@ -40,9 +40,14 @@ function InvoicesOutboxRenderer:populateCellForItemInSection(list, section, inde
   local toFarm = g_farmManager:getFarmById(invoice.receiverFarmId)
   local farmId = g_currentMission:getFarmId()
 
+  if toFarm == nil then
+    cell:getAttribute("outboxTo"):setText("-")
+  else
+    cell:getAttribute("outboxTo"):setText(toFarm.name)
+  end
+
   cell:getAttribute("outboxId"):setText(invoice.number)
   cell:getAttribute("outboxStatus"):setText(invoice:getStatus(farmId))
-  cell:getAttribute("outboxTo"):setText(toFarm.name)
   cell:getAttribute("outboxAmount"):setText(g_i18n:formatMoney(invoice.total, 0, true, true))
 end
 
