@@ -61,6 +61,8 @@ https://github.com/racc00n01/FS25_ContractsAndInvoices
     <sourceFile filename="scripts/contracts/CustomContractManager.lua"/>
     <sourceFile filename="scripts/invoices/InvoiceManager.lua"/>
     <sourceFile filename="scripts/notification/NotificationManager.lua"/>
+    <sourceFile filename="scripts/farmaccess/FarmAccess.lua"/>
+    <sourceFile filename="scripts/farmaccess/FarmAccessManger.lua"/>
     <sourceFile filename="scripts/inventory/FarmInventoryHelper.lua"/>
     <sourceFile filename="scripts/events/contracts/CreateContractEvent.lua"/>
     <sourceFile filename="scripts/events/contracts/AcceptContractEvent.lua"/>
@@ -79,6 +81,7 @@ https://github.com/racc00n01/FS25_ContractsAndInvoices
     <sourceFile filename="scripts/events/invoices/OpenCreateInvoiceDialogEvent.lua"/>
     <sourceFile filename="scripts/events/invoices/EditInvoiceEvent.lua"/>
     <sourceFile filename="scripts/events/notifications/SyncNotificationsEvent.lua"/>
+    <sourceFile filename="scripts/events/farmaccess/SyncFarmAccessEvent.lua"/>
     <sourceFile filename="gui/renderer/ContractsRenderer.lua"/>
     <sourceFile filename="gui/renderer/InventoryListRenderer.lua"/>
     <sourceFile filename="gui/renderer/InvoicesInboxRenderer.lua"/>

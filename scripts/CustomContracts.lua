@@ -91,6 +91,7 @@ function CustomContracts:loadMap()
   MessageType.CUSTOM_CONTRACTS_UPDATED = nextMessageTypeId()
   MessageType.INVOICES_UPDATED = nextMessageTypeId()
   MessageType.NOTIFICATIONS_UPDATED = nextMessageTypeId()
+  MessageType.FARM_ACCESS_UPDATED = nextMessageTypeId()
   MessageType.PLAYER_CONNECTED = nextMessageTypeId()
 
   g_gui:loadProfiles(CustomContracts.dir .. "gui/guiProfiles.xml")
@@ -114,6 +115,7 @@ function CustomContracts:loadMap()
   menuCustomContracts:initialize()
 
   self.ContractManager = CustomContractManager:new()
+  self.FarmAccessManager = FarmAccessManager:new()
   self.InvoiceManager = InvoiceManager:new()
   self.NotificationManager = NotificationManager:new()
   self.CustomContractsMenu = menuCustomContracts
@@ -141,6 +143,7 @@ function CustomContracts:loadFromXmlFile()
   if fileExists(savegameFolderPath .. CustomContracts.SaveKey .. ".xml") then
     local xmlFile = loadXMLFile(CustomContracts.SaveKey, savegameFolderPath .. CustomContracts.SaveKey .. ".xml");
     g_currentMission.CustomContracts.ContractManager:loadFromXmlFile(xmlFile)
+    g_currentMission.CustomContracts.FarmAccessManager:loadFromXmlFile(xmlFile)
     g_currentMission.CustomContracts.InvoiceManager:loadFromXmlFile(xmlFile)
     g_currentMission.CustomContracts.NotificationManager:loadFromXmlFile(xmlFile)
 
@@ -161,6 +164,7 @@ function CustomContracts:saveToXmlFile()
     CustomContracts.SaveKey)
 
   g_currentMission.CustomContracts.ContractManager:saveToXmlFile(xmlFile)
+  g_currentMission.CustomContracts.FarmAccessManager:saveToXmlFile(xmlFile)
   g_currentMission.CustomContracts.InvoiceManager:saveToXmlFile(xmlFile)
   g_currentMission.CustomContracts.NotificationManager:saveToXmlFile(xmlFile)
 
@@ -240,9 +244,12 @@ function CustomContracts.getIsAccessibleAtWorldPosition(self, superFunc, farmId,
     return false, landOwner, landValid
   end
 
-  -- contract exception function
-  if g_currentMission.CustomContracts.ContractManager:hasWorkAreaAccessByContract(farmId, landOwner, x, z, workAreaType, self) then
-    return true, landOwner, true
+  -- Use our farm access manager to provide dynamic access grants.
+  local farmAccessManager = g_currentMission.CustomContracts.FarmAccessManager
+  if farmAccessManager ~= nil then
+    if farmAccessManager:getFarmAccessFieldWorkByFarmId(farmId, landOwner, x, z, workAreaType, self) then
+      return true, landOwner, true
+    end
   end
 
   return false, landOwner, landValid
@@ -332,29 +339,94 @@ function CustomContracts.onClickCreateContract(frame)
     g_i18n:getText("cc_dialog_template_subtitle"), options)
 end
 
--- function CustomContracts.canFarmAccessOtherId(self, superFunc, farmId, otherFarmId, ...)
---   -- base game first
---   if superFunc(self, farmId, otherFarmId, ...) then
---     return true
---   end
+function CustomContracts.canFarmAccessOtherId(self, superFunc, farmId, otherFarmId, ...)
+  if superFunc(self, farmId, otherFarmId, ...) then
+    return true
+  end
 
---   -- ignore nonsense ids
---   if farmId == nil or otherFarmId == nil then
---     return false
---   end
---   if farmId == FarmlandManager.NO_OWNER_FARM_ID or otherFarmId == FarmlandManager.NO_OWNER_FARM_ID then
---     return false
---   end
+  if farmId == nil or otherFarmId == nil then
+    return false
+  end
+  if farmId == FarmlandManager.NO_OWNER_FARM_ID or otherFarmId == FarmlandManager.NO_OWNER_FARM_ID then
+    return false
+  end
 
---   -- custom-contract exception
---   if g_currentMission.CustomContracts.ContractManager.hasAcceptedContractWithOwner ~= nil then
---     if g_currentMission.CustomContracts.ContractManager:hasAcceptedContractWithOwner(farmId, otherFarmId) then
---       return true
---     end
---   end
+  local farmAccessManager = g_currentMission.CustomContracts.FarmAccessManager
+  if farmAccessManager == nil then
+    return false
+  end
 
---   return false
--- end
+  local fillTypeIndex = nil
+  local args = { ... }
+  for i = 1, #args do
+    if type(args[i]) == "number" then
+      fillTypeIndex = args[i]
+      break
+    end
+  end
+
+  return farmAccessManager:hasTransportAccess(farmId, otherFarmId, fillTypeIndex)
+end
+
+function CustomContracts._resolveFillTypeFromArgs(args, argCount)
+  if g_fillTypeManager == nil then
+    return nil
+  end
+
+  for i = 2, argCount do
+    local value = args[i]
+    if type(value) == "number" and value >= 0 and math.floor(value) == value then
+      if g_fillTypeManager:getFillTypeByIndex(value) ~= nil then
+        return value
+      end
+    end
+  end
+
+  return nil
+end
+
+function CustomContracts._trackTransportSoldRevenue(farmId, fillTypeIndex, soldPrice)
+  if not g_currentMission:getIsServer() then
+    return
+  end
+  if farmId == nil or fillTypeIndex == nil or soldPrice == nil or soldPrice <= 0 then
+    return
+  end
+
+  local contractManager = g_currentMission.CustomContracts.ContractManager
+  if contractManager == nil then
+    return
+  end
+
+  contractManager:registerTransportSale(farmId, fillTypeIndex, soldPrice)
+end
+
+function CustomContracts.sellingStation_addFillLevelFromTool(self, superFunc, ...)
+  local args = { ... }
+  local argCount = select("#", ...)
+  local farmId = args[1]
+  local fillTypeIndex = CustomContracts._resolveFillTypeFromArgs(args, argCount)
+
+  local beforeBalance = nil
+  local farm = nil
+  if g_currentMission:getIsServer() and type(farmId) == "number" then
+    farm = g_farmManager:getFarmById(farmId)
+    if farm ~= nil and farm.getBalance ~= nil then
+      beforeBalance = farm:getBalance()
+    end
+  end
+
+  local r1, r2, r3, r4, r5, r6 = superFunc(self, ...)
+
+  if farm ~= nil and beforeBalance ~= nil and farm.getBalance ~= nil then
+    local soldPrice = farm:getBalance() - beforeBalance
+    if soldPrice > 0 then
+      CustomContracts._trackTransportSoldRevenue(farmId, fillTypeIndex, soldPrice)
+    end
+  end
+
+  return r1, r2, r3, r4, r5, r6
+end
 
 -- function CustomContracts.placeableInfoTrigger_onDraw(self, superFunc)
 --   local spec = self.spec_infoTrigger
@@ -415,8 +487,18 @@ end
 -- PlaceableInfoTrigger.onDraw =
 --     Utils.overwrittenFunction(PlaceableInfoTrigger.onDraw, CustomContracts.placeableInfoTrigger_onDraw)
 
--- AccessHandler.canFarmAccessOtherId =
---     Utils.overwrittenFunction(AccessHandler.canFarmAccessOtherId, CustomContracts.canFarmAccessOtherId)
+AccessHandler.canFarmAccessOtherId =
+    Utils.overwrittenFunction(AccessHandler.canFarmAccessOtherId, CustomContracts.canFarmAccessOtherId)
+
+if SellingStation ~= nil and SellingStation.addFillLevelFromTool ~= nil then
+  SellingStation.addFillLevelFromTool =
+      Utils.overwrittenFunction(SellingStation.addFillLevelFromTool, CustomContracts.sellingStation_addFillLevelFromTool)
+end
+
+if SellingStation ~= nil and SellingStation.addFillLevelFromVehicle ~= nil then
+  SellingStation.addFillLevelFromVehicle =
+      Utils.overwrittenFunction(SellingStation.addFillLevelFromVehicle, CustomContracts.sellingStation_addFillLevelFromTool)
+end
 
 WorkArea.getIsAccessibleAtWorldPosition =
     Utils.overwrittenFunction(WorkArea.getIsAccessibleAtWorldPosition, CustomContracts.getIsAccessibleAtWorldPosition)

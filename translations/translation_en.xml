@@ -29,6 +29,7 @@
 
     <text name="cc_contract_description_transport" text="Transport %d L %s"/>
     <text name="cc_contract_description_transport_pickup" text="Load goods at: %s"/>
+    <text name="cc_contract_detail_transport_sold_price_label" text="Sold produce value: %s"/>
 
     <text name="cc_transport_pickup_loose_pallets" text="Loose pallets (on the map)"/>
     <text name="cc_transport_pickup_bales" text="Bales (on the map)"/>
@@ -185,6 +186,8 @@
     <text name="cc_dialog_invoice_create_auto_title" text="Invoice for Contract %d"/>
     <text name="cc_dialog_invoice_create_auto_line_title" text="Contract reward (Contract #%d)"/>
     <text name="cc_dialog_invoice_create_auto_line_title_transport" text="Transport contract #%d"/>
+    <text name="cc_dialog_invoice_create_transport_sold_line_title" text="Sold produce value"/>
+    <text name="cc_contract_detail_transport_sold_price_label" text="Sold produce value"/>
 
     <text name="cc_dialog_invoice_add_invoice_line_title" text="Add invoice line"/>
     <text name="cc_dialog_invoice_add_invoice_line_description_label" text="Description"/>

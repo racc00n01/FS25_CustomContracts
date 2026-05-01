@@ -77,6 +77,7 @@ function CustomContract.new(id, creatorFarmId, farmlandId, workAreaTypeIndex, re
   self.destinationId     = nil
   self.destinationX      = nil -- world X when destinationId == -1 (map position)
   self.destinationZ      = nil -- world Z when destinationId == -1 (map position)
+  self.transportSoldPrice = 0
 
   return self
 end
@@ -101,6 +102,7 @@ function CustomContract:writeStream(streamId)
   streamWriteInt32(streamId, self.destinationId or -1)
   streamWriteFloat32(streamId, self.destinationX or 0)
   streamWriteFloat32(streamId, self.destinationZ or 0)
+  streamWriteFloat32(streamId, self.transportSoldPrice or 0)
 end
 
 function CustomContract.newFromStream(streamId)
@@ -123,6 +125,7 @@ function CustomContract.newFromStream(streamId)
   local destinationId = streamReadInt32(streamId)
   local destinationX = streamReadFloat32(streamId)
   local destinationZ = streamReadFloat32(streamId)
+  local transportSoldPrice = streamReadFloat32(streamId)
 
   local contract = CustomContract.new(
     id,
@@ -146,6 +149,7 @@ function CustomContract.newFromStream(streamId)
   if destinationId ~= nil then contract.destinationId = destinationId end
   if destinationX and destinationX ~= 0 then contract.destinationX = destinationX end
   if destinationZ and destinationZ ~= 0 then contract.destinationZ = destinationZ end
+  contract.transportSoldPrice = transportSoldPrice or 0
 
   return contract
 end
@@ -190,11 +194,17 @@ function CustomContract:getDescriptionText()
     local line1 = string.format(g_i18n:getText("cc_contract_description_transport") or "Transport %d L %s",
       self.transportAmount or 0,
       productName)
+    local soldLine = string.format(
+      g_i18n:getText("cc_contract_description_transport_sold_price") or "Sold produce value: %s",
+      tostring(math.floor((self.transportSoldPrice or 0) + 0.5))
+    )
     local d = self.description
     if d ~= nil and d ~= "" and d ~= "-" then
-      return line1 .. "\n" .. string.format(g_i18n:getText("cc_contract_description_transport_pickup"), d)
+      return line1
+          .. "\n" .. string.format(g_i18n:getText("cc_contract_description_transport_pickup"), d)
+          .. "\n" .. soldLine
     end
-    return line1
+    return line1 .. "\n" .. soldLine
   end
   local farmland = (g_farmlandManager and self.farmlandId) and g_farmlandManager:getFarmlandById(self.farmlandId)
   local areaHa = (farmland and farmland.areaInHa) or 0

@@ -73,6 +73,11 @@ function ContractsDetailsRenderer:setFromContract(contract)
       title = i18n:getText("cc_contract_detail_transport_filltype_label"),
       info  = (fillType and (fillType.title or fillType.name)) or "-",
     })
+
+    table.insert(self.rows, {
+      title = i18n:getText("cc_contract_detail_transport_sold_price_label"),
+      info  = g_i18n:formatMoney(contract.transportSoldPrice, 0, true, true)
+    })
   end
 end
 
