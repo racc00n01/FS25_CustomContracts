@@ -252,25 +252,47 @@ function InvoiceManager:handlePayRequest(farmId, invoiceId)
   local invoice = self.invoices[invoiceId]
 
   if g_currentMission:getIsServer() then
-    -- Remove money from receiver farm
-    g_currentMission:addMoneyChange(
-      -invoice.total,
-      invoice.receiverFarmId,
-      MoneyType.INVOICES,
-      true
-    )
+    -- If the invoice is negative, it means the receiver is paying the creator
+    if invoice.total < 0 then
+      local positiveAmount = math.abs(invoice.total)
+      print("Total is negative")
+      g_currentMission:addMoneyChange(
+        positiveAmount,
+        invoice.receiverFarmId,
+        MoneyType.INVOICES,
+        true
+      )
 
-    -- Pay the creator farm
-    g_currentMission:addMoneyChange(
-      invoice.total,
-      invoice.creatorFarmId,
-      MoneyType.INVOICES,
-      true
-    )
+      g_currentMission:addMoneyChange(
+        -positiveAmount,
+        invoice.creatorFarmId,
+        MoneyType.INVOICES,
+        true
+      )
+
+      g_farmManager:getFarmById(invoice.receiverFarmId):changeBalance(positiveAmount, MoneyType.INVOICES)
+      g_farmManager:getFarmById(invoice.creatorFarmId):changeBalance(-positiveAmount, MoneyType.INVOICES)
+    else
+      print("Total is positive")
+      g_currentMission:addMoneyChange(
+        -invoice.total,
+        invoice.receiverFarmId,
+        MoneyType.INVOICES,
+        true
+      )
+
+      -- Pay the creator farm
+      g_currentMission:addMoneyChange(
+        invoice.total,
+        invoice.creatorFarmId,
+        MoneyType.INVOICES,
+        true
+      )
+
+      g_farmManager:getFarmById(invoice.receiverFarmId):changeBalance(-invoice.total, MoneyType.INVOICES)
+      g_farmManager:getFarmById(invoice.creatorFarmId):changeBalance(invoice.total, MoneyType.INVOICES)
+    end
   end
-
-  g_farmManager:getFarmById(invoice.receiverFarmId):changeBalance(-invoice.total, MoneyType.INVOICES)
-  g_farmManager:getFarmById(invoice.creatorFarmId):changeBalance(invoice.total, MoneyType.INVOICES)
 
   -- Change status of contract to be completed
   invoice.status = Invoice.STATUS.PAID

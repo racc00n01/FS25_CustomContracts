@@ -10,81 +10,6 @@ CustomContracts.dir = g_currentModDirectory
 CustomContracts.modName = g_currentModName
 CustomContracts.SaveKey = "CustomContracts"
 
-local function fixInGameMenu(frame, pageName, uvs, position, predicateFunc)
-  local inGameMenu = g_gui.screenControllers[InGameMenu]
-  position = position or #inGameMenu.pagingElement.pages + 1
-
-  for k, v in pairs({ pageName }) do
-    inGameMenu.controlIDs[v] = nil
-  end
-
-  for i = 1, #inGameMenu.pagingElement.elements do
-    local child = inGameMenu.pagingElement.elements[i]
-    if child == inGameMenu.pageAnimals then
-      position = i
-      break
-    end
-  end
-
-  inGameMenu[pageName] = frame
-  inGameMenu.pagingElement:addElement(inGameMenu[pageName])
-
-  inGameMenu:exposeControlsAsFields(pageName)
-
-  for i = 1, #inGameMenu.pagingElement.elements do
-    local child = inGameMenu.pagingElement.elements[i]
-    if child == inGameMenu[pageName] then
-      table.remove(inGameMenu.pagingElement.elements, i)
-      table.insert(inGameMenu.pagingElement.elements, position, child)
-      break
-    end
-  end
-
-  for i = 1, #inGameMenu.pagingElement.pages do
-    local child = inGameMenu.pagingElement.pages[i]
-    if child.element == inGameMenu[pageName] then
-      table.remove(inGameMenu.pagingElement.pages, i)
-      table.insert(inGameMenu.pagingElement.pages, position, child)
-      break
-    end
-  end
-
-  inGameMenu.pagingElement:updateAbsolutePosition()
-  inGameMenu.pagingElement:updatePageMapping()
-
-  inGameMenu:registerPage(inGameMenu[pageName], position, predicateFunc)
-  inGameMenu:addPageTab(inGameMenu[pageName], CustomContracts.dir .. "images/menuIcon.dds", GuiUtils.getUVs(uvs))
-
-  for i = 1, #inGameMenu.pageFrames do
-    local child = inGameMenu.pageFrames[i]
-    if child == inGameMenu[pageName] then
-      table.remove(inGameMenu.pageFrames, i)
-      table.insert(inGameMenu.pageFrames, position, child)
-      break
-    end
-  end
-
-  inGameMenu:rebuildTabList()
-end
-
-local function makeIsCustomContractsCheckEnabledPredicate()
-  -- Only enable the Custom Contracts page for players that are actually in a farm.
-  -- When in spectator mode (no farm or FarmManager.SPECTATOR_FARM_ID), the page
-  -- tab will be hidden from the in‑game menu so it cannot appear half off‑screen.
-  return function()
-    if g_currentMission == nil then
-      return false
-    end
-
-    local farmId = g_currentMission:getFarmId()
-    if farmId == nil or farmId == FarmManager.SPECTATOR_FARM_ID then
-      return false
-    end
-
-    return true
-  end
-end
-
 function CustomContracts:loadMap()
   g_currentMission.CustomContracts = self
 
@@ -94,12 +19,6 @@ function CustomContracts:loadMap()
   MessageType.PLAYER_CONNECTED = nextMessageTypeId()
 
   g_gui:loadProfiles(CustomContracts.dir .. "gui/guiProfiles.xml")
-
-  local menuCustomContracts = MenuCustomContracts.new(g_i18n)
-  g_gui:loadGui(CustomContracts.dir .. "gui/MenuCustomContracts.xml", "MenuCustomContracts", menuCustomContracts, true)
-
-  fixInGameMenu(menuCustomContracts, "menuCustomContracts", { 0, 0, 1024, 1024 }, 4,
-    makeIsCustomContractsCheckEnabledPredicate())
 
   CreateContractDialog.register()
   CreateTransportContractDialog.register()
@@ -111,12 +30,9 @@ function CustomContracts:loadMap()
   DetailInvoiceDialog.register()
   EditInvoiceDialog.register()
 
-  menuCustomContracts:initialize()
-
   self.ContractManager = CustomContractManager:new()
   self.InvoiceManager = InvoiceManager:new()
   self.NotificationManager = NotificationManager:new()
-  self.CustomContractsMenu = menuCustomContracts
 
   self.lastPeriod = g_currentMission.environment.currentPeriod - 1
   self.currentPeriod = g_currentMission.environment.currentPeriod
@@ -127,6 +43,8 @@ function CustomContracts:loadMap()
   g_messageCenter:publish(MessageType.NOTIFICATIONS_UPDATED)
 
   self:loadFromXmlFile()
+
+  CCDedicatedMenu.setupGui()
 end
 
 function CustomContracts:loadFromXmlFile()
@@ -172,22 +90,6 @@ function CustomContracts:sendInitialClientState(connection, user, farm)
   connection:sendEvent(InitialClientStateEvent:new())
 end
 
-function CustomContracts:registerMenu()
-  local menu = g_gui.screenControllers[TabbedMenu]
-  if menu == nil then
-    return
-  end
-
-  local frame = MenuCustomContracts.new()
-  g_gui:loadGui(
-    CustomContracts.dir .. "gui/MenuCustomContracts.xml",
-    "MenuCustomContracts",
-    frame
-  )
-
-  menu:addFrame(frame)
-end
-
 function CustomContracts:playerFarmChanged()
   g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
   g_messageCenter:publish(MessageType.INVOICES_UPDATED)
@@ -218,7 +120,6 @@ function CustomContracts:onPeriodChanged()
   g_currentMission.CustomContracts.currentDay = g_currentMission.environment.currentDay
 
   g_currentMission.CustomContracts.ContractManager:updateExpiredContracts()
-  -- TODO: Add function for expired invoices
 end
 
 function CustomContracts:onDayChanged()

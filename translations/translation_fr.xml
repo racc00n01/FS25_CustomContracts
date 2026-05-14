@@ -5,6 +5,7 @@
     <text name="finance_invoices" text="Factures"/>
 
     <text name="cc_map_btn" text="Créer un contrat"/>
+    <text name="cc_menu_join_farm_first" text="Rejoignez d'abord une ferme."/>
 
     <text name="cc_workareatype_cultivate" text="Cultiver"/>
     <text name="cc_workareatype_plow" text="Labourer"/>

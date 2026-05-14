@@ -4,6 +4,13 @@
     <text name="cc_money_type_invoices" text="Invoices"/>
     <text name="finance_invoices" text="Invoices"/>
 
+    <text name="gui_contracts" text="Contracts"/>
+    <text name="gui_invoices" text="Invoices"/>
+    <text name="gui_notifications" text="Notifications"/>
+
+    <text name="input_CC_DEDICATED_MENU" text="Open Contracts &amp; Invoices"/>
+    <text name="cc_menu_join_farm_first" text="Please join a farm first."/>
+
     <text name="cc_map_btn" text="Create contract"/>
 
     <text name="cc_workareatype_cultivate" text="Cultivate"/>
@@ -246,5 +253,6 @@
     <text name="cc_notification_table_id" text="ID"/>
     <text name="cc_notification_table_message" text="Message"/>
     <text name="cc_notification_table_date" text="Date"/>
+    <text name="cc_btn_delete_notification" text="Delete"/>
   </texts>
 </l10n>
