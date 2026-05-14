@@ -252,31 +252,61 @@ function InvoiceManager:handlePayRequest(farmId, invoiceId)
   local invoice = self.invoices[invoiceId]
 
   if g_currentMission:getIsServer() then
-    -- Remove money from receiver farm
-    g_currentMission:addMoneyChange(
-      -invoice.total,
-      invoice.receiverFarmId,
-      MoneyType.INVOICES,
-      true
-    )
+    -- If the invoice is negative, it means the receiver is paying the creator
+    if invoice.total < 0 then
+      local positiveAmount = math.abs(invoice.total)
+      print("Total is negative")
+      g_currentMission:addMoneyChange(
+        positiveAmount,
+        invoice.receiverFarmId,
+        MoneyType.INVOICES,
+        true
+      )
 
-    -- Pay the creator farm
-    g_currentMission:addMoneyChange(
-      invoice.total,
-      invoice.creatorFarmId,
-      MoneyType.INVOICES,
-      true
-    )
+      g_currentMission:addMoneyChange(
+        -positiveAmount,
+        invoice.creatorFarmId,
+        MoneyType.INVOICES,
+        true
+      )
+
+      g_farmManager:getFarmById(invoice.receiverFarmId):changeBalance(positiveAmount, MoneyType.INVOICES)
+      g_farmManager:getFarmById(invoice.creatorFarmId):changeBalance(-positiveAmount, MoneyType.INVOICES)
+    else
+      print("Total is positive")
+      g_currentMission:addMoneyChange(
+        -invoice.total,
+        invoice.receiverFarmId,
+        MoneyType.INVOICES,
+        true
+      )
+
+      -- Pay the creator farm
+      g_currentMission:addMoneyChange(
+        invoice.total,
+        invoice.creatorFarmId,
+        MoneyType.INVOICES,
+        true
+      )
+
+      g_farmManager:getFarmById(invoice.receiverFarmId):changeBalance(-invoice.total, MoneyType.INVOICES)
+      g_farmManager:getFarmById(invoice.creatorFarmId):changeBalance(invoice.total, MoneyType.INVOICES)
+    end
   end
-
-  g_farmManager:getFarmById(invoice.receiverFarmId):changeBalance(-invoice.total, MoneyType.INVOICES)
-  g_farmManager:getFarmById(invoice.creatorFarmId):changeBalance(invoice.total, MoneyType.INVOICES)
 
   -- Change status of contract to be completed
   invoice.status = Invoice.STATUS.PAID
 
   -- Update paid amount to with the total amount for now, since we don't have partial payments yet
   invoice.paid = invoice.total -- TODO: Add more logic when adding partial payments
+
+  -- Notify the contractor of the contract
+  local creatorFarm = g_farmManager:getFarmById(invoice.creatorFarmId)
+  local farmName = creatorFarm.name or "Unknown"
+  g_currentMission.CustomContracts.NotificationManager:addNotification(
+    string.format(g_i18n:getText("cc_invoice_paid_notification"), invoice.id, farmName),
+    Notification.TYPE.INFO,
+    invoice.creatorFarmId)
 
   -- Update all clients
   self:syncInvoices()

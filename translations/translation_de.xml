@@ -5,6 +5,7 @@
     <text name="finance_invoices" text="Rechnungen"/>
 
     <text name="cc_map_btn" text="Vertrag erstellen"/>
+    <text name="cc_menu_join_farm_first" text="Bitte tritt zuerst einem Hof bei."/>
 
     <text name="cc_workareatype_cultivate" text="Grubbern"/>
     <text name="cc_workareatype_plow" text="Pflügen"/>
@@ -228,5 +229,19 @@
 
     <text name="cc_dialog_edit_invoice_title" text="Rechnung bearbeiten"/>
     <text name="cc_dialog_edit_invoice_send_btn" text="Send"/>
+
+    <text name="cc_notifications_title" text="Benachrichtigungen"/>
+    <text name="cc_header_notifications" text="Benachrichtigungen"/>
+
+    <text name="cc_contract_accepted_notification" text="Vertrag #%d wurde von %s angenommen"/>
+    <text name="cc_contract_completed_notification" text="Vertrag #%d wurde von %s abgeschlossen"/>
+    <text name="cc_contract_cancelled_notification" text="Vertrag #%d wurde von %s storniert"/>
+    <text name="cc_contract_deleted_notification" text="Vertrag #%d wurde von %s gelöscht"/>
+
+    <text name="cc_invoice_paid_notification" text="Rechnung #%d wurde von %s bezahlt"/>
+
+    <text name="cc_notification_table_id" text="ID"/>
+    <text name="cc_notification_table_message" text="Nachricht"/>
+    <text name="cc_notification_table_date" text="Datum"/>
   </texts>
 </l10n>

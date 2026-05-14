@@ -119,10 +119,10 @@ function CustomContractManager:loadFromXmlFile(xmlFile)
     if destinationX then contract.destinationX = destinationX end
     if destinationZ then contract.destinationZ = destinationZ end
 
-    self.contracts[id]        = contract
-    self.nextId               = math.max(self.nextId, id + 1)
+    self.contracts[id] = contract
+    self.nextId        = math.max(self.nextId, id + 1)
 
-    i                         = i + 1
+    i                  = i + 1
   end
 
   self:_rebuildAccessCache()
@@ -262,18 +262,18 @@ end
 function CustomContractManager:handleCreateRequest(farmId, payload)
   if not g_currentMission:getIsServer() then return end
 
-  local id           = self.nextId
-  self.nextId        = self.nextId + 1
+  local id                = self.nextId
+  self.nextId             = self.nextId + 1
 
-  local templateId   = payload.templateId or CustomContract.TEMPLATE.FIELD_WORK
-  local farmlandId   = payload.farmlandId or -1
+  local templateId        = payload.templateId or CustomContract.TEMPLATE.FIELD_WORK
+  local farmlandId        = payload.farmlandId or -1
   local workAreaTypeIndex = payload.workAreaTypeIndex or 0
   if templateId == CustomContract.TEMPLATE.TRANSPORT then
     farmlandId = -1
     workAreaTypeIndex = 0
   end
 
-  local contract     = CustomContract.new(
+  local contract = CustomContract.new(
     id,
     farmId,
     farmlandId,
@@ -316,6 +316,20 @@ function CustomContractManager:handleAcceptRequest(farmId, contractId)
   contract.contractorFarmId = farmId
   contract.status = CustomContract.STATUS.ACCEPTED
 
+  -- Notify the creator of the contract
+  local contractorFarm = g_farmManager:getFarmById(contract.contractorFarmId)
+  local farmName = contractorFarm.name or "Unknown"
+
+  g_currentMission.CustomContracts.NotificationManager:addNotification(
+    string.format(g_i18n:getText("cc_contract_accepted_notification"), contract.id, farmName),
+    Notification.TYPE.INFO,
+    farmId)
+
+  -- Notify the contractor of the contract
+  g_currentMission.CustomContracts.NotificationManager:addNotification(
+    string.format(g_i18n:getText("cc_contract_accepted_notification"), contract.id, "You"), Notification.TYPE.INFO,
+    farmId)
+
   self:_rebuildAccessCache()
   self:syncContracts()
 end
@@ -333,7 +347,8 @@ function CustomContractManager:handleCompleteRequest(farmId, contractId, connect
 
   local lineTitle
   if contract.templateId == CustomContract.TEMPLATE.TRANSPORT then
-    lineTitle = string.format(g_i18n:getText("cc_dialog_invoice_create_auto_line_title_transport") or "Transport contract #%d", contract.id)
+    lineTitle = string.format(
+      g_i18n:getText("cc_dialog_invoice_create_auto_line_title_transport") or "Transport contract #%d", contract.id)
   else
     lineTitle = string.format(g_i18n:getText("cc_dialog_invoice_create_auto_line_title"), contract.id)
   end
@@ -353,7 +368,17 @@ function CustomContractManager:handleCompleteRequest(farmId, contractId, connect
   self:_rebuildAccessCache()
   self:syncContracts()
 
-  -- CreateInvoiceDialog.show(draft)
+  -- Notify the creator of the contract
+  local contractorFarm = g_farmManager:getFarmById(contract.contractorFarmId)
+  local farmName = contractorFarm.name or "Unknown"
+  g_currentMission.CustomContracts.NotificationManager:addNotification(
+    string.format(g_i18n:getText("cc_contract_completed_notification"), contract.id, farmName), Notification.TYPE.INFO,
+    contract.creatorFarmId)
+
+  -- Notify the contractor of the contract
+  g_currentMission.CustomContracts.NotificationManager:addNotification(
+    string.format(g_i18n:getText("cc_contract_completed_notification"), contract.id, "You"), Notification.TYPE.INFO,
+    contract.contractorFarmId)
 
   if connection ~= nil then
     connection:sendEvent(OpenCreateInvoiceDialogEvent.new(draft))
@@ -378,6 +403,19 @@ function CustomContractManager:handleCancelRequest(farmId, contractId)
   end
   self:_rebuildAccessCache()
   self:syncContracts()
+
+  -- Notify the creator of the contract
+  g_currentMission.CustomContracts.NotificationManager:addNotification(
+    string.format(g_i18n:getText("cc_contract_cancelled_notification"), contract.id, "You"), Notification.TYPE.INFO,
+    contract.creatorFarmId)
+
+  -- Notify the contractor of the contract
+  local creatorFarm = g_farmManager:getFarmById(contract.creatorFarmId)
+  local farmName = creatorFarm.name or "Unknown"
+  g_currentMission.CustomContracts.NotificationManager:addNotification(
+    string.format(g_i18n:getText("cc_contract_cancelled_notification"), contract.id, farmName),
+    Notification.TYPE.INFO,
+    contract.contractorFarmId)
 end
 
 -- Function to deleteContract, called by DeleteContractEvent
@@ -389,6 +427,19 @@ function CustomContractManager:handleDeleteRequest(farmId, contractId)
   if contract.creatorFarmId ~= farmId then return end
 
   self.contracts[contractId] = nil
+
+  -- Notify the creator of the contract
+  g_currentMission.CustomContracts.NotificationManager:addNotification(
+    string.format(g_i18n:getText("cc_contract_deleted_notification"), contract.id, "You"), Notification.TYPE.INFO,
+    contract.creatorFarmId)
+
+  -- Notify the contractor of the contract
+  local creatorFarm = g_farmManager:getFarmById(contract.creatorFarmId)
+  local farmName = creatorFarm.name or "Unknown"
+  g_currentMission.CustomContracts.NotificationManager:addNotification(
+    string.format(g_i18n:getText("cc_contract_deleted_notification"), contract.id, farmName),
+    Notification.TYPE.INFO,
+    contract.contractorFarmId)
 
   self:_rebuildAccessCache()
   self:syncContracts()
@@ -449,12 +500,12 @@ function CustomContractManager:handleEditRequest(farmId, contractId, data)
     end
   end
 
-  contract.reward            = data.reward
-  contract.description       = data.description
-  contract.startPeriod       = data.startPeriod
-  contract.startDay          = data.startDay
-  contract.duePeriod         = data.duePeriod
-  contract.dueDay            = data.dueDay
+  contract.reward      = data.reward
+  contract.description = data.description
+  contract.startPeriod = data.startPeriod
+  contract.startDay    = data.startDay
+  contract.duePeriod   = data.duePeriod
+  contract.dueDay      = data.dueDay
 
   self:syncContracts()
 end

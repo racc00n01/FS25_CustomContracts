@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<GUI name="CCDedicatedMenuNotificationsFrame">
+  <GuiElement profile="fs25_menuContainer">
+    <GuiElement profile="fs25_menuHeaderPanel">
+      <Bitmap profile="fs25_menuHeaderIconBg">
+        <Bitmap profile="CC_MenuHeaderIcon" id="categoryHeaderIcon"/>
+      </Bitmap>
+      <Text profile="fs25_menuHeaderTitle" text="$l10n_cc_header_notifications" id="categoryHeaderText"/>
+      <RoundCorner profile="fs25_shopMoneyBoxBg" id="shopMoneyBoxBg"/>
+      <BoxLayout profile="fs25_shopMoneyBox" id="shopMoneyBox">
+        <Text profile="fs25_shopBalance" text="$l10n_cc_current_balance"/>
+        <Text profile="fs25_shopMoney" id="currentBalanceText"/>
+      </BoxLayout>
+    </GuiElement>
+
+    <GuiElement profile="fs25_statisticsHeaderBox" position="0px -10px" size="100% 32px">
+      <Button profile="CC_TableHeader" position="50px 0px" size="150px 32px" text="$l10n_cc_notification_table_id" handleFocus="false"/>
+      <Button profile="CC_TableHeader" position="2000px 0px" size="520px 32px" text="$l10n_cc_notification_table_message" handleFocus="false"/>
+      <Button profile="CC_TableHeader" position="720px 0px" size="140px 32px" text="$l10n_cc_notification_table_date" handleFocus="false"/>
+      <ThreePartBitmap profile="fs25_lineSeparatorBottom" position="0px -2dp"/>
+    </GuiElement>
+
+    <SmoothList id="notificationsTable" profile="CC_Table" size="100% 450px" position="20px -50px">
+      <ListItem profile="CC_Row">
+        <Text profile="CC_RowCellLeft" position="20px 0px" name="id"/>
+        <Text profile="CC_RowCellLeft" position="170px 0px" name="message"/>
+        <Text profile="CC_RowCellLeft" position="690px 0px" name="date"/>
+      </ListItem>
+    </SmoothList>
+  </GuiElement>
+</GUI>
