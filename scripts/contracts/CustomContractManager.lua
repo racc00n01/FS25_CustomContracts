@@ -323,18 +323,18 @@ function CustomContractManager:handleAcceptRequest(farmId, contractId)
   end
 
   -- Notify the creator of the contract
-  local contractorFarm = g_farmManager:getFarmById(contract.creatorFarmId)
+  local contractorFarm = g_farmManager:getFarmById(contract.contractorFarmId)
   local farmName = contractorFarm.name or "Unknown"
 
   g_currentMission.CustomContracts.NotificationManager:addNotification(
     string.format(g_i18n:getText("cc_contract_accepted_notification"), contract.id, farmName),
     Notification.TYPE.INFO,
-    contract.creatorFarmId)
+    farmId)
 
   -- Notify the contractor of the contract
   g_currentMission.CustomContracts.NotificationManager:addNotification(
     string.format(g_i18n:getText("cc_contract_accepted_notification"), contract.id, "You"), Notification.TYPE.INFO,
-    contract.contractorFarmId)
+    farmId)
 
   self:_syncFarmAccess()
   self:syncContracts()
@@ -389,7 +389,7 @@ function CustomContractManager:handleCompleteRequest(farmId, contractId, connect
   self:syncContracts()
 
   -- Notify the creator of the contract
-  local contractorFarm = g_farmManager:getFarmById(contract.creatorFarmId)
+  local contractorFarm = g_farmManager:getFarmById(contract.contractorFarmId)
   local farmName = contractorFarm.name or "Unknown"
   g_currentMission.CustomContracts.NotificationManager:addNotification(
     string.format(g_i18n:getText("cc_contract_completed_notification"), contract.id, farmName), Notification.TYPE.INFO,
@@ -399,8 +399,6 @@ function CustomContractManager:handleCompleteRequest(farmId, contractId, connect
   g_currentMission.CustomContracts.NotificationManager:addNotification(
     string.format(g_i18n:getText("cc_contract_completed_notification"), contract.id, "You"), Notification.TYPE.INFO,
     contract.contractorFarmId)
-
-  -- CreateInvoiceDialog.show(draft)
 
   if connection ~= nil then
     connection:sendEvent(OpenCreateInvoiceDialogEvent.new(draft))

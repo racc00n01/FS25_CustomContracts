@@ -1,8 +1,8 @@
 --
 -- FS25 Contract and Invoices
 --
--- Renders per-contract detail rows (Farmland, Start date, End date, Status)
--- into the SmoothList `contractDetailsList` in MenuCustomContracts.xml.
+-- Renders per-contract detail rows (Farmland, dates, status, accepted-by, …)
+-- into the SmoothList `contractDetailsList` in ccDedicatedMenuContractsFrame.xml.
 --
 
 ContractsDetailsRenderer = {}
@@ -49,6 +49,18 @@ function ContractsDetailsRenderer:setFromContract(contract)
     title = i18n:getText("cc_contract_status_label_default"),
     info  = (i18n:getText("cc_status_" .. string.lower(contract.status or "")) or contract.status or "-")
   })
+
+  if contract.contractorFarmId ~= nil then
+    local contractorFarm = g_farmManager:getFarmById(contract.contractorFarmId)
+    local contractorName = "-"
+    if contractorFarm ~= nil and contractorFarm.name ~= nil and contractorFarm.name ~= "" then
+      contractorName = contractorFarm.name
+    end
+    table.insert(self.rows, {
+      title = i18n:getText("cc_contract_status_label"),
+      info = contractorName,
+    })
+  end
 
   -- Farmland size
   if contract.templateId == CustomContract.TEMPLATE.FIELD_WORK then

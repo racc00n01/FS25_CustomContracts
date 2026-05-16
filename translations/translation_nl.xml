@@ -5,6 +5,7 @@
     <text name="finance_invoices" text="Facturen"/>
 
     <text name="cc_map_btn" text="Contract aanmaken"/>
+    <text name="cc_menu_join_farm_first" text="Sluit je eerst aan bij een boerderij."/>
 
     <text name="cc_workareatype_cultivate" text="Cultiveren"/>
     <text name="cc_workareatype_plow" text="Ploegen"/>
