@@ -4,6 +4,12 @@
     <text name="cc_money_type_invoices" text="Facturen"/>
     <text name="finance_invoices" text="Facturen"/>
 
+    <text name="gui_contracts" text="Contracten"/>
+    <text name="gui_invoices" text="Facturen"/>
+    <text name="gui_notifications" text="Meldingen"/>
+
+    <text name="input_CC_DEDICATED_MENU" text="Contracten &amp; facturen openen"/>
+
     <text name="cc_map_btn" text="Contract aanmaken"/>
     <text name="cc_menu_join_farm_first" text="Sluit je eerst aan bij een boerderij."/>
 
@@ -60,6 +66,8 @@
     <text name="cc_contract_description" text="%s op Land %d (%.2f ha)"/>
     <text name="cc_contract_description_transport" text="Transport %d L %s"/>
     <text name="cc_contract_description_transport_pickup" text="Goederen laden bij: %s"/>
+    <text name="cc_contract_description_transport_sold_price" text="Waarde verkochte producten: %s"/>
+
     <text name="cc_transport_pickup_loose_pallets" text="Losse pallets (op de kaart)"/>
     <text name="cc_transport_pickup_bales" text="Balen (op de kaart)"/>
     <text name="cc_transport_pickup_global_pallet" text="Transportpallet / mobiele tank"/>
@@ -94,6 +102,7 @@
     <text name="cc_contract_detail_transport_amount_label" text="Hoeveelheid:"/>
     <text name="cc_contract_detail_transport_amount" text="%d L"/>
     <text name="cc_contract_detail_transport_filltype_label" text="Vultype:"/>
+    <text name="cc_contract_detail_transport_sold_price_label" text="Waarde verkochte producten"/>
 
     <text name="cc_btn_create_contract" text="Contract aanmaken"/>
     <text name="cc_btn_accept_contract" text="Contract accepteren"/>
@@ -183,6 +192,7 @@
     <text name="cc_dialog_invoice_create_auto_title" text="Factuur voor contract %d"/>
     <text name="cc_dialog_invoice_create_auto_line_title" text="Contractvergoeding (Contract #%d)"/>
     <text name="cc_dialog_invoice_create_auto_line_title_transport" text="Transportcontract #%d"/>
+    <text name="cc_dialog_invoice_create_transport_sold_line_title" text="Waarde verkochte producten"/>
 
     <text name="cc_dialog_invoice_add_invoice_line_title" text="Factuurregel toevoegen"/>
     <text name="cc_dialog_invoice_add_invoice_line_description_label" text="Beschrijving"/>
@@ -243,5 +253,6 @@
     <text name="cc_notification_table_id" text="ID"/>
     <text name="cc_notification_table_message" text="Bericht"/>
     <text name="cc_notification_table_date" text="Datum"/>
+    <text name="cc_btn_delete_notification" text="Verwijderen"/>
   </texts>
 </l10n>

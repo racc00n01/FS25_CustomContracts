@@ -4,6 +4,12 @@
     <text name="cc_money_type_invoices" text="Factures"/>
     <text name="finance_invoices" text="Factures"/>
 
+    <text name="gui_contracts" text="Contrats"/>
+    <text name="gui_invoices" text="Factures"/>
+    <text name="gui_notifications" text="Notifications"/>
+
+    <text name="input_CC_DEDICATED_MENU" text="Ouvrir contrats &amp; factures"/>
+
     <text name="cc_map_btn" text="Créer un contrat"/>
     <text name="cc_menu_join_farm_first" text="Rejoignez d'abord une ferme."/>
 
@@ -60,6 +66,8 @@
     <text name="cc_contract_description" text="%s sur le terrain %d (%.2f ha)"/>
     <text name="cc_contract_description_transport" text="Transport %d L %s"/>
     <text name="cc_contract_description_transport_pickup" text="Charger les marchandises à : %s"/>
+    <text name="cc_contract_description_transport_sold_price" text="Valeur des produits vendus : %s"/>
+
     <text name="cc_transport_pickup_loose_pallets" text="Palettes en vrac (sur la carte)"/>
     <text name="cc_transport_pickup_bales" text="Balles (sur la carte)"/>
     <text name="cc_transport_pickup_global_pallet" text="Palette de transport / citerne mobile"/>
@@ -94,6 +102,7 @@
     <text name="cc_contract_detail_transport_amount_label" text="Quantité :"/>
     <text name="cc_contract_detail_transport_amount" text="%d L"/>
     <text name="cc_contract_detail_transport_filltype_label" text="Type de remplissage :"/>
+    <text name="cc_contract_detail_transport_sold_price_label" text="Valeur des produits vendus"/>
 
     <text name="cc_btn_create_contract" text="Créer un contrat"/>
     <text name="cc_btn_accept_contract" text="Accepter le contrat"/>
@@ -183,6 +192,7 @@
     <text name="cc_dialog_invoice_create_auto_title" text="Facture pour le contrat %d"/>
     <text name="cc_dialog_invoice_create_auto_line_title" text="Récompense du contrat (Contrat n°%d)"/>
     <text name="cc_dialog_invoice_create_auto_line_title_transport" text="Contrat de transport n°%d"/>
+    <text name="cc_dialog_invoice_create_transport_sold_line_title" text="Valeur des produits vendus"/>
 
     <text name="cc_dialog_invoice_add_invoice_line_title" text="Ajouter une ligne de facture"/>
     <text name="cc_dialog_invoice_add_invoice_line_description_label" text="Description"/>
@@ -243,5 +253,6 @@
     <text name="cc_notification_table_id" text="ID"/>
     <text name="cc_notification_table_message" text="Message"/>
     <text name="cc_notification_table_date" text="Date"/>
+    <text name="cc_btn_delete_notification" text="Supprimer"/>
   </texts>
 </l10n>

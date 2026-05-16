@@ -54,29 +54,29 @@ CustomContract.STATUS = {
 function CustomContract.new(id, creatorFarmId, farmlandId, workAreaTypeIndex, reward, description, startPeriod, startDay,
                             duePeriod,
                             dueDay, invoiceId, templateId)
-  local self             = setmetatable({}, CustomContract_mt)
+  local self              = setmetatable({}, CustomContract_mt)
 
-  self.id                = id
-  self.creatorFarmId     = creatorFarmId
-  self.contractorFarmId  = nil
-  self.farmlandId        = farmlandId
-  self.workAreaTypeIndex = workAreaTypeIndex
-  self.reward            = reward
-  self.status            = CustomContract.STATUS.OPEN
-  self.description       = description or ""
-  self.startPeriod       = startPeriod or -1
-  self.startDay          = startDay or -1
-  self.duePeriod         = duePeriod or -1
-  self.dueDay            = dueDay or -1
-  self.invoiceId         = invoiceId or -1
-  self.templateId        = templateId or CustomContract.TEMPLATE.FIELD_WORK
+  self.id                 = id
+  self.creatorFarmId      = creatorFarmId
+  self.contractorFarmId   = nil
+  self.farmlandId         = farmlandId
+  self.workAreaTypeIndex  = workAreaTypeIndex
+  self.reward             = reward
+  self.status             = CustomContract.STATUS.OPEN
+  self.description        = description or ""
+  self.startPeriod        = startPeriod or -1
+  self.startDay           = startDay or -1
+  self.duePeriod          = duePeriod or -1
+  self.dueDay             = dueDay or -1
+  self.invoiceId          = invoiceId or -1
+  self.templateId         = templateId or CustomContract.TEMPLATE.FIELD_WORK
 
   -- Transport-specific (only used when templateId == TRANSPORT)
-  self.fillTypeIndex     = nil
-  self.transportAmount   = nil
-  self.destinationId     = nil
-  self.destinationX      = nil -- world X when destinationId == -1 (map position)
-  self.destinationZ      = nil -- world Z when destinationId == -1 (map position)
+  self.fillTypeIndex      = nil
+  self.transportAmount    = nil
+  self.destinationId      = nil
+  self.destinationX       = nil -- world X when destinationId == -1 (map position)
+  self.destinationZ       = nil -- world Z when destinationId == -1 (map position)
   self.transportSoldPrice = 0
 
   return self
@@ -195,7 +195,7 @@ function CustomContract:getDescriptionText()
       self.transportAmount or 0,
       productName)
     local soldLine = string.format(
-      g_i18n:getText("cc_contract_description_transport_sold_price") or "Sold produce value: %s",
+      g_i18n:getText("cc_contract_description_transport_sold_price"),
       tostring(math.floor((self.transportSoldPrice or 0) + 0.5))
     )
     local d = self.description
