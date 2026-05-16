@@ -32,6 +32,7 @@ function FarmAccessManager:saveToXmlFile(xmlFile)
     setXMLInt(xmlFile, accessKey .. "#accessType", access.accessType)
     setXMLInt(xmlFile, accessKey .. "#scopeType", access.scopeType or FarmAccess.SCOPE_TYPES.FARM)
     setXMLInt(xmlFile, accessKey .. "#scopeId", access.scopeId or -1)
+    setXMLString(xmlFile, accessKey .. "#scopeStringId", access.scopeStringId or "")
     setXMLInt(xmlFile, accessKey .. "#sourceId", access.sourceId or -1)
     count = count + 1
   end
@@ -52,8 +53,9 @@ function FarmAccessManager:loadFromXmlFile(xmlFile)
     local accessType = getXMLInt(xmlFile, accessKey .. "#accessType")
     local scopeType = getXMLInt(xmlFile, accessKey .. "#scopeType") or FarmAccess.SCOPE_TYPES.FARM
     local scopeId = getXMLInt(xmlFile, accessKey .. "#scopeId") or -1
+    local scopeStringId = getXMLString(xmlFile, accessKey .. "#scopeStringId") or ""
     local sourceId = getXMLInt(xmlFile, accessKey .. "#sourceId") or -1
-    self.access[id] = FarmAccess.new(id, farmId, contractorFor, accessType, scopeType, scopeId, sourceId)
+    self.access[id] = FarmAccess.new(id, farmId, contractorFor, accessType, scopeType, scopeId, sourceId, scopeStringId)
     self.nextId = math.max(self.nextId, id + 1)
     i = i + 1
   end
@@ -102,7 +104,7 @@ function FarmAccessManager:onPlayerConnected(connection)
   self:syncAccess(connection)
 end
 
-function FarmAccessManager:addAccess(farmId, contractorFor, accessType, scopeType, scopeId, sourceId)
+function FarmAccessManager:addAccess(farmId, contractorFor, accessType, scopeType, scopeId, sourceId, scopeStringId)
   local id = self.nextId
   self.nextId = self.nextId + 1
 
@@ -113,7 +115,8 @@ function FarmAccessManager:addAccess(farmId, contractorFor, accessType, scopeTyp
     accessType,
     scopeType or FarmAccess.SCOPE_TYPES.FARM,
     scopeId or -1,
-    sourceId or -1
+    sourceId or -1,
+    scopeStringId
   )
 
   self.access[id] = access
@@ -189,6 +192,23 @@ function FarmAccessManager:grantContractAccess(contract)
       contract.id
     )
   end
+
+  if contract.templateId == CustomContract.TEMPLATE.VEHICLE_TRANSPORT then
+    for _, entry in ipairs(contract.transportVehicleEntries or {}) do
+      local uniqueId = entry.uniqueId
+      if uniqueId ~= nil and uniqueId ~= "" then
+        self:addAccess(
+          contract.contractorFarmId,
+          contract.creatorFarmId,
+          FarmAccess.ACCESS_TYPES.VEHICLE_TRANSPORT,
+          FarmAccess.SCOPE_TYPES.VEHICLE,
+          -1,
+          contract.id,
+          uniqueId
+        )
+      end
+    end
+  end
 end
 
 function FarmAccessManager:rebuildFromContracts(contracts)
@@ -259,6 +279,24 @@ function FarmAccessManager:hasAcceptedContractWithOwner(contractorFarmId, ownerF
         and access.contractorFor == ownerFarmId
         and access.sourceId ~= nil
         and access.sourceId >= 0 then
+      return true
+    end
+  end
+
+  return false
+end
+
+function FarmAccessManager:hasVehicleTransportAccess(contractorFarmId, ownerFarmId, vehicleUniqueId)
+  if contractorFarmId == nil or ownerFarmId == nil or vehicleUniqueId == nil or vehicleUniqueId == "" then
+    return false
+  end
+
+  for _, access in pairs(self.access) do
+    if access.farmId == contractorFarmId
+        and access.contractorFor == ownerFarmId
+        and access.accessType == FarmAccess.ACCESS_TYPES.VEHICLE_TRANSPORT
+        and access.scopeType == FarmAccess.SCOPE_TYPES.VEHICLE
+        and access.scopeStringId == vehicleUniqueId then
       return true
     end
   end

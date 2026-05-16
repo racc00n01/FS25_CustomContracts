@@ -310,6 +310,39 @@
     <position value="8px 0" />
     <imageSliceId value="noSlice" />
   </Profile>
+
+  <Profile name="CC_VehicleTable" extends="CC_Table">
+    <showHighlights value="false" />
+  </Profile>
+
+  <Profile name="CC_VehicleRow" extends="baseReference" with="anchorTopStretchingX alternating">
+    <height value="76px" />
+    <imageColor value="$preset_fs25_colorGrey" />
+    <imageSelectedColor value="$preset_fs25_colorGrey" />
+  </Profile>
+
+  <Profile name="CC_VehicleRowChosen" extends="CC_VehicleRow">
+    <imageColor value="$preset_fs25_colorMainHighlight" />
+    <alternateBackgroundColor value="$preset_fs25_colorMainHighlight" />
+  </Profile>
+
+  <Profile name="CC_VehicleRowImage" extends="baseReference" with="anchorMiddleLeft">
+    <size value="64px 64px" />
+    <position value="12px 0" />
+    <imageSliceId value="noSlice" />
+    <clipChildren value="true" />
+  </Profile>
+
+  <Profile name="CC_VehicleRowTitle" extends="CC_RowCellLeft" with="anchorMiddleLeft">
+    <position value="88px 0px" />
+    <textSize value="16px" />
+    <size value="420px 76px" />
+    <textColor value="$preset_fs25_colorWhite" />
+    <textSelectedColor value="$preset_fs25_colorWhite" />
+    <textHighlightedColor value="$preset_fs25_colorWhite" />
+    <textDisabledColor value="$preset_fs25_colorWhite" />
+  </Profile>
+
   <Profile name="CC_RowCellRight" extends="CC_RowCell" with="anchorStretchingYRight">
     <textAlignment value="right" />
   </Profile>

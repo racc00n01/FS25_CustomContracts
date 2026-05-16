@@ -23,6 +23,7 @@ function CustomContracts:loadMap()
 
   CreateContractDialog.register()
   CreateTransportContractDialog.register()
+  CreateVehicleTransportContractDialog.register()
   PickDestinationMapDialog.register()
   EditFieldWorkContractDialog.register()
   EditTransportContractDialog.register()
@@ -212,8 +213,7 @@ function CustomContracts.onClickCreateContract(frame)
   local options = {
     g_i18n:getText("cc_dialog_template_field_work"),
     g_i18n:getText("cc_dialog_template_transport"),
-    -- g_i18n:getText("cc_dialog_template_farmjob"),
-    -- g_i18n:getText("cc_dialog_template_custom"),
+    g_i18n:getText("cc_dialog_template_transport_vehicle"),
   }
   local callback = function(templateId)
     if templateId == 1 then
@@ -230,7 +230,12 @@ function CustomContracts.onClickCreateContract(frame)
         InfoDialog.show(g_i18n:getText("cc_dialog_template_no_inventory"))
       end
     elseif templateId == 3 then
-      InfoDialog.show(g_i18n:getText("cc_dialog_template_coming_soon"))
+      local vehicles = FarmVehicleHelper.retrieveFarmVehicles(farmId)
+      if vehicles ~= nil and #vehicles > 0 then
+        CreateVehicleTransportContractDialog.show(vehicles)
+      else
+        InfoDialog.show(g_i18n:getText("cc_dialog_template_no_vehicles"))
+      end
     elseif templateId == 4 then
       InfoDialog.show(g_i18n:getText("cc_dialog_template_coming_soon"))
     end
@@ -238,6 +243,35 @@ function CustomContracts.onClickCreateContract(frame)
 
   OptionDialog.show(callback, g_i18n:getText("cc_dialog_template_title"),
     g_i18n:getText("cc_dialog_template_subtitle"), options)
+end
+
+function CustomContracts.canFarmAccess(self, superFunc, farmId, object, allowEqualAlways)
+  if superFunc(self, farmId, object, allowEqualAlways) then
+    return true
+  end
+
+  if object == nil or object.getOwnerFarmId == nil or farmId == nil then
+    return false
+  end
+
+  local ownerFarmId = object:getOwnerFarmId()
+  if ownerFarmId == nil
+      or ownerFarmId == FarmlandManager.NO_OWNER_FARM_ID
+      or ownerFarmId == farmId then
+    return false
+  end
+
+  local farmAccessManager = g_currentMission.CustomContracts.FarmAccessManager
+  if farmAccessManager == nil then
+    return false
+  end
+
+  local uniqueId = FarmVehicleHelper.getVehicleUniqueId(object)
+  if uniqueId == nil then
+    return false
+  end
+
+  return farmAccessManager:hasVehicleTransportAccess(farmId, ownerFarmId, uniqueId)
 end
 
 function CustomContracts.canFarmAccessOtherId(self, superFunc, farmId, otherFarmId, ...)
@@ -387,6 +421,9 @@ end
 
 -- PlaceableInfoTrigger.onDraw =
 --     Utils.overwrittenFunction(PlaceableInfoTrigger.onDraw, CustomContracts.placeableInfoTrigger_onDraw)
+
+AccessHandler.canFarmAccess =
+    Utils.overwrittenFunction(AccessHandler.canFarmAccess, CustomContracts.canFarmAccess)
 
 AccessHandler.canFarmAccessOtherId =
     Utils.overwrittenFunction(AccessHandler.canFarmAccessOtherId, CustomContracts.canFarmAccessOtherId)

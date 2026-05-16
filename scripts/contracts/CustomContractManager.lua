@@ -57,6 +57,15 @@ function CustomContractManager:saveToXmlFile(xmlFile)
     if contract.destinationZ then setXMLFloat(xmlFile, key .. "#destinationZ", contract.destinationZ) end
     setXMLFloat(xmlFile, key .. "#transportSoldPrice", contract.transportSoldPrice or 0)
 
+    local vehicleEntries = contract.transportVehicleEntries or {}
+    setXMLInt(xmlFile, key .. "#transportVehicleCount", #vehicleEntries)
+    for vi, entry in ipairs(vehicleEntries) do
+      local vKey = string.format("%s.vehicle(%d)", key, vi - 1)
+      setXMLString(xmlFile, vKey .. "#uniqueId", entry.uniqueId or "")
+      setXMLString(xmlFile, vKey .. "#title", entry.title or "")
+      setXMLString(xmlFile, vKey .. "#imageFilename", entry.imageFilename or "")
+    end
+
     count = count + 1
   end
 end
@@ -120,6 +129,19 @@ function CustomContractManager:loadFromXmlFile(xmlFile)
     if destinationX then contract.destinationX = destinationX end
     if destinationZ then contract.destinationZ = destinationZ end
     contract.transportSoldPrice = transportSoldPrice or 0
+
+    contract.transportVehicleEntries = {}
+    local vehicleCount = getXMLInt(xmlFile, contractKey .. "#transportVehicleCount") or 0
+    for vi = 0, vehicleCount - 1 do
+      local vKey = string.format("%s.vehicle(%d)", contractKey, vi)
+      if hasXMLProperty(xmlFile, vKey) then
+        table.insert(contract.transportVehicleEntries, {
+          uniqueId      = getXMLString(xmlFile, vKey .. "#uniqueId") or "",
+          title         = getXMLString(xmlFile, vKey .. "#title") or "",
+          imageFilename = getXMLString(xmlFile, vKey .. "#imageFilename") or ""
+        })
+      end
+    end
 
     self.contracts[id] = contract
     self.nextId        = math.max(self.nextId, id + 1)
@@ -270,7 +292,8 @@ function CustomContractManager:handleCreateRequest(farmId, payload)
   local templateId        = payload.templateId or CustomContract.TEMPLATE.FIELD_WORK
   local farmlandId        = payload.farmlandId or -1
   local workAreaTypeIndex = payload.workAreaTypeIndex or 0
-  if templateId == CustomContract.TEMPLATE.TRANSPORT then
+  if templateId == CustomContract.TEMPLATE.TRANSPORT
+      or templateId == CustomContract.TEMPLATE.VEHICLE_TRANSPORT then
     farmlandId = -1
     workAreaTypeIndex = 0
   end
@@ -297,6 +320,12 @@ function CustomContractManager:handleCreateRequest(farmId, payload)
     contract.transportSoldPrice = 0
     if payload.destinationX then contract.destinationX = payload.destinationX end
     if payload.destinationZ then contract.destinationZ = payload.destinationZ end
+  elseif templateId == CustomContract.TEMPLATE.VEHICLE_TRANSPORT then
+    contract.destinationId = payload.destinationId or -1
+    contract.transportSoldPrice = 0
+    if payload.destinationX then contract.destinationX = payload.destinationX end
+    if payload.destinationZ then contract.destinationZ = payload.destinationZ end
+    contract.transportVehicleEntries = CustomContract.copyVehicleEntries(payload.transportVehicleEntries)
   end
 
   self.contracts[id] = contract
@@ -355,6 +384,10 @@ function CustomContractManager:handleCompleteRequest(farmId, contractId, connect
   if contract.templateId == CustomContract.TEMPLATE.TRANSPORT then
     lineTitle = string.format(
       g_i18n:getText("cc_dialog_invoice_create_auto_line_title_transport") or "Transport contract #%d", contract.id)
+  elseif contract.templateId == CustomContract.TEMPLATE.VEHICLE_TRANSPORT then
+    lineTitle = string.format(
+      g_i18n:getText("cc_dialog_invoice_create_auto_line_title_vehicle_transport") or "Vehicle transport contract #%d",
+      contract.id)
   else
     lineTitle = string.format(g_i18n:getText("cc_dialog_invoice_create_auto_line_title"), contract.id)
   end
@@ -557,6 +590,15 @@ function CustomContractManager:hasAcceptedContractWithOwner(contractorFarmId, ow
   end
 
   return farmAccessManager:hasAcceptedContractWithOwner(contractorFarmId, ownerFarmId)
+end
+
+function CustomContractManager:hasVehicleTransportAccess(contractorFarmId, ownerFarmId, vehicleUniqueId)
+  local farmAccessManager = g_currentMission.CustomContracts.FarmAccessManager
+  if farmAccessManager == nil then
+    return false
+  end
+
+  return farmAccessManager:hasVehicleTransportAccess(contractorFarmId, ownerFarmId, vehicleUniqueId)
 end
 
 local function toOrdinal(period, day, daysPerPeriod)

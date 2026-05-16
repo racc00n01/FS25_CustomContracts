@@ -8,7 +8,8 @@ FarmAccess.ACCESS_TYPES = {
   FIELD_WORK = 1,
   TRANSPORT = 2,
   FARM_JOB = 3,
-  CUSTOM = 4
+  CUSTOM = 4,
+  VEHICLE_TRANSPORT = 5
 }
 
 FarmAccess.SCOPE_TYPES = {
@@ -21,7 +22,7 @@ FarmAccess.SCOPE_TYPES = {
   CUSTOM = 6
 }
 
-function FarmAccess.new(id, farmId, contractorFor, accessType, scopeType, scopeId, sourceId)
+function FarmAccess.new(id, farmId, contractorFor, accessType, scopeType, scopeId, sourceId, scopeStringId)
   local self = setmetatable({}, FarmAccess_mt)
   self.id = id
   self.farmId = farmId
@@ -30,6 +31,7 @@ function FarmAccess.new(id, farmId, contractorFor, accessType, scopeType, scopeI
   self.scopeType = scopeType or FarmAccess.SCOPE_TYPES.FARM
   self.scopeId = scopeId or -1
   self.sourceId = sourceId or -1
+  self.scopeStringId = scopeStringId or ""
   return self
 end
 
@@ -41,6 +43,7 @@ function FarmAccess:writeStream(streamId)
   streamWriteInt32(streamId, self.scopeType)
   streamWriteInt32(streamId, self.scopeId)
   streamWriteInt32(streamId, self.sourceId)
+  streamWriteString(streamId, self.scopeStringId or "")
 end
 
 function FarmAccess.newFromStream(streamId)
@@ -51,5 +54,6 @@ function FarmAccess.newFromStream(streamId)
   local scopeType = streamReadInt32(streamId)
   local scopeId = streamReadInt32(streamId)
   local sourceId = streamReadInt32(streamId)
-  return FarmAccess.new(id, farmId, contractorFor, accessType, scopeType, scopeId, sourceId)
+  local scopeStringId = streamReadString(streamId)
+  return FarmAccess.new(id, farmId, contractorFor, accessType, scopeType, scopeId, sourceId, scopeStringId)
 end

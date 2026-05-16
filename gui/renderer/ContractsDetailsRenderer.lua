@@ -73,6 +73,19 @@ function ContractsDetailsRenderer:setFromContract(contract)
     end
   end
 
+  if contract.templateId == CustomContract.TEMPLATE.VEHICLE_TRANSPORT then
+    table.insert(self.rows, {
+      title = i18n:getText("cc_contract_detail_vehicle_count_label"),
+      info  = tostring(#(contract.transportVehicleEntries or {}))
+    })
+    if contract.destinationX ~= nil and contract.destinationZ ~= nil then
+      table.insert(self.rows, {
+        title = i18n:getText("cc_contract_detail_transport_destination_label"),
+        info  = string.format("%.0f, %.0f", contract.destinationX, contract.destinationZ)
+      })
+    end
+  end
+
   -- Transport details
   if contract.templateId == CustomContract.TEMPLATE.TRANSPORT then
     table.insert(self.rows, {

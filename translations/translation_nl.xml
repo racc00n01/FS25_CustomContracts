@@ -112,18 +112,21 @@
     <text name="cc_btn_reopen_contract" text="Contract heropenen"/>
     <text name="cc_btn_edit_contract" text="Contract bewerken"/>
 
-    <text name="cc_dialog_create_yes_no" text="Contract voor Land %d voltooien en €%s ontvangen?"/>
+    <text name="cc_dialog_create_yes_no" text="%s-contract voor %s voltooien en €%s ontvangen?"/>
     <text name="cc_dialog_create_yes_no_btn" text="Contract voltooien"/>
-    <text name="cc_dialog_accept_yes_no" text="Contract voor Land %d (%s) accepteren voor €%s?"/>
+    <text name="cc_dialog_accept_yes_no" text="%s-contract voor %s accepteren voor €%s?"/>
     <text name="cc_dialog_accept_yes_no_btn" text="Contract accepteren"/>
-    <text name="cc_dialog_complete_yes_no" text="Contract voor Land %d voltooien en €%s ontvangen?"/>
+    <text name="cc_dialog_complete_yes_no" text="%s-contract voor %s voltooien en €%s ontvangen?"/>
     <text name="cc_dialog_complete_yes_no_btn" text="Contract voltooien"/>
-    <text name="cc_dialog_cancel_yes_no" text="Contract voor Land %d annuleren?"/>
+    <text name="cc_dialog_cancel_yes_no" text="%s-contract voor %s annuleren?"/>
     <text name="cc_dialog_cancel_yes_no_btn" text="Contract annuleren"/>
-    <text name="cc_dialog_delete_yes_no" text="Contract voor Land %d verwijderen?"/>
+    <text name="cc_dialog_delete_yes_no" text="%s-contract voor %s verwijderen?"/>
     <text name="cc_dialog_delete_yes_no_btn" text="Contract verwijderen"/>
-    <text name="cc_dialog_reopen_yes_no" text="Contract voor Land %d heropenen?"/>
+    <text name="cc_dialog_reopen_yes_no" text="%s-contract voor %s heropenen?"/>
     <text name="cc_dialog_reopen_yes_no_btn" text="Contract heropenen"/>
+
+    <text name="cc_contract_dialog_subject_transport" text="%d L %s"/>
+    <text name="cc_contract_dialog_subject_vehicles" text="%d voertuig(en)"/>
 
     <text name="cc_dialog_create_validation_fields" text="Vul alle velden in"/>
     <text name="cc_dialog_create_validation_fields_due_date" text="Selecteer een start- en vervaldatum"/>
@@ -143,6 +146,7 @@
     <text name="cc_dialog_template_subtitle" text="Kies een sjabloon voor het nieuwe contract."/>
     <text name="cc_dialog_template_field_work" text="Veldwerk"/>
     <text name="cc_dialog_template_transport" text="Transport"/>
+    <text name="cc_dialog_template_transport_vehicle" text="Voertuigtransport"/>
     <text name="cc_dialog_template_farm_job" text="Boerderijklus"/>
     <text name="cc_dialog_template_custom" text="Aangepast"/>
     <text name="cc_dialog_template_no_farmland" text="Geen land beschikbaar om een contract aan te maken."/>
@@ -184,6 +188,26 @@
     <text name="cc_btn_delete_invoice" text="Factuur verwijderen"/>
     <text name="cc_dialog_create_invoice_no_other_farms" text="Geen andere boerderijen beschikbaar om te factureren."/>
     <text name="cc_dialog_template_no_inventory" text="Geen voorraad beschikbaar om een transportcontract aan te maken."/>
+    <text name="cc_dialog_template_no_vehicles" text="Geen voertuigen of werktuigen beschikbaar op deze boerderij."/>
+
+    <text name="cc_dialog_vehicle_transport_title" text="Voertuigtransportcontract aanmaken"/>
+    <text name="cc_dialog_vehicle_transport_vehicle" text="Voertuig / werktuig"/>
+    <text name="cc_dialog_vehicle_transport_multi_hint" text="Klik op rijen om meerdere voertuigen te selecteren"/>
+    <text name="cc_dialog_vehicle_transport_col_selected" text="Geselecteerd"/>
+    <text name="cc_dialog_vehicle_transport_selection_count" text="%d voertuig(en) geselecteerd"/>
+    <text name="cc_dialog_vehicle_transport_validation_select" text="Selecteer minstens één voertuig."/>
+    <text name="cc_dialog_vehicle_transport_edit_not_supported" text="Voertuigtransportcontracten kunnen nog niet worden bewerkt."/>
+    <text name="cc_vehicle_transport_selected" text="✓"/>
+    <text name="cc_vehicle_transport_unknown" text="Voertuig"/>
+
+    <text name="cc_contract_description_vehicle_transport" text="%d voertuig(en) transporteren"/>
+    <text name="cc_contract_description_vehicle_transport_destination" text="Afleveren op: %.0f, %.0f"/>
+    <text name="cc_contract_vehicles_title" text="Voertuigen"/>
+    <text name="cc_contract_equipment_title" text="Uitrusting"/>
+    <text name="cc_contract_vehicle_transport_equipment_desc" text="Deze voertuigen moeten naar de bestemming op de kaart worden gebracht. Gebruik je eigen machines of huur hulp in om het transport uit te voeren."/>
+    <text name="cc_contract_detail_vehicle_count_label" text="Voertuigen:"/>
+    <text name="cc_contract_detail_transport_destination_label" text="Bestemming:"/>
+    <text name="cc_dialog_invoice_create_auto_line_title_vehicle_transport" text="Voertuigtransportcontract #%d"/>
 
     <text name="cc_invoice_status_label" text="Status:"/>
     <text name="cc_dialog_invoice_pay_yes_no" text="Factuur %s betalen en €%s overmaken?"/>
