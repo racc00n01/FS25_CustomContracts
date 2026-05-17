@@ -192,7 +192,7 @@
 
     <text name="cc_dialog_vehicle_transport_title" text="Créer un contrat de transport de véhicules"/>
     <text name="cc_dialog_vehicle_transport_vehicle" text="Véhicule / équipement"/>
-    <text name="cc_dialog_vehicle_transport_multi_hint" text="Cliquez sur les lignes pour sélectionner plusieurs véhicules"/>
+    <text name="cc_dialog_vehicle_transport_multi_hint" text="Cochez les cases pour sélectionner plusieurs véhicules"/>
     <text name="cc_dialog_vehicle_transport_col_selected" text="Sélection"/>
     <text name="cc_dialog_vehicle_transport_selection_count" text="%d véhicule(s) sélectionné(s)"/>
     <text name="cc_dialog_vehicle_transport_validation_select" text="Veuillez sélectionner au moins un véhicule."/>

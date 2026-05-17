@@ -315,15 +315,45 @@
     <showHighlights value="false" />
   </Profile>
 
-  <Profile name="CC_VehicleRow" extends="baseReference" with="anchorTopStretchingX alternating">
+  <Profile name="CC_VehicleRow" extends="baseReference" with="anchorTopStretchingX">
     <height value="76px" />
-    <imageColor value="$preset_fs25_colorGrey" />
-    <imageSelectedColor value="$preset_fs25_colorGrey" />
+    <imageColor value="$preset_fs25_colorGreyDark_50" />
+    <imageSelectedColor value="$preset_fs25_colorGreyDark_50" />
+    <imageHighlightedColor value="$preset_fs25_colorGreyDark_50" />
+    <imageFocusedColor value="$preset_fs25_colorGreyDark_50" />
+    <backgroundColor value="$preset_fs25_colorGreyDark_50" />
+    <backgroundSelectedColor value="$preset_fs25_colorGreyDark_50" />
+    <backgroundHighlightedColor value="$preset_fs25_colorGreyDark_50" />
+    <backgroundFocusedColor value="$preset_fs25_colorGreyDark_50" />
   </Profile>
 
-  <Profile name="CC_VehicleRowChosen" extends="CC_VehicleRow">
-    <imageColor value="$preset_fs25_colorMainHighlight" />
-    <alternateBackgroundColor value="$preset_fs25_colorMainHighlight" />
+  <Profile name="CC_checkboxButton" extends="buttonBase" with="anchorTopRight">
+    <width value="25px"/>
+    <position value="-12px -26px"/>
+    <imageColor value="$preset_colorTransparent"/>
+  </Profile>
+
+  <Profile name="CC_checkboxBox" extends="emptyPanel">
+    <imageSliceId value="ui_elements.square_center"/>
+    <imageColor value="$preset_fs25_colorMainHighlight"/>
+    <imageSelectedColor value="$preset_colorRed"/>
+    <imageHighlightedColor value="$preset_fs25_colorMainHighlight"/>
+    <imageFocusedColor value="$preset_fs25_colorMainHighlight"/>
+    <startImageSize value="5px"/>
+    <startImageSliceId value="ui_elements.square_left"/>
+    <startImageColor value="$preset_fs25_colorMainHighlight"/>
+    <startImageSelectedColor value="$preset_colorRed"/>
+    <endImageSize value="5px"/>
+    <endImageSliceId value="ui_elements.square_right"/>
+    <endImageColor value="$preset_fs25_colorMainHighlight"/>
+    <endImageSelectedColor value="$preset_colorRed"/>
+  </Profile>
+
+  <Profile name="CC_checkbox" extends="buttonBase">
+    <imageSliceId value="gui.tick"/>
+    <imageColor value="$preset_fs25_colorMainHighlight"/>
+    <imageSelectedColor value="$preset_colorRed"/>
+    <position value="3px 0px"/>
   </Profile>
 
   <Profile name="CC_VehicleRowImage" extends="baseReference" with="anchorMiddleLeft">

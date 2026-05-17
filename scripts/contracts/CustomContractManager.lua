@@ -314,9 +314,9 @@ function CustomContractManager:handleCreateRequest(farmId, payload)
   )
 
   if templateId == CustomContract.TEMPLATE.TRANSPORT then
-    contract.fillTypeIndex   = payload.fillTypeIndex
-    contract.transportAmount = payload.transportAmount
-    contract.destinationId   = payload.destinationId or -1
+    contract.fillTypeIndex      = payload.fillTypeIndex
+    contract.transportAmount    = payload.transportAmount
+    contract.destinationId      = payload.destinationId or -1
     contract.transportSoldPrice = 0
     if payload.destinationX then contract.destinationX = payload.destinationX end
     if payload.destinationZ then contract.destinationZ = payload.destinationZ end
@@ -358,7 +358,7 @@ function CustomContractManager:handleAcceptRequest(farmId, contractId)
   g_currentMission.CustomContracts.NotificationManager:addNotification(
     string.format(g_i18n:getText("cc_contract_accepted_notification"), contract.id, farmName),
     Notification.TYPE.INFO,
-    farmId)
+    contract.creatorFarmId)
 
   -- Notify the contractor of the contract
   g_currentMission.CustomContracts.NotificationManager:addNotification(

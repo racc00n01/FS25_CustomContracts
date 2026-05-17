@@ -92,14 +92,6 @@ function CreateVehicleTransportContractDialog:onClose()
   CreateVehicleTransportContractDialog:superClass().onClose(self)
 end
 
-function CreateVehicleTransportContractDialog:onClickVehicleList(list, section, index)
-  if self.vehicleListRenderer == nil or index == nil then
-    return
-  end
-  self.vehicleListRenderer:handleRowClick(list, section or 1, index)
-  self:updateVehicleSelectionCount()
-end
-
 function CreateVehicleTransportContractDialog:updateDestinationSelector()
   local text
   if self.pickedDestinationX ~= nil and self.pickedDestinationZ ~= nil then

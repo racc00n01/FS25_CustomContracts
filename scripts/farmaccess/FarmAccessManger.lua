@@ -224,6 +224,14 @@ function FarmAccessManager:rebuildFromContracts(contracts)
   end
 end
 
+-- Function to get the farm access for field work
+-- @param farmId The farm ID
+-- @param landOwnerFarmId The land owner farm ID
+-- @param x The X position
+-- @param z The Z position
+-- @param workAreaType The work area type
+-- @param workArea The work area
+-- @return The farm access
 function FarmAccessManager:getFarmAccessFieldWorkByFarmId(farmId, landOwnerFarmId, x, z, workAreaType, workArea)
   if farmId == nil or landOwnerFarmId == nil then
     return false
@@ -247,6 +255,13 @@ function FarmAccessManager:getFarmAccessFieldWorkByFarmId(farmId, landOwnerFarmI
   return false
 end
 
+-- Function to get the granting farm ID for field work
+-- @param farmId The farm ID
+-- @param x The X position
+-- @param z The Z position
+-- @param workAreaType The work area type
+-- @param workArea The work area
+-- @return The granting farm ID
 function FarmAccessManager:getGrantingFarmIdForFieldWork(farmId, x, z, workAreaType, workArea)
   if farmId == nil then
     return nil
@@ -269,6 +284,10 @@ function FarmAccessManager:getGrantingFarmIdForFieldWork(farmId, x, z, workAreaT
   return nil
 end
 
+-- Function to check if the contractor has accepted a contract with the owner
+-- @param contractorFarmId The contractor farm ID
+-- @param ownerFarmId The owner farm ID
+-- @return True if the contractor has accepted a contract with the owner, false otherwise
 function FarmAccessManager:hasAcceptedContractWithOwner(contractorFarmId, ownerFarmId)
   if contractorFarmId == nil or ownerFarmId == nil then
     return false
@@ -286,6 +305,11 @@ function FarmAccessManager:hasAcceptedContractWithOwner(contractorFarmId, ownerF
   return false
 end
 
+-- Function to check if the contractor has accepted a contract with the owner for vehicle transport
+-- @param contractorFarmId The contractor farm ID
+-- @param ownerFarmId The owner farm ID
+-- @param vehicleUniqueId The vehicle unique ID
+-- @return True if the contractor has accepted a contract with the owner, false otherwise
 function FarmAccessManager:hasVehicleTransportAccess(contractorFarmId, ownerFarmId, vehicleUniqueId)
   if contractorFarmId == nil or ownerFarmId == nil or vehicleUniqueId == nil or vehicleUniqueId == "" then
     return false
@@ -304,6 +328,11 @@ function FarmAccessManager:hasVehicleTransportAccess(contractorFarmId, ownerFarm
   return false
 end
 
+-- Function to check if the contractor has accepted a contract with the owner for transport
+-- @param contractorFarmId The contractor farm ID
+-- @param ownerFarmId The owner farm ID
+-- @param fillTypeIndex The fill type index
+-- @return True if the contractor has accepted a contract with the owner for transport, false otherwise
 function FarmAccessManager:hasTransportAccess(contractorFarmId, ownerFarmId, fillTypeIndex)
   if contractorFarmId == nil or ownerFarmId == nil then
     return false

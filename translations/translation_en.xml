@@ -193,7 +193,7 @@
 
     <text name="cc_dialog_vehicle_transport_title" text="Create vehicle transport contract"/>
     <text name="cc_dialog_vehicle_transport_vehicle" text="Vehicle / equipment"/>
-    <text name="cc_dialog_vehicle_transport_multi_hint" text="Click rows to select multiple vehicles"/>
+    <text name="cc_dialog_vehicle_transport_multi_hint" text="Use the checkboxes to select multiple vehicles"/>
     <text name="cc_dialog_vehicle_transport_col_selected" text="Selected"/>
     <text name="cc_dialog_vehicle_transport_selection_count" text="%d vehicle(s) selected"/>
     <text name="cc_dialog_vehicle_transport_validation_select" text="Please select at least one vehicle."/>

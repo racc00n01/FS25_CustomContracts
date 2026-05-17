@@ -303,7 +303,11 @@ function CustomContracts.canFarmAccessOtherId(self, superFunc, farmId, otherFarm
   return farmAccessManager:hasTransportAccess(farmId, otherFarmId, fillTypeIndex)
 end
 
-function CustomContracts._resolveFillTypeFromArgs(args, argCount)
+-- Function to resolve the fill type from the arguments
+-- @param args The arguments
+-- @param argCount The number of arguments
+-- @return The fill type index
+function CustomContracts.resolveFillTypeFromArgs(args, argCount)
   if g_fillTypeManager == nil then
     return nil
   end
@@ -320,7 +324,8 @@ function CustomContracts._resolveFillTypeFromArgs(args, argCount)
   return nil
 end
 
-function CustomContracts._trackTransportSoldRevenue(farmId, fillTypeIndex, soldPrice)
+-- Function to track the revenue from selling transport
+function CustomContracts.trackTransportSoldRevenue(farmId, fillTypeIndex, soldPrice)
   if not g_currentMission:getIsServer() then
     return
   end
@@ -336,11 +341,11 @@ function CustomContracts._trackTransportSoldRevenue(farmId, fillTypeIndex, soldP
   contractManager:registerTransportSale(farmId, fillTypeIndex, soldPrice)
 end
 
-function CustomContracts.sellingStation_addFillLevelFromTool(self, superFunc, ...)
+function CustomContracts.addFillLevelFromTool(self, superFunc, ...)
   local args = { ... }
   local argCount = select("#", ...)
   local farmId = args[1]
-  local fillTypeIndex = CustomContracts._resolveFillTypeFromArgs(args, argCount)
+  local fillTypeIndex = CustomContracts.resolveFillTypeFromArgs(args, argCount)
 
   local beforeBalance = nil
   local farm = nil
@@ -356,7 +361,7 @@ function CustomContracts.sellingStation_addFillLevelFromTool(self, superFunc, ..
   if farm ~= nil and beforeBalance ~= nil and farm.getBalance ~= nil then
     local soldPrice = farm:getBalance() - beforeBalance
     if soldPrice > 0 then
-      CustomContracts._trackTransportSoldRevenue(farmId, fillTypeIndex, soldPrice)
+      CustomContracts.trackTransportSoldRevenue(farmId, fillTypeIndex, soldPrice)
     end
   end
 
@@ -430,12 +435,13 @@ AccessHandler.canFarmAccessOtherId =
 
 if SellingStation ~= nil and SellingStation.addFillLevelFromTool ~= nil then
   SellingStation.addFillLevelFromTool =
-      Utils.overwrittenFunction(SellingStation.addFillLevelFromTool, CustomContracts.sellingStation_addFillLevelFromTool)
+      Utils.overwrittenFunction(SellingStation.addFillLevelFromTool, CustomContracts.addFillLevelFromTool)
 end
 
 if SellingStation ~= nil and SellingStation.addFillLevelFromVehicle ~= nil then
   SellingStation.addFillLevelFromVehicle =
-      Utils.overwrittenFunction(SellingStation.addFillLevelFromVehicle, CustomContracts.sellingStation_addFillLevelFromTool)
+      Utils.overwrittenFunction(SellingStation.addFillLevelFromVehicle,
+        CustomContracts.addFillLevelFromTool)
 end
 
 WorkArea.getIsAccessibleAtWorldPosition =

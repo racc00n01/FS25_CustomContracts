@@ -18,10 +18,14 @@
         </GuiElement>
         <Text profile="fs25_textDefault" id="vehicleSelectionCount" position="20px -36px" size="700px 20px" text=""/>
         <Text profile="fs25_textDefault" position="20px -56px" size="700px 20px" text="$l10n_cc_dialog_vehicle_transport_multi_hint"/>
-        <SmoothList id="vehicleList" profile="CC_VehicleTable" size="100% 216px" position="0px -78px" onClick="onClickVehicleList">
+        <SmoothList id="vehicleList" profile="CC_VehicleTable" size="100% 216px" position="0px -40px">
           <ListItem profile="CC_VehicleRow">
             <Bitmap profile="CC_VehicleRowImage" name="icon" />
             <Text profile="CC_VehicleRowTitle" name="title"/>
+            <Button profile="CC_checkboxButton" name="checkbox">
+              <ThreePartBitmap profile="CC_checkboxBox"/>
+              <Bitmap profile="CC_checkbox" name="check"/>
+            </Button>
           </ListItem>
         </SmoothList>
       </Bitmap>

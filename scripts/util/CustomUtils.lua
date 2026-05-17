@@ -167,29 +167,3 @@ function CustomUtils:findWorkAreaTypeRowIndex(workAreaTypeIndex)
   end
   return 1
 end
-
-function CustomUtils.sendEventToFarm(targetFarmId, event)
-  if g_server == nil or g_currentMission == nil then
-    return false
-  end
-
-  local userManager = g_currentMission.userManager
-  if userManager == nil or userManager.users == nil then
-    return false
-  end
-
-  local sent = false
-
-  for _, user in pairs(userManager.users) do
-    -- FS usually has user.farmId and user.connection
-    local userFarmId = user.farmId
-    local connection = user.connection
-
-    if userFarmId == targetFarmId and connection ~= nil then
-      connection:sendEvent(event)
-      sent = true
-    end
-  end
-
-  return sent
-end

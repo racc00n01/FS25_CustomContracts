@@ -10,7 +10,6 @@ function VehicleListRenderer.new()
   self.data = {}
   self.selectedUniqueIds = {}
   self.selectionChangedCallback = nil
-  self.suppressSelectionHandler = false
   return self
 end
 
@@ -59,19 +58,9 @@ function VehicleListRenderer:getSelectedEntries()
   return out
 end
 
-function VehicleListRenderer:applyRowVisual(cell, index, entry)
+function VehicleListRenderer:applyRowVisual(cell, entry)
   if cell == nil or entry == nil then
     return
-  end
-
-  local isChosen = self:isSelected(entry.uniqueId)
-
-  if cell.applyProfile ~= nil then
-    if isChosen then
-      cell:applyProfile("CC_VehicleRowChosen", true)
-    else
-      cell:applyProfile("CC_VehicleRow", true)
-    end
   end
 
   local icon = cell:getAttribute("icon")
@@ -86,6 +75,26 @@ function VehicleListRenderer:applyRowVisual(cell, index, entry)
   if title ~= nil then
     title:setText(entry.title or "")
     title:setTextColor(1, 1, 1, 1)
+  end
+end
+
+function VehicleListRenderer:populateCheckbox(cell, entry)
+  local checkbox = cell:getAttribute("checkbox")
+  local check = cell:getAttribute("check")
+  if checkbox == nil or check == nil or entry == nil then
+    return
+  end
+
+  checkbox:setVisible(true)
+  local uniqueId = entry.uniqueId
+  check:setVisible(self:isSelected(uniqueId))
+
+  checkbox.onClickCallback = function()
+    self:toggleSelection(uniqueId)
+    check:setVisible(self:isSelected(uniqueId))
+    if self.selectionChangedCallback ~= nil then
+      self.selectionChangedCallback()
+    end
   end
 end
 
@@ -106,36 +115,13 @@ function VehicleListRenderer:populateCellForItemInSection(list, section, index, 
   if entry == nil then
     return
   end
-  self:applyRowVisual(cell, index, entry)
+  self:applyRowVisual(cell, entry)
+  self:populateCheckbox(cell, entry)
 end
 
 function VehicleListRenderer:refreshList(list)
   if list == nil then
     return
   end
-  self.suppressSelectionHandler = true
   list:reloadData()
-  self.suppressSelectionHandler = false
-end
-
-function VehicleListRenderer:onListSelectionChanged(list, section, index)
-  -- Multi-select toggles via SmoothList onClick (CreateVehicleTransportContractDialog:onClickVehicleList).
-end
-
-function VehicleListRenderer:handleRowClick(list, section, index)
-  if self.suppressSelectionHandler then
-    return
-  end
-
-  local entry = self.data[index]
-  if entry == nil then
-    return
-  end
-
-  self:toggleSelection(entry.uniqueId)
-  self:refreshList(list)
-
-  if self.selectionChangedCallback ~= nil then
-    self.selectionChangedCallback()
-  end
 end

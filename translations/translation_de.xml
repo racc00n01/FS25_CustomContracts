@@ -192,7 +192,7 @@
 
     <text name="cc_dialog_vehicle_transport_title" text="Fahrzeugtransportvertrag erstellen"/>
     <text name="cc_dialog_vehicle_transport_vehicle" text="Fahrzeug / Gerät"/>
-    <text name="cc_dialog_vehicle_transport_multi_hint" text="Zeilen anklicken, um mehrere Fahrzeuge auszuwählen"/>
+    <text name="cc_dialog_vehicle_transport_multi_hint" text="Kreuzen Sie die Kästchen an, um mehrere Fahrzeuge auszuwählen"/>
     <text name="cc_dialog_vehicle_transport_col_selected" text="Auswahl"/>
     <text name="cc_dialog_vehicle_transport_selection_count" text="%d Fahrzeug(e) ausgewählt"/>
     <text name="cc_dialog_vehicle_transport_validation_select" text="Bitte mindestens ein Fahrzeug auswählen."/>
