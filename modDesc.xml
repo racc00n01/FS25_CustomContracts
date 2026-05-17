@@ -2,7 +2,7 @@
 <modDesc descVersion="108">
   <author>Racc00n</author>
 
-  <version>1.0.0.2</version>
+  <version>1.0.0.3</version>
 
   <iconFilename>icon_customContracts.dds</iconFilename>
 
@@ -63,7 +63,10 @@ https://github.com/racc00n01/FS25_ContractsAndInvoices
     <sourceFile filename="scripts/contracts/CustomContractManager.lua"/>
     <sourceFile filename="scripts/invoices/InvoiceManager.lua"/>
     <sourceFile filename="scripts/notification/NotificationManager.lua"/>
+    <sourceFile filename="scripts/farmaccess/FarmAccess.lua"/>
+    <sourceFile filename="scripts/farmaccess/FarmAccessManger.lua"/>
     <sourceFile filename="scripts/inventory/FarmInventoryHelper.lua"/>
+    <sourceFile filename="scripts/inventory/FarmVehicleHelper.lua"/>
     <sourceFile filename="scripts/events/contracts/CreateContractEvent.lua"/>
     <sourceFile filename="scripts/events/contracts/AcceptContractEvent.lua"/>
     <sourceFile filename="scripts/events/contracts/CancelContractEvent.lua"/>
@@ -81,9 +84,11 @@ https://github.com/racc00n01/FS25_ContractsAndInvoices
     <sourceFile filename="scripts/events/invoices/OpenCreateInvoiceDialogEvent.lua"/>
     <sourceFile filename="scripts/events/invoices/EditInvoiceEvent.lua"/>
     <sourceFile filename="scripts/events/notifications/SyncNotificationsEvent.lua"/>
+    <sourceFile filename="scripts/events/farmaccess/SyncFarmAccessEvent.lua"/>
     <sourceFile filename="scripts/events/notifications/DeleteNotificationEvent.lua"/>
     <sourceFile filename="gui/renderer/ContractsRenderer.lua"/>
     <sourceFile filename="gui/renderer/InventoryListRenderer.lua"/>
+    <sourceFile filename="gui/renderer/VehicleListRenderer.lua"/>
     <sourceFile filename="gui/renderer/InvoicesInboxRenderer.lua"/>
     <sourceFile filename="gui/renderer/InvoicesOutboxRenderer.lua"/>
     <sourceFile filename="gui/renderer/ContractsDetailsRenderer.lua"/>
@@ -95,6 +100,7 @@ https://github.com/racc00n01/FS25_ContractsAndInvoices
     <sourceFile filename="gui/renderer/NotificationsRenderer.lua"/>
     <sourceFile filename="gui/dialog/contracts/CreateContractDialog.lua"/>
     <sourceFile filename="gui/dialog/contracts/CreateTransportContractDialog.lua"/>
+    <sourceFile filename="gui/dialog/contracts/CreateVehicleTransportContractDialog.lua"/>
     <sourceFile filename="gui/dialog/contracts/PickDestinationMapDialog.lua"/>
     <sourceFile filename="gui/dialog/contracts/EditFieldWorkContractDialog.lua"/>
     <sourceFile filename="gui/dialog/contracts/EditTransportContractDialog.lua"/>

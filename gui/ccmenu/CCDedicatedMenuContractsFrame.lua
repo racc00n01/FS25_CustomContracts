@@ -80,6 +80,8 @@ function CCDedicatedMenuContractsFrame.new()
 
   self.contractsListDelegate = CCDedicatedContractsListDelegate.new(self)
   self.contractDetailsRenderer = ContractsDetailsRenderer.new()
+  self.contractVehicleElements = {}
+  self.marqueeTime = 0
 
   self.fieldWorkFieldCircleHotspot = createAbstractFieldMissionCircleHotspot()
   self.transportPickupFieldCircleHotspot = createAbstractFieldMissionCircleHotspot()
@@ -263,7 +265,19 @@ function CCDedicatedMenuContractsFrame:initialize()
 
   self.currentContractsListType = self.contractDisplaySwitcher:getState()
       or CCDedicatedMenuContractsFrame.CONTRACTS_LIST_TYPE.NEW
+
+  if self.contractVehicleTemplate ~= nil then
+    self.contractVehicleTemplate:unlinkElement()
+  end
+
   self:updateMenuButtons()
+end
+
+function CCDedicatedMenuContractsFrame:update(dt)
+  CCDedicatedMenuContractsFrame:superClass().update(self, dt)
+  if self.isFrameOpen and self.contractEquipmentBox ~= nil and self.contractEquipmentBox:getIsVisible() then
+    self:updateContractVehicleMarquee(dt)
+  end
 end
 
 function CCDedicatedMenuContractsFrame:getMenuButtonInfo()
@@ -294,6 +308,7 @@ function CCDedicatedMenuContractsFrame:onFrameOpen()
 end
 
 function CCDedicatedMenuContractsFrame:onFrameClose()
+  self:clearContractVehicleElements()
   self:clearContractMapPreviewHotspots()
   -- Must run super.onFrameClose first: IngameMapPreview:onClose clears HUD layout on ingameMap.
   -- Do NOT call contractMap:setIngameMap(nil) after this: TabbedMenu:onClose also runs
@@ -338,6 +353,119 @@ function CCDedicatedMenuContractsFrame:clearContractMapPreviewClip()
   end
 end
 
+function CCDedicatedMenuContractsFrame:clearContractVehicleElements()
+  if self.contractVehicleElements == nil then
+    self.contractVehicleElements = {}
+  end
+  for _, elem in pairs(self.contractVehicleElements) do
+    elem:delete()
+  end
+  self.contractVehicleElements = {}
+  self.marqueeTime = 0
+  if self.contractVehiclesBox ~= nil then
+    self.contractVehiclesBox:invalidateLayout()
+    if self.contractVehiclesBox.setPivot ~= nil then
+      self.contractVehiclesBox:setPivot(0.5, 0.5)
+    end
+    if self.contractVehiclesBox.setPosition ~= nil then
+      self.contractVehiclesBox:setPosition(0)
+    end
+  end
+end
+
+function CCDedicatedMenuContractsFrame:populateContractVehicleElements(contract)
+  self:clearContractVehicleElements()
+
+  if contract == nil
+      or contract.templateId ~= CustomContract.TEMPLATE.VEHICLE_TRANSPORT
+      or self.contractVehicleTemplate == nil
+      or self.contractVehiclesBox == nil then
+    return
+  end
+
+  local entries = contract.transportVehicleEntries or {}
+  local totalWidth = 0
+
+  for _, entry in ipairs(entries) do
+    local imageFilename = entry.imageFilename
+    if imageFilename ~= nil and imageFilename ~= "" then
+      local element = self.contractVehicleTemplate:clone(self.contractVehiclesBox)
+      element:setImageFilename(imageFilename)
+      element:setImageColor(nil, nil, nil, nil, 1)
+      totalWidth = totalWidth + element.absSize[1] + element.margin[1] + element.margin[3]
+      table.insert(self.contractVehicleElements, element)
+    end
+  end
+
+  self.contractVehiclesBox:setSize(totalWidth)
+  self.contractVehiclesBox:invalidateLayout()
+
+  local parent = self.contractVehiclesBox.parent
+  if parent ~= nil
+      and parent.absSize ~= nil
+      and parent.absSize[1] < self.contractVehiclesBox.maxFlowSize
+      and self.contractVehiclesBox.pivot[1] ~= 0 then
+    self.contractVehiclesBox:setPivot(0, 0.5)
+    self.contractVehiclesBox:setPosition(0)
+  end
+end
+
+function CCDedicatedMenuContractsFrame:updateContractVehicleMarquee(dt)
+  if self.contractVehiclesBox == nil or self.contractVehiclesBox.parent == nil then
+    return
+  end
+
+  local contentWidth = self.contractVehiclesBox.absSize[1]
+  local visibleWidth = self.contractVehiclesBox.parent.absSize[1]
+  local scrollAmount = contentWidth - visibleWidth
+  local scrollLengthFactor = contentWidth / visibleWidth
+
+  if scrollLengthFactor <= 1 then
+    return
+  end
+
+  local scrollDuration = 5000 * scrollLengthFactor
+  self.marqueeTime = self.marqueeTime + dt
+  if scrollDuration <= self.marqueeTime then
+    self.marqueeTime = -scrollDuration
+  end
+
+  local alpha = MathUtil.smoothstep(0.2, 0.8, math.abs(self.marqueeTime) / scrollDuration)
+  local offset = scrollAmount * alpha
+  self.contractVehiclesBox:setPosition(-offset)
+end
+
+function CCDedicatedMenuContractsFrame:applyContractDetailLayout(isVehicleTransport)
+  if self.contractDetailsList ~= nil then
+    if isVehicleTransport then
+      self.contractDetailsList:applyProfile("CC_ContractDetailsListVehicleTransport", true)
+    else
+      self.contractDetailsList:applyProfile("CC_ContractDetailsList", true)
+    end
+  end
+  if self.rewardTitle ~= nil then
+    if isVehicleTransport then
+      self.rewardTitle:applyProfile("CC_ContractRewardVehicleTransport", true)
+    else
+      self.rewardTitle:applyProfile("fs25_contractsContractReward", true)
+    end
+  end
+  if self.contractRewardSeparator ~= nil then
+    if isVehicleTransport then
+      self.contractRewardSeparator:applyProfile("CC_ContractRewardSeparatorVehicleTransport", true)
+    else
+      self.contractRewardSeparator:applyProfile("fs25_contractsContractRewardSeparator", true)
+    end
+  end
+  if self.contractRewardValue ~= nil then
+    if isVehicleTransport then
+      self.contractRewardValue:applyProfile("CC_ContractRewardValueVehicleTransport", true)
+    else
+      self.contractRewardValue:applyProfile("fs25_contractsContractRewardValue", true)
+    end
+  end
+end
+
 function CCDedicatedMenuContractsFrame:displaySelectedContract()
   local index = self.contractsTable.selectedIndex
   local selection = self.contractDisplaySwitcher:getState()
@@ -367,13 +495,21 @@ function CCDedicatedMenuContractsFrame:displaySelectedContract()
         self.contractMap:setIngameMap(hudMap)
         self.contractMap.drawHotspots = true
 
-        if contract.templateId == CustomContract.TEMPLATE.TRANSPORT then
+        if contract.templateId == CustomContract.TEMPLATE.TRANSPORT
+            or contract.templateId == CustomContract.TEMPLATE.VEHICLE_TRANSPORT then
           local destX = contract.destinationX
           local destZ = contract.destinationZ
           local pickupX, pickupZ = nil, nil
-          if FarmInventoryHelper ~= nil and contract.creatorFarmId ~= nil and contract.fillTypeIndex ~= nil then
-            pickupX, pickupZ = FarmInventoryHelper.getPrimaryPickupWorldXZ(contract.creatorFarmId, contract
-              .fillTypeIndex)
+          if contract.templateId == CustomContract.TEMPLATE.TRANSPORT then
+            if FarmInventoryHelper ~= nil and contract.creatorFarmId ~= nil and contract.fillTypeIndex ~= nil then
+              pickupX, pickupZ = FarmInventoryHelper.getPrimaryPickupWorldXZ(contract.creatorFarmId, contract
+                .fillTypeIndex)
+            end
+          elseif contract.templateId == CustomContract.TEMPLATE.VEHICLE_TRANSPORT then
+            pickupX, pickupZ = FarmVehicleHelper.getPrimaryPickupWorldXZ(
+              contract.creatorFarmId,
+              contract.transportVehicleEntries
+            )
           end
           local transportCircleR = math.min(50, 85)
           if self.transportPickupFieldCircleHotspot ~= nil and pickupX ~= nil and pickupZ ~= nil then
@@ -457,8 +593,12 @@ function CCDedicatedMenuContractsFrame:displaySelectedContract()
       if farm ~= nil then
         self.contractFarmImage:setImageSlice(nil, farm:getIconSliceId())
         self.contractFarmName:setText(farm.name)
-        self.contractWorkType:setText(g_i18n:getText("cc_workareatype_" .. string.lower(contract:getWorkTypeAreaName())) or
-          contract:getWorkTypeAreaName())
+        if contract.templateId == CustomContract.TEMPLATE.FIELD_WORK then
+          local workKey = "cc_workareatype_" .. string.lower(contract:getWorkTypeAreaName())
+          self.contractWorkType:setText(g_i18n:getText(workKey) or contract:getWorkTypeAreaName())
+        else
+          self.contractWorkType:setText(contract:getWorkTypeAreaName())
+        end
       else
         self.contractFarmName:setText("-")
         self.contractWorkType:setText("-")
@@ -473,10 +613,34 @@ function CCDedicatedMenuContractsFrame:displaySelectedContract()
         self.contractDetailsList:reloadData()
       end
 
+      local isVehicleTransport = contract.templateId == CustomContract.TEMPLATE.VEHICLE_TRANSPORT
+      if self.contractEquipmentBox ~= nil then
+        self.contractEquipmentBox:setVisible(isVehicleTransport)
+      end
+      if self.contractEquipmentDesc ~= nil then
+        if isVehicleTransport then
+          self.contractEquipmentDesc:setText(g_i18n:getText("cc_contract_vehicle_transport_equipment_desc"))
+        else
+          self.contractEquipmentDesc:setText("")
+        end
+      end
+      if isVehicleTransport then
+        self:populateContractVehicleElements(contract)
+      else
+        self:clearContractVehicleElements()
+      end
+
+      self:applyContractDetailLayout(isVehicleTransport)
+
       self.contractDescriptionValue:setText(contract:getDescriptionText())
     else
       self:clearContractMapPreviewHotspots()
       self:clearContractMapPreviewClip()
+      if self.contractEquipmentBox ~= nil then
+        self.contractEquipmentBox:setVisible(false)
+      end
+      self:clearContractVehicleElements()
+      self:applyContractDetailLayout(false)
       self.contractsInfoContainer:setVisible(false)
       self.noContractsText:setVisible(true)
     end
@@ -752,6 +916,7 @@ function CCDedicatedMenuContractsFrame:onCreateContract()
   local options = {
     g_i18n:getText("cc_dialog_template_field_work"),
     g_i18n:getText("cc_dialog_template_transport"),
+    g_i18n:getText("cc_dialog_template_transport_vehicle"),
   }
   local callback = function(templateId)
     if templateId == 1 then
@@ -768,7 +933,13 @@ function CCDedicatedMenuContractsFrame:onCreateContract()
         InfoDialog.show(g_i18n:getText("cc_dialog_template_no_inventory"))
       end
     elseif templateId == 3 then
-      InfoDialog.show(g_i18n:getText("cc_dialog_template_coming_soon"))
+      local farmId = g_currentMission:getFarmId()
+      local vehicles = FarmVehicleHelper.retrieveFarmVehicles(farmId)
+      if vehicles ~= nil and #vehicles > 0 then
+        CreateVehicleTransportContractDialog.show(vehicles)
+      else
+        InfoDialog.show(g_i18n:getText("cc_dialog_template_no_vehicles"))
+      end
     elseif templateId == 4 then
       InfoDialog.show(g_i18n:getText("cc_dialog_template_coming_soon"))
     end
@@ -776,6 +947,22 @@ function CCDedicatedMenuContractsFrame:onCreateContract()
 
   OptionDialog.show(callback, g_i18n:getText("cc_dialog_template_subtitle"),
     g_i18n:getText("cc_dialog_template_title"), options)
+end
+
+function CCDedicatedMenuContractsFrame.formatContractYesNoMessage(contract, textKey, withReward)
+  if withReward then
+    return string.format(
+      g_i18n:getText(textKey),
+      contract:getTypeDisplayName(),
+      contract:getSubjectDisplayName(),
+      g_i18n:formatMoney(contract.reward, 0, true, true)
+    )
+  end
+  return string.format(
+    g_i18n:getText(textKey),
+    contract:getTypeDisplayName(),
+    contract:getSubjectDisplayName()
+  )
 end
 
 function CCDedicatedMenuContractsFrame:onCompleteContract()
@@ -793,12 +980,8 @@ function CCDedicatedMenuContractsFrame:onCompleteContract()
       end
     end,
     self,
-    string.format(
-      g_i18n:getText("cc_dialog_create_yes_no"),
-      contract.farmlandId,
-      g_i18n:formatMoney(contract.reward)
-    ),
-    g_i18n:getText("cc_dialog_create_yes_no_btn")
+    CCDedicatedMenuContractsFrame.formatContractYesNoMessage(contract, "cc_dialog_complete_yes_no", true),
+    g_i18n:getText("cc_dialog_complete_yes_no_btn")
   )
 end
 
@@ -822,13 +1005,7 @@ function CCDedicatedMenuContractsFrame:onAcceptContract()
       end
     end,
     self,
-    string.format(
-      g_i18n:getText("cc_dialog_accept_yes_no"),
-      contract.farmlandId,
-      g_i18n:getText("cc_workareatype_" ..
-        string.lower(contract:getWorkTypeAreaName(contract.workAreaTypeIndex))),
-      g_i18n:formatMoney(contract.reward)
-    ),
+    CCDedicatedMenuContractsFrame.formatContractYesNoMessage(contract, "cc_dialog_accept_yes_no", true),
     g_i18n:getText("cc_dialog_accept_yes_no_btn")
   )
 end
@@ -851,10 +1028,7 @@ function CCDedicatedMenuContractsFrame:onCancelContract()
       end
     end,
     self,
-    string.format(
-      g_i18n:getText("cc_dialog_cancel_yes_no"),
-      contract.farmlandId
-    ),
+    CCDedicatedMenuContractsFrame.formatContractYesNoMessage(contract, "cc_dialog_cancel_yes_no", false),
     g_i18n:getText("cc_dialog_cancel_yes_no_btn")
   )
 end
@@ -878,10 +1052,7 @@ function CCDedicatedMenuContractsFrame:onDeleteContract()
       end
     end,
     self,
-    string.format(
-      g_i18n:getText("cc_dialog_delete_yes_no"),
-      contract.farmlandId
-    ),
+    CCDedicatedMenuContractsFrame.formatContractYesNoMessage(contract, "cc_dialog_delete_yes_no", false),
     g_i18n:getText("cc_dialog_delete_yes_no_btn")
   )
 end
@@ -905,10 +1076,7 @@ function CCDedicatedMenuContractsFrame:onReopenContract()
       end
     end,
     self,
-    string.format(
-      g_i18n:getText("cc_dialog_reopen_yes_no"),
-      contract.farmlandId
-    ),
+    CCDedicatedMenuContractsFrame.formatContractYesNoMessage(contract, "cc_dialog_reopen_yes_no", false),
     g_i18n:getText("cc_dialog_reopen_yes_no_btn")
   )
 end
@@ -935,6 +1103,8 @@ function CCDedicatedMenuContractsFrame:onEditContract()
 
   if contract.templateId == CustomContract.TEMPLATE.TRANSPORT then
     EditTransportContractDialog.show(contract)
+  elseif contract.templateId == CustomContract.TEMPLATE.VEHICLE_TRANSPORT then
+    InfoDialog.show(g_i18n:getText("cc_dialog_vehicle_transport_edit_not_supported"))
   else
     EditFieldWorkContractDialog.show(contract)
   end

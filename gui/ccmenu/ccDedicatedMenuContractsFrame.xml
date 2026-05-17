@@ -68,13 +68,22 @@
         </SmoothList>
 
         <Text profile="fs25_contractsContractReward" id="rewardTitle" text="$l10n_contract_reward:"/>
-        <ThreePartBitmap profile="fs25_contractsContractRewardSeparator"/>
+        <ThreePartBitmap profile="fs25_contractsContractRewardSeparator" id="contractRewardSeparator"/>
         <Text profile="fs25_contractsContractRewardValue" id="contractRewardValue"/>
       </GuiElement>
 
       <GuiElement profile="fs25_contractsMapBox" id="mapBox" visible="false">
         <Text profile="fs25_contractsContentTitle" text="$l10n_contract_position:" position="0px -30px"/>
         <InGameMapPreview profile="fs25_contractsIngameMap" id="contractMap"/>
+      </GuiElement>
+
+      <GuiElement profile="fs25_contractsProgressBox" id="contractEquipmentBox" visible="false">
+        <Text profile="fs25_contractsContentTitle" text="$l10n_cc_contract_equipment_title"/>
+        <Text profile="fs25_contractsContentText" id="contractEquipmentDesc"/>
+        <Bitmap profile="fs25_contractsVehiclesItem" id="contractVehicleTemplate"/>
+        <GuiElement profile="fs25_contractsVehiclesBoxMarquee">
+          <BoxLayout profile="fs25_contractsVehiclesBox" id="contractVehiclesBox"/>
+        </GuiElement>
       </GuiElement>
     </GuiElement>
   </GuiElement>
@@ -105,8 +114,24 @@
     <Profile name="CC_ContractDetailsList" extends="fs25_contractsDetailsList">
       <position value="0px -150px"/>
     </Profile>
+    <Profile name="CC_ContractDetailsListVehicleTransport" extends="fs25_contractsDetailsList">
+      <position value="0px -290px"/>
+    </Profile>
+    <Profile name="CC_ContractRewardVehicleTransport" extends="CC_ContractContractReward">
+      <position value="0px -478px"/>
+    </Profile>
+    <Profile name="CC_ContractRewardSeparatorVehicleTransport" extends="CC_ContractContractRewardSeparator">
+      <position value="0px -510px"/>
+    </Profile>
+    <Profile name="CC_ContractRewardValueVehicleTransport" extends="CC_ContractContractRewardValue">
+      <position value="0px -508px"/>
+    </Profile>
     <Profile name="CC_ContractDetailsInfoIcon" with="anchorTopRight">
       <position value="0px 0px"/>
+    </Profile>
+    <Profile name="CC_ContractEquipmentBox" extends="emptyPanel" with="anchorTopLeft">
+      <size value="400px 220px"/>
+      <position value="0px -168px"/>
     </Profile>
   </GUIProfiles>
 </GUI>

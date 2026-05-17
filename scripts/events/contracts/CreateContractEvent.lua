@@ -39,6 +39,7 @@ function CreateContractEvent:writeStream(streamId, connection)
   streamWriteInt32(streamId, self.payload.destinationId or -1)
   streamWriteFloat32(streamId, self.payload.destinationX or 0)
   streamWriteFloat32(streamId, self.payload.destinationZ or 0)
+  CustomContract.writeVehicleEntriesToStream(streamId, self.payload.transportVehicleEntries)
 end
 
 function CreateContractEvent:readStream(streamId, connection)
@@ -58,7 +59,8 @@ function CreateContractEvent:readStream(streamId, connection)
     transportAmount   = streamReadInt32(streamId),
     destinationId     = streamReadInt32(streamId),
     destinationX      = streamReadFloat32(streamId),
-    destinationZ      = streamReadFloat32(streamId)
+    destinationZ      = streamReadFloat32(streamId),
+    transportVehicleEntries = CustomContract.readVehicleEntriesFromStream(streamId)
   }
 
   self:run(connection)

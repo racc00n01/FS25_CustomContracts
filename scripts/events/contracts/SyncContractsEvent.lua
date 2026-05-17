@@ -49,6 +49,8 @@ function SyncContractsEvent:writeStream(streamId, connection)
     streamWriteInt32(streamId, contract.destinationId or -1)
     streamWriteFloat32(streamId, contract.destinationX or 0)
     streamWriteFloat32(streamId, contract.destinationZ or 0)
+    streamWriteFloat32(streamId, contract.transportSoldPrice or 0)
+    CustomContract.writeVehicleEntriesToStream(streamId, contract.transportVehicleEntries)
   end
 end
 
@@ -78,6 +80,8 @@ function SyncContractsEvent:readStream(streamId, connection)
     local destinationId       = streamReadInt32(streamId)
     local destinationX        = streamReadFloat32(streamId)
     local destinationZ        = streamReadFloat32(streamId)
+    local transportSoldPrice  = streamReadFloat32(streamId)
+    local transportVehicleEntries = CustomContract.readVehicleEntriesFromStream(streamId)
 
     local contract            = CustomContract.new(
       id,
@@ -101,8 +105,10 @@ function SyncContractsEvent:readStream(streamId, connection)
     if destinationId ~= nil then contract.destinationId = destinationId end
     if destinationX and destinationX ~= 0 then contract.destinationX = destinationX end
     if destinationZ and destinationZ ~= 0 then contract.destinationZ = destinationZ end
+    contract.transportSoldPrice = transportSoldPrice or 0
+    contract.transportVehicleEntries = transportVehicleEntries
 
-    self.contracts[id]        = contract
+    self.contracts[id] = contract
   end
 
   self:run(connection)

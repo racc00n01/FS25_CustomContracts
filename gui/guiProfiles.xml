@@ -310,6 +310,69 @@
     <position value="8px 0" />
     <imageSliceId value="noSlice" />
   </Profile>
+
+  <Profile name="CC_VehicleTable" extends="CC_Table">
+    <showHighlights value="false" />
+  </Profile>
+
+  <Profile name="CC_VehicleRow" extends="baseReference" with="anchorTopStretchingX">
+    <height value="76px" />
+    <imageColor value="$preset_fs25_colorGreyDark_50" />
+    <imageSelectedColor value="$preset_fs25_colorGreyDark_50" />
+    <imageHighlightedColor value="$preset_fs25_colorGreyDark_50" />
+    <imageFocusedColor value="$preset_fs25_colorGreyDark_50" />
+    <backgroundColor value="$preset_fs25_colorGreyDark_50" />
+    <backgroundSelectedColor value="$preset_fs25_colorGreyDark_50" />
+    <backgroundHighlightedColor value="$preset_fs25_colorGreyDark_50" />
+    <backgroundFocusedColor value="$preset_fs25_colorGreyDark_50" />
+  </Profile>
+
+  <Profile name="CC_checkboxButton" extends="buttonBase" with="anchorTopRight">
+    <width value="25px"/>
+    <position value="-12px -26px"/>
+    <imageColor value="$preset_colorTransparent"/>
+  </Profile>
+
+  <Profile name="CC_checkboxBox" extends="emptyPanel">
+    <imageSliceId value="ui_elements.square_center"/>
+    <imageColor value="$preset_fs25_colorMainHighlight"/>
+    <imageSelectedColor value="$preset_colorRed"/>
+    <imageHighlightedColor value="$preset_fs25_colorMainHighlight"/>
+    <imageFocusedColor value="$preset_fs25_colorMainHighlight"/>
+    <startImageSize value="5px"/>
+    <startImageSliceId value="ui_elements.square_left"/>
+    <startImageColor value="$preset_fs25_colorMainHighlight"/>
+    <startImageSelectedColor value="$preset_colorRed"/>
+    <endImageSize value="5px"/>
+    <endImageSliceId value="ui_elements.square_right"/>
+    <endImageColor value="$preset_fs25_colorMainHighlight"/>
+    <endImageSelectedColor value="$preset_colorRed"/>
+  </Profile>
+
+  <Profile name="CC_checkbox" extends="buttonBase">
+    <imageSliceId value="gui.tick"/>
+    <imageColor value="$preset_fs25_colorMainHighlight"/>
+    <imageSelectedColor value="$preset_colorRed"/>
+    <position value="3px 0px"/>
+  </Profile>
+
+  <Profile name="CC_VehicleRowImage" extends="baseReference" with="anchorMiddleLeft">
+    <size value="64px 64px" />
+    <position value="12px 0" />
+    <imageSliceId value="noSlice" />
+    <clipChildren value="true" />
+  </Profile>
+
+  <Profile name="CC_VehicleRowTitle" extends="CC_RowCellLeft" with="anchorMiddleLeft">
+    <position value="88px 0px" />
+    <textSize value="16px" />
+    <size value="420px 76px" />
+    <textColor value="$preset_fs25_colorWhite" />
+    <textSelectedColor value="$preset_fs25_colorWhite" />
+    <textHighlightedColor value="$preset_fs25_colorWhite" />
+    <textDisabledColor value="$preset_fs25_colorWhite" />
+  </Profile>
+
   <Profile name="CC_RowCellRight" extends="CC_RowCell" with="anchorStretchingYRight">
     <textAlignment value="right" />
   </Profile>

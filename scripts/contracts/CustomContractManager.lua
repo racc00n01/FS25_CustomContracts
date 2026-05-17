@@ -14,7 +14,6 @@ function CustomContractManager:new()
   local self = {}
   setmetatable(self, CustomContractManager_mt)
   self.contracts = {}
-  self.accessByFarmland = {}
   self.nextId = 1
 
   if g_currentMission:getIsServer() then
@@ -56,6 +55,16 @@ function CustomContractManager:saveToXmlFile(xmlFile)
     setXMLInt(xmlFile, key .. "#destinationId", contract.destinationId or -1)
     if contract.destinationX then setXMLFloat(xmlFile, key .. "#destinationX", contract.destinationX) end
     if contract.destinationZ then setXMLFloat(xmlFile, key .. "#destinationZ", contract.destinationZ) end
+    setXMLFloat(xmlFile, key .. "#transportSoldPrice", contract.transportSoldPrice or 0)
+
+    local vehicleEntries = contract.transportVehicleEntries or {}
+    setXMLInt(xmlFile, key .. "#transportVehicleCount", #vehicleEntries)
+    for vi, entry in ipairs(vehicleEntries) do
+      local vKey = string.format("%s.vehicle(%d)", key, vi - 1)
+      setXMLString(xmlFile, vKey .. "#uniqueId", entry.uniqueId or "")
+      setXMLString(xmlFile, vKey .. "#title", entry.title or "")
+      setXMLString(xmlFile, vKey .. "#imageFilename", entry.imageFilename or "")
+    end
 
     count = count + 1
   end
@@ -95,6 +104,7 @@ function CustomContractManager:loadFromXmlFile(xmlFile)
     local destinationId       = getXMLInt(xmlFile, contractKey .. "#destinationId")
     local destinationX        = getXMLFloat(xmlFile, contractKey .. "#destinationX")
     local destinationZ        = getXMLFloat(xmlFile, contractKey .. "#destinationZ")
+    local transportSoldPrice  = getXMLFloat(xmlFile, contractKey .. "#transportSoldPrice")
 
     local contract            = CustomContract.new(
       id,
@@ -118,6 +128,20 @@ function CustomContractManager:loadFromXmlFile(xmlFile)
     contract.destinationId = destinationId
     if destinationX then contract.destinationX = destinationX end
     if destinationZ then contract.destinationZ = destinationZ end
+    contract.transportSoldPrice = transportSoldPrice or 0
+
+    contract.transportVehicleEntries = {}
+    local vehicleCount = getXMLInt(xmlFile, contractKey .. "#transportVehicleCount") or 0
+    for vi = 0, vehicleCount - 1 do
+      local vKey = string.format("%s.vehicle(%d)", contractKey, vi)
+      if hasXMLProperty(xmlFile, vKey) then
+        table.insert(contract.transportVehicleEntries, {
+          uniqueId      = getXMLString(xmlFile, vKey .. "#uniqueId") or "",
+          title         = getXMLString(xmlFile, vKey .. "#title") or "",
+          imageFilename = getXMLString(xmlFile, vKey .. "#imageFilename") or ""
+        })
+      end
+    end
 
     self.contracts[id] = contract
     self.nextId        = math.max(self.nextId, id + 1)
@@ -125,7 +149,7 @@ function CustomContractManager:loadFromXmlFile(xmlFile)
     i                  = i + 1
   end
 
-  self:_rebuildAccessCache()
+  self:_syncFarmAccess()
   self:syncContracts()
 end
 
@@ -151,7 +175,7 @@ function CustomContractManager:readInitialClientState(streamId, connection)
     self.contracts[contract.id] = contract
   end
 
-  self:_rebuildAccessCache()
+  self:_syncFarmAccess()
   -- notify UI
   g_messageCenter:publish(MessageType.CUSTOM_CONTRACTS_UPDATED)
 end
@@ -268,7 +292,8 @@ function CustomContractManager:handleCreateRequest(farmId, payload)
   local templateId        = payload.templateId or CustomContract.TEMPLATE.FIELD_WORK
   local farmlandId        = payload.farmlandId or -1
   local workAreaTypeIndex = payload.workAreaTypeIndex or 0
-  if templateId == CustomContract.TEMPLATE.TRANSPORT then
+  if templateId == CustomContract.TEMPLATE.TRANSPORT
+      or templateId == CustomContract.TEMPLATE.VEHICLE_TRANSPORT then
     farmlandId = -1
     workAreaTypeIndex = 0
   end
@@ -289,11 +314,18 @@ function CustomContractManager:handleCreateRequest(farmId, payload)
   )
 
   if templateId == CustomContract.TEMPLATE.TRANSPORT then
-    contract.fillTypeIndex   = payload.fillTypeIndex
-    contract.transportAmount = payload.transportAmount
-    contract.destinationId   = payload.destinationId or -1
+    contract.fillTypeIndex      = payload.fillTypeIndex
+    contract.transportAmount    = payload.transportAmount
+    contract.destinationId      = payload.destinationId or -1
+    contract.transportSoldPrice = 0
     if payload.destinationX then contract.destinationX = payload.destinationX end
     if payload.destinationZ then contract.destinationZ = payload.destinationZ end
+  elseif templateId == CustomContract.TEMPLATE.VEHICLE_TRANSPORT then
+    contract.destinationId = payload.destinationId or -1
+    contract.transportSoldPrice = 0
+    if payload.destinationX then contract.destinationX = payload.destinationX end
+    if payload.destinationZ then contract.destinationZ = payload.destinationZ end
+    contract.transportVehicleEntries = CustomContract.copyVehicleEntries(payload.transportVehicleEntries)
   end
 
   self.contracts[id] = contract
@@ -315,6 +347,9 @@ function CustomContractManager:handleAcceptRequest(farmId, contractId)
 
   contract.contractorFarmId = farmId
   contract.status = CustomContract.STATUS.ACCEPTED
+  if contract.templateId == CustomContract.TEMPLATE.TRANSPORT then
+    contract.transportSoldPrice = 0
+  end
 
   -- Notify the creator of the contract
   local contractorFarm = g_farmManager:getFarmById(contract.contractorFarmId)
@@ -323,14 +358,14 @@ function CustomContractManager:handleAcceptRequest(farmId, contractId)
   g_currentMission.CustomContracts.NotificationManager:addNotification(
     string.format(g_i18n:getText("cc_contract_accepted_notification"), contract.id, farmName),
     Notification.TYPE.INFO,
-    farmId)
+    contract.creatorFarmId)
 
   -- Notify the contractor of the contract
   g_currentMission.CustomContracts.NotificationManager:addNotification(
     string.format(g_i18n:getText("cc_contract_accepted_notification"), contract.id, "You"), Notification.TYPE.INFO,
     farmId)
 
-  self:_rebuildAccessCache()
+  self:_syncFarmAccess()
   self:syncContracts()
 end
 
@@ -349,6 +384,10 @@ function CustomContractManager:handleCompleteRequest(farmId, contractId, connect
   if contract.templateId == CustomContract.TEMPLATE.TRANSPORT then
     lineTitle = string.format(
       g_i18n:getText("cc_dialog_invoice_create_auto_line_title_transport") or "Transport contract #%d", contract.id)
+  elseif contract.templateId == CustomContract.TEMPLATE.VEHICLE_TRANSPORT then
+    lineTitle = string.format(
+      g_i18n:getText("cc_dialog_invoice_create_auto_line_title_vehicle_transport") or "Vehicle transport contract #%d",
+      contract.id)
   else
     lineTitle = string.format(g_i18n:getText("cc_dialog_invoice_create_auto_line_title"), contract.id)
   end
@@ -356,16 +395,30 @@ function CustomContractManager:handleCompleteRequest(farmId, contractId, connect
     receiverFarmId = contract.creatorFarmId,
     title = string.format(g_i18n:getText("cc_contract_id_label"), contract.id),
     description = contract.description or "",
-    lines = {
-      { title = lineTitle, amount = contract.reward }
-    },
-    total = contract.reward,
+    lines = {},
+    total = 0,
     dueAt = contract.duePeriod,
     relatedContractId = contract.id,
     autoGenerated = true
   }
 
-  self:_rebuildAccessCache()
+  table.insert(draft.lines, { title = lineTitle, amount = contract.reward })
+
+  if contract.templateId == CustomContract.TEMPLATE.TRANSPORT then
+    local soldPrice = contract.transportSoldPrice or 0
+    table.insert(draft.lines, {
+      title = g_i18n:getText("cc_dialog_invoice_create_transport_sold_line_title") or "Sold produce value",
+      amount = -soldPrice
+    })
+  end
+
+  local total = 0
+  for _, line in ipairs(draft.lines) do
+    total = total + (tonumber(line.amount) or 0)
+  end
+  draft.total = total
+
+  self:_syncFarmAccess()
   self:syncContracts()
 
   -- Notify the creator of the contract
@@ -401,7 +454,7 @@ function CustomContractManager:handleCancelRequest(farmId, contractId)
     -- TODO: Add fine, 10% of contract money will be transfered to contractor if the start date is past.
     contract.status = CustomContract.STATUS.CANCELLED
   end
-  self:_rebuildAccessCache()
+  self:_syncFarmAccess()
   self:syncContracts()
 
   -- Notify the creator of the contract
@@ -441,7 +494,7 @@ function CustomContractManager:handleDeleteRequest(farmId, contractId)
     Notification.TYPE.INFO,
     contract.contractorFarmId)
 
-  self:_rebuildAccessCache()
+  self:_syncFarmAccess()
   self:syncContracts()
 end
 
@@ -455,9 +508,10 @@ function CustomContractManager:handleReopenRequest(farmId, contractId)
 
   self.contracts[contractId].contractorFarmId = nil
   self.contracts[contractId].status = CustomContract.STATUS.OPEN
+  self.contracts[contractId].transportSoldPrice = 0
 
 
-  self:_rebuildAccessCache()
+  self:_syncFarmAccess()
   self:syncContracts()
 end
 
@@ -510,53 +564,41 @@ function CustomContractManager:handleEditRequest(farmId, contractId, data)
   self:syncContracts()
 end
 
-function CustomContractManager:_rebuildAccessCache()
-  self.accessByFarmland = {}
-
-  for _, c in pairs(self.contracts) do
-    if c.status == CustomContract.STATUS.ACCEPTED and c.contractorFarmId ~= nil then
-      local farmlandId = c.farmlandId
-      if farmlandId ~= nil then
-        self.accessByFarmland[farmlandId] = self.accessByFarmland[farmlandId] or {}
-        self.accessByFarmland[farmlandId][c.contractorFarmId] = true
-      end
-    end
+function CustomContractManager:_syncFarmAccess()
+  local farmAccessManager = g_currentMission.CustomContracts.FarmAccessManager
+  if farmAccessManager == nil then
+    return
   end
+
+  farmAccessManager:rebuildFromContracts(self.contracts)
+  farmAccessManager:syncAccess()
 end
 
 function CustomContractManager:hasWorkAreaAccessByContract(farmId, landOwnerFarmId, x, z, workAreaType, workArea)
-  local farmlandIdAtPos = g_farmlandManager:getFarmlandIdAtWorldPosition(x, z)
-  if farmlandIdAtPos == nil then
+  local farmAccessManager = g_currentMission.CustomContracts.FarmAccessManager
+  if farmAccessManager == nil then
     return false
   end
 
-  for _, c in pairs(self.contracts) do
-    if c.status == CustomContract.STATUS.ACCEPTED
-        and c.contractorFarmId == farmId
-        and c.creatorFarmId == landOwnerFarmId
-        and c.farmlandId ~= nil then
-      if c.farmlandId == farmlandIdAtPos then
-        -- optional: restrict by workAreaType / c.workType here later
-        return true
-      end
-    end
-  end
-
-  return false
+  return farmAccessManager:getFarmAccessFieldWorkByFarmId(farmId, landOwnerFarmId, x, z, workAreaType, workArea)
 end
 
 function CustomContractManager:hasAcceptedContractWithOwner(contractorFarmId, ownerFarmId)
-  if contractorFarmId == nil or ownerFarmId == nil then return false end
-
-  for _, c in pairs(self.contracts) do
-    if c.status == CustomContract.STATUS.ACCEPTED
-        and c.contractorFarmId == contractorFarmId
-        and c.creatorFarmId == ownerFarmId then
-      return true
-    end
+  local farmAccessManager = g_currentMission.CustomContracts.FarmAccessManager
+  if farmAccessManager == nil then
+    return false
   end
 
-  return false
+  return farmAccessManager:hasAcceptedContractWithOwner(contractorFarmId, ownerFarmId)
+end
+
+function CustomContractManager:hasVehicleTransportAccess(contractorFarmId, ownerFarmId, vehicleUniqueId)
+  local farmAccessManager = g_currentMission.CustomContracts.FarmAccessManager
+  if farmAccessManager == nil then
+    return false
+  end
+
+  return farmAccessManager:hasVehicleTransportAccess(contractorFarmId, ownerFarmId, vehicleUniqueId)
 end
 
 local function toOrdinal(period, day, daysPerPeriod)
@@ -632,4 +674,41 @@ end
 
 function CustomContractManager:getContractById(id)
   return self.contracts[id]
+end
+
+function CustomContractManager:getActiveTransportContractForSale(contractorFarmId, fillTypeIndex)
+  if contractorFarmId == nil or fillTypeIndex == nil then
+    return nil
+  end
+
+  local match = nil
+  for _, contract in pairs(self.contracts) do
+    if contract.templateId == CustomContract.TEMPLATE.TRANSPORT
+        and contract.status == CustomContract.STATUS.ACCEPTED
+        and contract.contractorFarmId == contractorFarmId
+        and contract.fillTypeIndex == fillTypeIndex then
+      if match == nil or contract.id < match.id then
+        match = contract
+      end
+    end
+  end
+
+  return match
+end
+
+function CustomContractManager:registerTransportSale(contractorFarmId, fillTypeIndex, soldPrice)
+  if not g_currentMission:getIsServer() then
+    return
+  end
+  if soldPrice == nil or soldPrice <= 0 then
+    return
+  end
+
+  local contract = self:getActiveTransportContractForSale(contractorFarmId, fillTypeIndex)
+  if contract == nil then
+    return
+  end
+
+  contract.transportSoldPrice = (contract.transportSoldPrice or 0) + soldPrice
+  self:syncContracts()
 end

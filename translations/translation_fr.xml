@@ -4,6 +4,12 @@
     <text name="cc_money_type_invoices" text="Factures"/>
     <text name="finance_invoices" text="Factures"/>
 
+    <text name="gui_contracts" text="Contrats"/>
+    <text name="gui_invoices" text="Factures"/>
+    <text name="gui_notifications" text="Notifications"/>
+
+    <text name="input_CC_DEDICATED_MENU" text="Ouvrir contrats &amp; factures"/>
+
     <text name="cc_map_btn" text="Créer un contrat"/>
     <text name="cc_menu_join_farm_first" text="Rejoignez d'abord une ferme."/>
 
@@ -60,6 +66,8 @@
     <text name="cc_contract_description" text="%s sur le terrain %d (%.2f ha)"/>
     <text name="cc_contract_description_transport" text="Transport %d L %s"/>
     <text name="cc_contract_description_transport_pickup" text="Charger les marchandises à : %s"/>
+    <text name="cc_contract_description_transport_sold_price" text="Valeur des produits vendus : %s"/>
+
     <text name="cc_transport_pickup_loose_pallets" text="Palettes en vrac (sur la carte)"/>
     <text name="cc_transport_pickup_bales" text="Balles (sur la carte)"/>
     <text name="cc_transport_pickup_global_pallet" text="Palette de transport / citerne mobile"/>
@@ -94,6 +102,7 @@
     <text name="cc_contract_detail_transport_amount_label" text="Quantité :"/>
     <text name="cc_contract_detail_transport_amount" text="%d L"/>
     <text name="cc_contract_detail_transport_filltype_label" text="Type de remplissage :"/>
+    <text name="cc_contract_detail_transport_sold_price_label" text="Valeur des produits vendus"/>
 
     <text name="cc_btn_create_contract" text="Créer un contrat"/>
     <text name="cc_btn_accept_contract" text="Accepter le contrat"/>
@@ -103,18 +112,21 @@
     <text name="cc_btn_reopen_contract" text="Rouvrir le contrat"/>
     <text name="cc_btn_edit_contract" text="Modifier le contrat"/>
 
-    <text name="cc_dialog_create_yes_no" text="Terminer le contrat pour le terrain %d et recevoir €%s ?"/>
+    <text name="cc_dialog_create_yes_no" text="Terminer le contrat %s pour %s et recevoir €%s ?"/>
     <text name="cc_dialog_create_yes_no_btn" text="Terminer le contrat"/>
-    <text name="cc_dialog_accept_yes_no" text="Accepter le contrat pour le terrain %d (%s) pour €%s ?"/>
+    <text name="cc_dialog_accept_yes_no" text="Accepter le contrat %s pour %s pour €%s ?"/>
     <text name="cc_dialog_accept_yes_no_btn" text="Accepter le contrat"/>
-    <text name="cc_dialog_complete_yes_no" text="Terminer le contrat pour le terrain %d et recevoir €%s ?"/>
+    <text name="cc_dialog_complete_yes_no" text="Terminer le contrat %s pour %s et recevoir €%s ?"/>
     <text name="cc_dialog_complete_yes_no_btn" text="Terminer le contrat"/>
-    <text name="cc_dialog_cancel_yes_no" text="Annuler le contrat pour le terrain %d ?"/>
+    <text name="cc_dialog_cancel_yes_no" text="Annuler le contrat %s pour %s ?"/>
     <text name="cc_dialog_cancel_yes_no_btn" text="Annuler le contrat"/>
-    <text name="cc_dialog_delete_yes_no" text="Supprimer le contrat pour le terrain %d ?"/>
+    <text name="cc_dialog_delete_yes_no" text="Supprimer le contrat %s pour %s ?"/>
     <text name="cc_dialog_delete_yes_no_btn" text="Supprimer le contrat"/>
-    <text name="cc_dialog_reopen_yes_no" text="Rouvrir le contrat pour le terrain %d ?"/>
+    <text name="cc_dialog_reopen_yes_no" text="Rouvrir le contrat %s pour %s ?"/>
     <text name="cc_dialog_reopen_yes_no_btn" text="Rouvrir le contrat"/>
+
+    <text name="cc_contract_dialog_subject_transport" text="%d L %s"/>
+    <text name="cc_contract_dialog_subject_vehicles" text="%d véhicule(s)"/>
 
     <text name="cc_dialog_create_validation_fields" text="Veuillez remplir tous les champs"/>
     <text name="cc_dialog_create_validation_fields_due_date" text="Veuillez sélectionner une date de début et une date d’échéance"/>
@@ -134,6 +146,7 @@
     <text name="cc_dialog_template_subtitle" text="Choisissez un modèle pour le nouveau contrat."/>
     <text name="cc_dialog_template_field_work" text="Travail aux champs"/>
     <text name="cc_dialog_template_transport" text="Transport"/>
+    <text name="cc_dialog_template_transport_vehicle" text="Transport de véhicules"/>
     <text name="cc_dialog_template_farm_job" text="Tâche à la ferme"/>
     <text name="cc_dialog_template_custom" text="Personnalisé"/>
     <text name="cc_dialog_template_no_farmland" text="Aucun terrain disponible pour créer un contrat."/>
@@ -175,6 +188,26 @@
     <text name="cc_btn_delete_invoice" text="Supprimer la facture"/>
     <text name="cc_dialog_create_invoice_no_other_farms" text="Aucune autre ferme disponible pour facturer."/>
     <text name="cc_dialog_template_no_inventory" text="Aucun stock disponible pour créer un contrat de transport."/>
+    <text name="cc_dialog_template_no_vehicles" text="Aucun véhicule ou équipement disponible sur cette ferme."/>
+
+    <text name="cc_dialog_vehicle_transport_title" text="Créer un contrat de transport de véhicules"/>
+    <text name="cc_dialog_vehicle_transport_vehicle" text="Véhicule / équipement"/>
+    <text name="cc_dialog_vehicle_transport_multi_hint" text="Cochez les cases pour sélectionner plusieurs véhicules"/>
+    <text name="cc_dialog_vehicle_transport_col_selected" text="Sélection"/>
+    <text name="cc_dialog_vehicle_transport_selection_count" text="%d véhicule(s) sélectionné(s)"/>
+    <text name="cc_dialog_vehicle_transport_validation_select" text="Veuillez sélectionner au moins un véhicule."/>
+    <text name="cc_dialog_vehicle_transport_edit_not_supported" text="Les contrats de transport de véhicules ne peuvent pas encore être modifiés."/>
+    <text name="cc_vehicle_transport_selected" text="✓"/>
+    <text name="cc_vehicle_transport_unknown" text="Véhicule"/>
+
+    <text name="cc_contract_description_vehicle_transport" text="Transporter %d véhicule(s)"/>
+    <text name="cc_contract_description_vehicle_transport_destination" text="Livrer à : %.0f, %.0f"/>
+    <text name="cc_contract_vehicles_title" text="Véhicules"/>
+    <text name="cc_contract_equipment_title" text="Équipement"/>
+    <text name="cc_contract_vehicle_transport_equipment_desc" text="Ces véhicules doivent être livrés à la destination indiquée sur la carte. Utilisez votre propre parc ou de l'aide pour effectuer le transport."/>
+    <text name="cc_contract_detail_vehicle_count_label" text="Véhicules :"/>
+    <text name="cc_contract_detail_transport_destination_label" text="Destination :"/>
+    <text name="cc_dialog_invoice_create_auto_line_title_vehicle_transport" text="Contrat de transport de véhicules n°%d"/>
 
     <text name="cc_invoice_status_label" text="Statut :"/>
     <text name="cc_dialog_invoice_pay_yes_no" text="Payer la facture %s et payer €%s ?"/>
@@ -183,6 +216,7 @@
     <text name="cc_dialog_invoice_create_auto_title" text="Facture pour le contrat %d"/>
     <text name="cc_dialog_invoice_create_auto_line_title" text="Récompense du contrat (Contrat n°%d)"/>
     <text name="cc_dialog_invoice_create_auto_line_title_transport" text="Contrat de transport n°%d"/>
+    <text name="cc_dialog_invoice_create_transport_sold_line_title" text="Valeur des produits vendus"/>
 
     <text name="cc_dialog_invoice_add_invoice_line_title" text="Ajouter une ligne de facture"/>
     <text name="cc_dialog_invoice_add_invoice_line_description_label" text="Description"/>
@@ -243,5 +277,6 @@
     <text name="cc_notification_table_id" text="ID"/>
     <text name="cc_notification_table_message" text="Message"/>
     <text name="cc_notification_table_date" text="Date"/>
+    <text name="cc_btn_delete_notification" text="Supprimer"/>
   </texts>
 </l10n>
