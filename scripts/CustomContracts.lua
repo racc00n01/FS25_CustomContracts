@@ -21,6 +21,7 @@ function CustomContracts:loadMap()
 
   g_gui:loadProfiles(CustomContracts.dir .. "gui/guiProfiles.xml")
 
+  AddVehicleDialog.register()
   CreateContractDialog.register()
   CreateTransportContractDialog.register()
   CreateVehicleTransportContractDialog.register()
