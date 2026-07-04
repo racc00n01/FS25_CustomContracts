@@ -377,7 +377,6 @@ function CCDedicatedMenuContractsFrame:populateContractVehicleElements(contract)
   self:clearContractVehicleElements()
 
   if contract == nil
-      or contract.templateId ~= CustomContract.TEMPLATE.VEHICLE_TRANSPORT
       or self.contractVehicleTemplate == nil
       or self.contractVehiclesBox == nil then
     return
@@ -614,17 +613,20 @@ function CCDedicatedMenuContractsFrame:displaySelectedContract()
       end
 
       local isVehicleTransport = contract.templateId == CustomContract.TEMPLATE.VEHICLE_TRANSPORT
+      local hasVehicleEntries = contract.transportVehicleEntries ~= nil and #contract.transportVehicleEntries > 0
       if self.contractEquipmentBox ~= nil then
-        self.contractEquipmentBox:setVisible(isVehicleTransport)
+        self.contractEquipmentBox:setVisible(hasVehicleEntries)
       end
       if self.contractEquipmentDesc ~= nil then
         if isVehicleTransport then
           self.contractEquipmentDesc:setText(g_i18n:getText("cc_contract_vehicle_transport_equipment_desc"))
+        elseif hasVehicleEntries then
+          self.contractEquipmentDesc:setText(g_i18n:getText("cc_contract_lent_equipment_desc"))
         else
           self.contractEquipmentDesc:setText("")
         end
       end
-      if isVehicleTransport then
+      if hasVehicleEntries then
         self:populateContractVehicleElements(contract)
       else
         self:clearContractVehicleElements()

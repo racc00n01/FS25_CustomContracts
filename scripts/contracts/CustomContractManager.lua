@@ -325,8 +325,10 @@ function CustomContractManager:handleCreateRequest(farmId, payload)
     contract.transportSoldPrice = 0
     if payload.destinationX then contract.destinationX = payload.destinationX end
     if payload.destinationZ then contract.destinationZ = payload.destinationZ end
-    contract.transportVehicleEntries = CustomContract.copyVehicleEntries(payload.transportVehicleEntries)
   end
+
+  -- Applies to every template (e.g. field_work contracts that lend equipment)
+  contract.transportVehicleEntries = CustomContract.copyVehicleEntries(payload.transportVehicleEntries)
 
   self.contracts[id] = contract
   self:syncContracts()

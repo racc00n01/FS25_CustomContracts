@@ -176,6 +176,7 @@
     <text name="cc_dialog_create_input_startdate" text="Startdatum"/>
     <text name="cc_dialog_create_input_duedate" text="Vervaldatum"/>
     <text name="cc_dialog_create_btn_cancel" text="Annuleren"/>
+    <text name="cc_dialog_create_btn_add_vehicle" text="Voertuig toevoegen"/>
     <text name="cc_dialog_create_btn_create" text="Aanmaken"/>
 
     <text name="cc_invoices_inbox_title" text="Inbox"/>
@@ -205,9 +206,13 @@
     <text name="cc_contract_vehicles_title" text="Voertuigen"/>
     <text name="cc_contract_equipment_title" text="Uitrusting"/>
     <text name="cc_contract_vehicle_transport_equipment_desc" text="Deze voertuigen moeten naar de bestemming op de kaart worden gebracht. Gebruik je eigen machines of huur hulp in om het transport uit te voeren."/>
+    <text name="cc_contract_lent_equipment_desc" text="De volgende uitrusting wordt met dit contract uitgeleend zodat de opdrachtnemer deze kan gebruiken."/>
     <text name="cc_contract_detail_vehicle_count_label" text="Voertuigen:"/>
     <text name="cc_contract_detail_transport_destination_label" text="Bestemming:"/>
     <text name="cc_dialog_invoice_create_auto_line_title_vehicle_transport" text="Voertuigtransportcontract #%d"/>
+
+    <text name="cc_dialog_add_vehicle_title" text="Voertuig toevoegen"/>
+    <text name="cc_dialog_add_vehicle_btn_add" text="Toevoegen"/>
 
     <text name="cc_invoice_status_label" text="Status:"/>
     <text name="cc_dialog_invoice_pay_yes_no" text="Factuur %s betalen en €%s overmaken?"/>

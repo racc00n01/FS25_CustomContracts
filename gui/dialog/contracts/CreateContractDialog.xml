@@ -63,6 +63,7 @@
 
     <BoxLayout profile="fs25_dialogButtonBox">
       <Button profile="buttonBack" text="$l10n_cc_dialog_create_btn_cancel" onClick="onCancel" />
+      <Button profile="buttonBack" text="$l10n_cc_dialog_create_btn_add_vehicle" onClick="onAddVehicle" />
       <Button profile="buttonOK" text="$l10n_cc_dialog_create_btn_create" onClick="onConfirm" />
     </BoxLayout>
   </GuiElement>

@@ -34,6 +34,7 @@ function CreateContractDialog.new(target, custom_mt)
   self.dueDate = 0
   self.reward = 0
   self.description = nil
+  self.transportVehicleEntries = {}
 
   -- Data helpers
   self.farmlandIds = 0
@@ -90,6 +91,9 @@ function CreateContractDialog:onOpen()
   -- Populate dueDate MultiTextOption with dates from now till one year
   self:fillMonthMultiTextOption(self.dueDateSelector, "dueDateValues")
   self.selectedDueDateIndex = 1
+
+  -- Retrieve farms vehicles
+  self.ownedVehicles = FarmVehicleHelper.retrieveFarmVehicles(self.farmId)
 end
 
 function CreateContractDialog:onClose()
@@ -112,11 +116,6 @@ end
 
 function CreateContractDialog:onDueDateSelectChange(state)
   self.selectedDueDateIndex = state
-end
-
-function CreateContractDialog:onClickVehicleList(list, section, index)
-  self:toggleRentableVehicle(index)
-  list:reloadData()
 end
 
 -- Submit create contract button
@@ -148,16 +147,17 @@ function CreateContractDialog:onConfirm(sender)
   end
 
   local contract = {
-    templateId        = CustomContract.TEMPLATE.FIELD_WORK,
-    farmlandId        = self.farmlandId,
-    workAreaTypeIndex = self.workAreaTypeIndex,
-    reward            = self.reward,
-    description       = self.description or "-",
-    startPeriod       = startV.period,
-    startDay          = startV.day,
-    duePeriod         = dueV.period,
-    dueDay            = dueV.day,
-    invoiceId         = -1
+    templateId              = CustomContract.TEMPLATE.FIELD_WORK,
+    farmlandId              = self.farmlandId,
+    workAreaTypeIndex       = self.workAreaTypeIndex,
+    reward                  = self.reward,
+    description             = self.description or "-",
+    startPeriod             = startV.period,
+    startDay                = startV.day,
+    duePeriod               = dueV.period,
+    dueDay                  = dueV.day,
+    invoiceId               = -1,
+    transportVehicleEntries = CustomContract.copyVehicleEntries(self.transportVehicleEntries)
   }
 
   g_client:getServerConnection():sendEvent(
@@ -175,6 +175,13 @@ function CreateContractDialog:onCancel(sender)
   self.workAreaTypeIndex = nil
 
   self:close()
+end
+
+function CreateContractDialog:onAddVehicle(sender)
+  AddVehicleDialog.show(self.ownedVehicles, function(selectedVehicles)
+    print("Selected vehicles for contract: " .. tostring(#selectedVehicles))
+    self.transportVehicleEntries = selectedVehicles
+  end)
 end
 
 function CreateContractDialog:fillMonthMultiTextOption(multiTextOption, valuesFieldName)

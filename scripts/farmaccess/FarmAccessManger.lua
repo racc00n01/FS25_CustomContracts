@@ -193,20 +193,20 @@ function FarmAccessManager:grantContractAccess(contract)
     )
   end
 
-  if contract.templateId == CustomContract.TEMPLATE.VEHICLE_TRANSPORT then
-    for _, entry in ipairs(contract.transportVehicleEntries or {}) do
-      local uniqueId = entry.uniqueId
-      if uniqueId ~= nil and uniqueId ~= "" then
-        self:addAccess(
-          contract.contractorFarmId,
-          contract.creatorFarmId,
-          FarmAccess.ACCESS_TYPES.VEHICLE_TRANSPORT,
-          FarmAccess.SCOPE_TYPES.VEHICLE,
-          -1,
-          contract.id,
-          uniqueId
-        )
-      end
+  -- Any contract can carry vehicles (VEHICLE_TRANSPORT jobs, or equipment lent
+  -- alongside another template). Grant the contractor access to each of them.
+  for _, entry in ipairs(contract.transportVehicleEntries or {}) do
+    local uniqueId = entry.uniqueId
+    if uniqueId ~= nil and uniqueId ~= "" then
+      self:addAccess(
+        contract.contractorFarmId,
+        contract.creatorFarmId,
+        FarmAccess.ACCESS_TYPES.VEHICLE_TRANSPORT,
+        FarmAccess.SCOPE_TYPES.VEHICLE,
+        -1,
+        contract.id,
+        uniqueId
+      )
     end
   end
 end

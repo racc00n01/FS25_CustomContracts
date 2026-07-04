@@ -176,6 +176,7 @@
     <text name="cc_dialog_create_input_startdate" text="Startdatum"/>
     <text name="cc_dialog_create_input_duedate" text="Fälligkeitsdatum"/>
     <text name="cc_dialog_create_btn_cancel" text="Abbrechen"/>
+    <text name="cc_dialog_create_btn_add_vehicle" text="Fahrzeug hinzufügen"/>
     <text name="cc_dialog_create_btn_create" text="Erstellen"/>
 
     <text name="cc_invoices_inbox_title" text="Eingang"/>
@@ -205,9 +206,13 @@
     <text name="cc_contract_vehicles_title" text="Fahrzeuge"/>
     <text name="cc_contract_equipment_title" text="Ausrüstung"/>
     <text name="cc_contract_vehicle_transport_equipment_desc" text="Diese Fahrzeuge müssen zum auf der Karte markierten Zielort gebracht werden. Nutze deine eigene Flotte oder Hilfe, um den Transport abzuschließen."/>
+    <text name="cc_contract_lent_equipment_desc" text="Die folgende Ausrüstung wird mit diesem Vertrag verliehen, damit der Auftragnehmer sie nutzen kann."/>
     <text name="cc_contract_detail_vehicle_count_label" text="Fahrzeuge:"/>
     <text name="cc_contract_detail_transport_destination_label" text="Ziel:"/>
     <text name="cc_dialog_invoice_create_auto_line_title_vehicle_transport" text="Fahrzeugtransportvertrag #%d"/>
+
+    <text name="cc_dialog_add_vehicle_title" text="Fahrzeug hinzufügen"/>
+    <text name="cc_dialog_add_vehicle_btn_add" text="Hinzufügen"/>
 
     <text name="cc_invoice_status_label" text="Status:"/>
     <text name="cc_dialog_invoice_pay_yes_no" text="Rechnung %s bezahlen und €%s überweisen?"/>
