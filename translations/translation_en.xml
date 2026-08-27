@@ -277,6 +277,7 @@
 
     <text name="cc_contract_accepted_notification" text="Contract #%d has been accepted by %s"/>
     <text name="cc_contract_completed_notification" text="Contract #%d has been completed by %s"/>
+    <text name="cc_contract_progress_finished_notification" text="The field work of contract #%d is finished"/>
     <text name="cc_contract_cancelled_notification" text="Contract #%d has been cancelled by %s"/>
     <text name="cc_contract_deleted_notification" text="Contract #%d has been deleted by %s"/>
 
