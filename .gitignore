@@ -1,3 +1,5 @@
 .vscode
 .cursor
+build.bat
+build.ps1
 /docs

@@ -351,3 +351,21 @@ function FarmAccessManager:hasTransportAccess(contractorFarmId, ownerFarmId, fil
 
   return false
 end
+
+-- Function to check if a farm has field work access on the farmland at a world position
+-- @param farmId The farm ID
+-- @param x The X position
+-- @param z The Z position
+-- @return True if the farm has field work access at that position
+function FarmAccessManager:hasFieldWorkAccessAtPosition(farmId, x, z)
+  if farmId == nil or farmId == FarmlandManager.NO_OWNER_FARM_ID then
+    return false
+  end
+
+  local ownerFarmId = g_farmlandManager:getOwnerIdAtWorldPosition(x, z)
+  if ownerFarmId == nil or ownerFarmId == FarmlandManager.NO_OWNER_FARM_ID then
+    return false
+  end
+
+  return self:getFarmAccessFieldWorkByFarmId(farmId, ownerFarmId, x, z)
+end

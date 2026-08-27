@@ -304,6 +304,29 @@ function CustomContracts.canFarmAccessOtherId(self, superFunc, farmId, otherFarm
   return farmAccessManager:hasTransportAccess(farmId, otherFarmId, fillTypeIndex)
 end
 
+-- Guidance steering (AIAutomaticSteering) and field course generation gate on
+-- AccessHandler:canFarmAccessLand. Grant contractors the same land access the base
+-- game gives real contracting farms, but scoped to the farmland their contract covers.
+function CustomContracts.canFarmAccessLand(self, superFunc, farmId, x, z, disallowContracting)
+  if superFunc(self, farmId, x, z, disallowContracting) then
+    return true
+  end
+
+  -- Construction and placement pass disallowContracting = true; a contractor must
+  -- never be able to build or place on someone else's land.
+  if disallowContracting == true then
+    return false
+  end
+
+  local farmAccessManager = g_currentMission.CustomContracts ~= nil
+      and g_currentMission.CustomContracts.FarmAccessManager or nil
+  if farmAccessManager == nil then
+    return false
+  end
+
+  return farmAccessManager:hasFieldWorkAccessAtPosition(farmId, x, z)
+end
+
 -- Function to resolve the fill type from the arguments
 -- @param args The arguments
 -- @param argCount The number of arguments
@@ -433,6 +456,9 @@ AccessHandler.canFarmAccess =
 
 AccessHandler.canFarmAccessOtherId =
     Utils.overwrittenFunction(AccessHandler.canFarmAccessOtherId, CustomContracts.canFarmAccessOtherId)
+
+AccessHandler.canFarmAccessLand =
+    Utils.overwrittenFunction(AccessHandler.canFarmAccessLand, CustomContracts.canFarmAccessLand)
 
 if SellingStation ~= nil and SellingStation.addFillLevelFromTool ~= nil then
   SellingStation.addFillLevelFromTool =
