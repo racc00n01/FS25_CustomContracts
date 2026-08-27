@@ -303,6 +303,7 @@ function CCDedicatedMenuContractsFrame:onFrameOpen()
   self:onMoneyChange()
   g_messageCenter:subscribe(MessageType.MONEY_CHANGED, self.onMoneyChange, self)
   g_messageCenter:subscribe(MessageType.CUSTOM_CONTRACTS_UPDATED, self.updateContent, self)
+  g_messageCenter:subscribe(MessageType.CUSTOM_CONTRACT_PROGRESS_UPDATED, self.onContractProgressUpdated, self)
   self:updateContent()
   self:setMenuButtonInfoDirty()
 end
@@ -465,6 +466,50 @@ function CCDedicatedMenuContractsFrame:applyContractDetailLayout(isVehicleTransp
   end
 end
 
+--- Copy of InGameMenuContractsFrame:updateProgressBar so the bar behaves
+--- exactly like the base game one.
+function CCDedicatedMenuContractsFrame:updateProgressBar(value)
+  local fullWidth = self.contractProgressBarBg.size[1] - self.contractProgressBar.margin[1] * 2
+  value = math.max(value, self.contractProgressBar.startSize[1] * 2 / fullWidth)
+  self.contractProgressBar:setSize(fullWidth * math.min(value, 1), nil)
+end
+
+--- True when the server measures the field work of this contract.
+function CCDedicatedMenuContractsFrame:getHasProgress(contract)
+  return contract ~= nil
+      and contract.status == CustomContract.STATUS.ACCEPTED
+      and (contract.completion or ContractProgress.NOT_TRACKED) >= 0
+end
+
+--- Refreshes the percentage and the bar of the selected contract.
+function CCDedicatedMenuContractsFrame:updateContractProgress(contract)
+  if self.contractProgressBox == nil then
+    return
+  end
+
+  local hasProgress = self:getHasProgress(contract)
+  self.contractProgressBox:setVisible(hasProgress)
+
+  if not hasProgress then
+    return
+  end
+
+  self.contractProgressText:setText(string.format("%.0f%%", contract.completion * 100))
+  self:updateProgressBar(contract.completion)
+end
+
+--- Progress updates arrive while the menu is open, only touch the box.
+function CCDedicatedMenuContractsFrame:onContractProgressUpdated(contract)
+  if not self.isFrameOpen then
+    return
+  end
+
+  local selected = self:getSelectedContract()
+  if selected ~= nil and contract ~= nil and selected.id == contract.id then
+    self:updateContractProgress(selected)
+  end
+end
+
 function CCDedicatedMenuContractsFrame:displaySelectedContract()
   local index = self.contractsTable.selectedIndex
   local selection = self.contractDisplaySwitcher:getState()
@@ -612,10 +657,15 @@ function CCDedicatedMenuContractsFrame:displaySelectedContract()
         self.contractDetailsList:reloadData()
       end
 
+      self:updateContractProgress(contract)
+
       local isVehicleTransport = contract.templateId == CustomContract.TEMPLATE.VEHICLE_TRANSPORT
       local hasVehicleEntries = contract.transportVehicleEntries ~= nil and #contract.transportVehicleEntries > 0
+      -- Both boxes use the same slot, the base game shows the progress of a
+      -- running contract there as well.
+      local showEquipment = hasVehicleEntries and not self:getHasProgress(contract)
       if self.contractEquipmentBox ~= nil then
-        self.contractEquipmentBox:setVisible(hasVehicleEntries)
+        self.contractEquipmentBox:setVisible(showEquipment)
       end
       if self.contractEquipmentDesc ~= nil then
         if isVehicleTransport then
@@ -626,7 +676,7 @@ function CCDedicatedMenuContractsFrame:displaySelectedContract()
           self.contractEquipmentDesc:setText("")
         end
       end
-      if hasVehicleEntries then
+      if showEquipment then
         self:populateContractVehicleElements(contract)
       else
         self:clearContractVehicleElements()
@@ -640,6 +690,9 @@ function CCDedicatedMenuContractsFrame:displaySelectedContract()
       self:clearContractMapPreviewClip()
       if self.contractEquipmentBox ~= nil then
         self.contractEquipmentBox:setVisible(false)
+      end
+      if self.contractProgressBox ~= nil then
+        self.contractProgressBox:setVisible(false)
       end
       self:clearContractVehicleElements()
       self:applyContractDetailLayout(false)

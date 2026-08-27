@@ -15,6 +15,8 @@ function CustomContractManager:new()
   setmetatable(self, CustomContractManager_mt)
   self.contracts = {}
   self.nextId = 1
+  -- Server side ContractProgress objects, keyed by contract id.
+  self.progressTrackers = {}
 
   if g_currentMission:getIsServer() then
     g_messageCenter:subscribe(
@@ -56,6 +58,16 @@ function CustomContractManager:saveToXmlFile(xmlFile)
     if contract.destinationX then setXMLFloat(xmlFile, key .. "#destinationX", contract.destinationX) end
     if contract.destinationZ then setXMLFloat(xmlFile, key .. "#destinationZ", contract.destinationZ) end
     setXMLFloat(xmlFile, key .. "#transportSoldPrice", contract.transportSoldPrice or 0)
+    setXMLFloat(xmlFile, key .. "#completion", contract.completion or ContractProgress.NOT_TRACKED)
+    if contract.progressBaseline ~= nil then
+      setXMLFloat(xmlFile, key .. "#progressBaseline", contract.progressBaseline)
+    end
+    if contract.progressFruitTypeIndex ~= nil then
+      setXMLInt(xmlFile, key .. "#progressFruitTypeIndex", contract.progressFruitTypeIndex)
+    end
+    if contract.progressTargetLevel ~= nil then
+      setXMLInt(xmlFile, key .. "#progressTargetLevel", contract.progressTargetLevel)
+    end
 
     local vehicleEntries = contract.transportVehicleEntries or {}
     setXMLInt(xmlFile, key .. "#transportVehicleCount", #vehicleEntries)
@@ -129,6 +141,10 @@ function CustomContractManager:loadFromXmlFile(xmlFile)
     if destinationX then contract.destinationX = destinationX end
     if destinationZ then contract.destinationZ = destinationZ end
     contract.transportSoldPrice = transportSoldPrice or 0
+    contract.completion = getXMLFloat(xmlFile, contractKey .. "#completion") or ContractProgress.NOT_TRACKED
+    contract.progressBaseline = getXMLFloat(xmlFile, contractKey .. "#progressBaseline")
+    contract.progressFruitTypeIndex = getXMLInt(xmlFile, contractKey .. "#progressFruitTypeIndex")
+    contract.progressTargetLevel = getXMLInt(xmlFile, contractKey .. "#progressTargetLevel")
 
     contract.transportVehicleEntries = {}
     local vehicleCount = getXMLInt(xmlFile, contractKey .. "#transportVehicleCount") or 0
@@ -349,6 +365,7 @@ function CustomContractManager:handleAcceptRequest(farmId, contractId)
 
   contract.contractorFarmId = farmId
   contract.status = CustomContract.STATUS.ACCEPTED
+  self:resetProgress(contract)
   if contract.templateId == CustomContract.TEMPLATE.TRANSPORT then
     contract.transportSoldPrice = 0
   end
@@ -381,6 +398,7 @@ function CustomContractManager:handleCompleteRequest(farmId, contractId, connect
   if contract.contractorFarmId ~= farmId then return end
 
   contract.status = CustomContract.STATUS.COMPLETED_AWAITING_INVOICE
+  self:resetProgress(contract)
 
   local lineTitle
   if contract.templateId == CustomContract.TEMPLATE.TRANSPORT then
@@ -456,6 +474,7 @@ function CustomContractManager:handleCancelRequest(farmId, contractId)
     -- TODO: Add fine, 10% of contract money will be transfered to contractor if the start date is past.
     contract.status = CustomContract.STATUS.CANCELLED
   end
+  self:resetProgress(contract)
   self:_syncFarmAccess()
   self:syncContracts()
 
@@ -482,6 +501,7 @@ function CustomContractManager:handleDeleteRequest(farmId, contractId)
   if contract.creatorFarmId ~= farmId then return end
 
   self.contracts[contractId] = nil
+  self:resetProgress(contract)
 
   -- Notify the creator of the contract
   g_currentMission.CustomContracts.NotificationManager:addNotification(
@@ -511,6 +531,7 @@ function CustomContractManager:handleReopenRequest(farmId, contractId)
   self.contracts[contractId].contractorFarmId = nil
   self.contracts[contractId].status = CustomContract.STATUS.OPEN
   self.contracts[contractId].transportSoldPrice = 0
+  self:resetProgress(contract)
 
 
   self:_syncFarmAccess()
@@ -649,6 +670,7 @@ function CustomContractManager:updateExpiredContracts()
       if contract.duePeriod == g_currentMission.CustomContracts.lastPeriod then
         if CustomUtils.isPastDue(contract, curPeriod, curDay, daysPerPeriod) then
           contract.status = CustomContract.STATUS.EXPIRED
+          self:resetProgress(contract)
           changed = true
         end
       end
@@ -676,6 +698,86 @@ end
 
 function CustomContractManager:getContractById(id)
   return self.contracts[id]
+end
+
+--- Drops the tracker and the measured values of a contract, used whenever a
+--- contract leaves the accepted state (or is accepted again).
+function CustomContractManager:resetProgress(contract)
+  if contract == nil then return end
+
+  self.progressTrackers[contract.id] = nil
+  contract.completion = ContractProgress.NOT_TRACKED
+  contract.progressBaseline = nil
+  contract.progressFruitTypeIndex = nil
+  contract.progressTargetLevel = nil
+end
+
+--- Measures one partition of every accepted field work contract. Called from
+--- CustomContracts:update on the server, at CustomContracts.PROGRESS_INTERVAL.
+function CustomContractManager:updateProgress()
+  if not g_currentMission:getIsServer() then return end
+
+  for id, contract in pairs(self.contracts) do
+    if contract.status == CustomContract.STATUS.ACCEPTED and ContractProgress.isSupported(contract) then
+      local tracker = self.progressTrackers[id]
+      if tracker == nil then
+        tracker = ContractProgress.new(contract)
+        self.progressTrackers[id] = tracker
+      end
+
+      if tracker ~= nil then
+        local completion = tracker:step()
+        local previous = contract.completion or ContractProgress.NOT_TRACKED
+
+        -- Same idea as the base game dirty flag: only tell the clients about
+        -- changes they can actually see.
+        if previous < 0 or math.abs(completion - previous) >= 0.0025 or (completion >= 1 and previous < 1) then
+          contract.completion = completion
+          g_server:broadcastEvent(ContractProgressEvent.new(id, completion))
+          g_messageCenter:publish(MessageType.CUSTOM_CONTRACT_PROGRESS_UPDATED, contract)
+
+          if completion >= 1 and previous < 1 then
+            self:notifyContractFinished(contract)
+          end
+        end
+      end
+    elseif self.progressTrackers[id] ~= nil then
+      self.progressTrackers[id] = nil
+    end
+  end
+end
+
+--- Tells both farms that the field work is done, the contractor still has to
+--- complete the contract manually.
+function CustomContractManager:notifyContractFinished(contract)
+  local notificationManager = g_currentMission.CustomContracts.NotificationManager
+  if notificationManager == nil then return end
+
+  local message = string.format(g_i18n:getText("cc_contract_progress_finished_notification"), contract.id)
+
+  notificationManager:addNotification(message, Notification.TYPE.INFO, contract.creatorFarmId)
+  if contract.contractorFarmId ~= nil then
+    notificationManager:addNotification(message, Notification.TYPE.INFO, contract.contractorFarmId)
+  end
+end
+
+--- The contract whose progress is shown in the HUD for the given farm: the
+--- accepted, measurable field work contract with the lowest id.
+function CustomContractManager:getTrackedContractForFarm(farmId)
+  if farmId == nil then return nil end
+
+  local tracked = nil
+  for _, contract in pairs(self.contracts) do
+    if contract.status == CustomContract.STATUS.ACCEPTED
+        and contract.contractorFarmId == farmId
+        and (contract.completion or ContractProgress.NOT_TRACKED) >= 0 then
+      if tracked == nil or contract.id < tracked.id then
+        tracked = contract
+      end
+    end
+  end
+
+  return tracked
 end
 
 function CustomContractManager:getActiveTransportContractForSale(contractorFarmId, fillTypeIndex)

@@ -34,8 +34,8 @@ function NotificationManager:saveToXmlFile(xmlFile)
     setXMLInt(xmlFile, notKey .. "#id", notification.id)
     setXMLString(xmlFile, notKey .. "#message", notification.message)
     setXMLString(xmlFile, notKey .. "#type", notification.type)
-    setXMLInt(xmlFile, notKey .. "#date", notification.date)
-    setXMLInt(xmlFile, notKey .. "#farmId", notification.farmId)
+    setXMLInt(xmlFile, notKey .. "#date", notification.date or 0)
+    setXMLInt(xmlFile, notKey .. "#farmId", notification.farmId or -1)
 
     count = count + 1
   end
@@ -59,8 +59,8 @@ function NotificationManager:loadFromXmlFile(xmlFile)
     local id = getXMLInt(xmlFile, notKey .. "#id")
     local message = getXMLString(xmlFile, notKey .. "#message")
     local type = getXMLString(xmlFile, notKey .. "#type")
-    local date = getXMLInt(xmlFile, notKey .. "#date")
-    local farmId = getXMLInt(xmlFile, notKey .. "#farmId")
+    local date = getXMLInt(xmlFile, notKey .. "#date") or 0
+    local farmId = getXMLInt(xmlFile, notKey .. "#farmId") or -1
 
     local notification = Notification.new(id, message, type, date, farmId)
 
@@ -137,6 +137,10 @@ end
 
 function NotificationManager:addNotification(message, type, farmId)
   if not g_currentMission:getIsServer() then return end
+
+  -- Nothing to notify: happens for the contractor of a contract that was never
+  -- accepted (cancelled or deleted while still open).
+  if farmId == nil then return end
 
   local notification = Notification.new(self.nextId, message, type, g_currentMission.environment.dayTime, farmId)
   self.notifications[notification.id] = notification

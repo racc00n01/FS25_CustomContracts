@@ -2,7 +2,7 @@
 <modDesc descVersion="108">
   <author>Racc00n</author>
 
-  <version>1.0.0.4</version>
+  <version>1.0.0.5</version>
 
   <iconFilename>icon_customContracts.dds</iconFilename>
 
@@ -56,6 +56,7 @@ https://github.com/racc00n01/FS25_ContractsAndInvoices
   <l10n filenamePrefix="translations/translation" />
   <extraSourceFiles>
     <sourceFile filename="scripts/util/CustomUtils.lua"/>
+    <sourceFile filename="scripts/contracts/ContractProgress.lua"/>
     <sourceFile filename="scripts/contracts/CustomContract.lua"/>
     <sourceFile filename="scripts/invoices/Invoice.lua"/>
     <sourceFile filename="scripts/notification/Notification.lua"/>
@@ -75,6 +76,7 @@ https://github.com/racc00n01/FS25_ContractsAndInvoices
     <sourceFile filename="scripts/events/contracts/EditContractEvent.lua"/>
     <sourceFile filename="scripts/events/contracts/ReopenContractEvent.lua"/>
     <sourceFile filename="scripts/events/contracts/SyncContractsEvent.lua"/>
+    <sourceFile filename="scripts/events/contracts/ContractProgressEvent.lua"/>
     <sourceFile filename="scripts/events/InitialClientStateEvent.lua"/>
     <sourceFile filename="scripts/events/invoices/CreateInvoiceEvent.lua"/>
     <sourceFile filename="scripts/events/invoices/PayInvoiceEvent.lua"/>

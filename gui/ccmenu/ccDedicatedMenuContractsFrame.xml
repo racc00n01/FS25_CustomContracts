@@ -77,6 +77,17 @@
         <InGameMapPreview profile="fs25_contractsIngameMap" id="contractMap"/>
       </GuiElement>
 
+      <!-- Same elements and profiles as the base game contract progress box,
+           see InGameMenuContractsFrame.xml -->
+      <GuiElement profile="fs25_contractsProgressBox" id="contractProgressBox" visible="false">
+        <Text profile="fs25_contractsContentTitle" text="$l10n_contract_progress:"/>
+        <Text profile="fs25_contractsContentExtraText" id="contractExtraProgressText"/>
+        <Text profile="fs25_contractsContentValue" id="contractProgressText"/>
+        <ThreePartBitmap profile="fs25_contractsProgressBarBg" id="contractProgressBarBg">
+          <ThreePartBitmap profile="fs25_contractsProgressBar" id="contractProgressBar"/>
+        </ThreePartBitmap>
+      </GuiElement>
+
       <GuiElement profile="fs25_contractsProgressBox" id="contractEquipmentBox" visible="false">
         <Text profile="fs25_contractsContentTitle" text="$l10n_cc_contract_equipment_title"/>
         <Text profile="fs25_contractsContentText" id="contractEquipmentDesc"/>

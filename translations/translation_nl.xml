@@ -274,6 +274,7 @@
 
     <text name="cc_contract_accepted_notification" text="Contract #%d is geaccepteerd door %s"/>
     <text name="cc_contract_completed_notification" text="Contract #%d is voltooid door %s"/>
+    <text name="cc_contract_progress_finished_notification" text="Het veldwerk van contract #%d is klaar"/>
     <text name="cc_contract_cancelled_notification" text="Contract #%d is geannuleerd door %s"/>
     <text name="cc_contract_deleted_notification" text="Contract #%d is verwijderd door %s"/>
 

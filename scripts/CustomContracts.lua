@@ -10,6 +10,10 @@ CustomContracts.dir = g_currentModDirectory
 CustomContracts.modName = g_currentModName
 CustomContracts.SaveKey = "CustomContracts"
 
+-- Interval of the field work progress measurement. The base game uses 2500 ms
+-- for its own missions, we run faster so the bar follows the work closely.
+CustomContracts.PROGRESS_INTERVAL = 1000
+
 function CustomContracts:loadMap()
   g_currentMission.CustomContracts = self
 
@@ -17,6 +21,7 @@ function CustomContracts:loadMap()
   MessageType.INVOICES_UPDATED = nextMessageTypeId()
   MessageType.NOTIFICATIONS_UPDATED = nextMessageTypeId()
   MessageType.FARM_ACCESS_UPDATED = nextMessageTypeId()
+  MessageType.CUSTOM_CONTRACT_PROGRESS_UPDATED = nextMessageTypeId()
   MessageType.PLAYER_CONNECTED = nextMessageTypeId()
 
   g_gui:loadProfiles(CustomContracts.dir .. "gui/guiProfiles.xml")
@@ -49,6 +54,59 @@ function CustomContracts:loadMap()
   self:loadFromXmlFile()
 
   CCDedicatedMenu.setupGui()
+end
+
+--- Server: measures the progress of the accepted field work contracts.
+--- Client and server: keeps the base game contract progress bar of the HUD alive.
+function CustomContracts:update(dt)
+  if self.ContractManager == nil then
+    return
+  end
+
+  if g_currentMission:getIsServer() then
+    self.progressTimer = (self.progressTimer or 0) + dt
+    if self.progressTimer >= CustomContracts.PROGRESS_INTERVAL then
+      self.progressTimer = 0
+      self.ContractManager:updateProgress()
+    end
+  end
+
+  self:updateProgressHud()
+end
+
+--- Reuses the base game side notification progress bar (the box in the top
+--- right corner) for the contract the local farm is working on.
+function CustomContracts:updateProgressHud()
+  local hud = g_currentMission.hud
+  if hud == nil or hud.addSideNotificationProgressBar == nil or g_localPlayer == nil then
+    return
+  end
+
+  local contract = self.ContractManager:getTrackedContractForFarm(g_localPlayer.farmId)
+
+  if contract == nil then
+    if self.progressHudBar ~= nil then
+      hud:removeSideNotificationProgressBar(self.progressHudBar)
+      self.progressHudBar = nil
+      self.progressHudContractId = nil
+    end
+    return
+  end
+
+  if self.progressHudBar == nil or self.progressHudContractId ~= contract.id then
+    if self.progressHudBar ~= nil then
+      hud:removeSideNotificationProgressBar(self.progressHudBar)
+    end
+    self.progressHudBar = hud:addSideNotificationProgressBar(
+      g_i18n:getText("contract_title"),
+      contract:getListLabel(),
+      contract.completion
+    )
+    self.progressHudContractId = contract.id
+  end
+
+  self.progressHudBar.progress = contract.completion
+  hud:markSideNotificationProgressBarForDrawing(self.progressHudBar)
 end
 
 function CustomContracts:loadFromXmlFile()
@@ -304,6 +362,29 @@ function CustomContracts.canFarmAccessOtherId(self, superFunc, farmId, otherFarm
   return farmAccessManager:hasTransportAccess(farmId, otherFarmId, fillTypeIndex)
 end
 
+-- Guidance steering (AIAutomaticSteering) and field course generation gate on
+-- AccessHandler:canFarmAccessLand. Grant contractors the same land access the base
+-- game gives real contracting farms, but scoped to the farmland their contract covers.
+function CustomContracts.canFarmAccessLand(self, superFunc, farmId, x, z, disallowContracting)
+  if superFunc(self, farmId, x, z, disallowContracting) then
+    return true
+  end
+
+  -- Construction and placement pass disallowContracting = true; a contractor must
+  -- never be able to build or place on someone else's land.
+  if disallowContracting == true then
+    return false
+  end
+
+  local farmAccessManager = g_currentMission.CustomContracts ~= nil
+      and g_currentMission.CustomContracts.FarmAccessManager or nil
+  if farmAccessManager == nil then
+    return false
+  end
+
+  return farmAccessManager:hasFieldWorkAccessAtPosition(farmId, x, z)
+end
+
 -- Function to resolve the fill type from the arguments
 -- @param args The arguments
 -- @param argCount The number of arguments
@@ -433,6 +514,9 @@ AccessHandler.canFarmAccess =
 
 AccessHandler.canFarmAccessOtherId =
     Utils.overwrittenFunction(AccessHandler.canFarmAccessOtherId, CustomContracts.canFarmAccessOtherId)
+
+AccessHandler.canFarmAccessLand =
+    Utils.overwrittenFunction(AccessHandler.canFarmAccessLand, CustomContracts.canFarmAccessLand)
 
 if SellingStation ~= nil and SellingStation.addFillLevelFromTool ~= nil then
   SellingStation.addFillLevelFromTool =

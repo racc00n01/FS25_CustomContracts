@@ -72,6 +72,13 @@ function CustomContract.new(id, creatorFarmId, farmlandId, workAreaTypeIndex, re
   self.invoiceId          = invoiceId or -1
   self.templateId         = templateId or CustomContract.TEMPLATE.FIELD_WORK
 
+  -- Field work progress. `completion` is synced to the clients, the rest is
+  -- server side bookkeeping (see ContractProgress).
+  self.completion         = ContractProgress.NOT_TRACKED
+  self.progressBaseline   = nil -- field state ratio when the contract was accepted
+  self.progressFruitTypeIndex = nil -- snapshot for harvest/mowing contracts
+  self.progressTargetLevel = nil -- snapshot for fertilize/lime/roll/mulch contracts
+
   -- Transport-specific (TRANSPORT goods or VEHICLE_TRANSPORT)
   self.fillTypeIndex      = nil
   self.transportAmount    = nil
@@ -147,6 +154,7 @@ function CustomContract:writeStream(streamId)
   streamWriteFloat32(streamId, self.destinationZ or 0)
   streamWriteFloat32(streamId, self.transportSoldPrice or 0)
   CustomContract.writeVehicleEntriesToStream(streamId, self.transportVehicleEntries)
+  streamWriteFloat32(streamId, self.completion or ContractProgress.NOT_TRACKED)
 end
 
 function CustomContract.newFromStream(streamId)
@@ -171,6 +179,7 @@ function CustomContract.newFromStream(streamId)
   local destinationZ = streamReadFloat32(streamId)
   local transportSoldPrice = streamReadFloat32(streamId)
   local transportVehicleEntries = CustomContract.readVehicleEntriesFromStream(streamId)
+  local completion = streamReadFloat32(streamId)
 
   local contract = CustomContract.new(
     id,
@@ -196,6 +205,7 @@ function CustomContract.newFromStream(streamId)
   if destinationZ and destinationZ ~= 0 then contract.destinationZ = destinationZ end
   contract.transportSoldPrice = transportSoldPrice or 0
   contract.transportVehicleEntries = transportVehicleEntries
+  contract.completion = completion or ContractProgress.NOT_TRACKED
 
   return contract
 end
